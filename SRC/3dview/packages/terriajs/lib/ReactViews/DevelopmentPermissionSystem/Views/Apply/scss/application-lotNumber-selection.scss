@@ -1,0 +1,157 @@
+@import "~terriajs-variables";
+.text_area {
+    margin: 10px 5PX; 
+    text-align: left;
+    border: 0.5px solid;
+    border-color: #E3E3E3
+}
+
+.btn_margin {
+    margin: 0px 5px;
+}
+
+.btn_border_radius {
+    border-radius: 4px;
+}
+
+.radio_label {
+    color: #303030;
+    font-size: 14px;
+    font-weight: 400;
+    margin-right: 7px;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+}
+
+.radio_input {
+    margin: 0;
+    visibility: hidden;
+}
+
+.radio_input:checked + span {
+    border: 2px solid $view-main-color;;
+    box-sizing: border-box;
+}
+
+.radio_input:checked + span:after {
+    opacity: 1;
+}
+
+.custom_radio {
+    left: -8px;
+    top: 6px;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    border: 2px solid $view-main-pale-color;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* for inner filled circle */
+.custom_radio::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: $view-main-color;
+    position: absolute;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.applyType_div_area{
+    display: flex;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+}
+
+.component_border {
+    margin: 5px;
+    filter: drop-shadow(0 5px 5px gray);
+    // margin-bottom: 20px;
+}
+
+.btn_baise_style {
+    background-color: transparent;
+    margin: 0px 5px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    color: #ffff;
+    background: $view-main-color;
+    border:none;
+    font-size:0.8125rem;
+    cursor:pointer;
+    padding: 5px 10px;
+    line-height:2em;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
+    min-width: 150px;
+}
+
+.btn_baise_style:disabled{
+    cursor:not-allowed;
+    background: $view-main-pale-color ;
+}
+
+.btn_gry {
+    background:$view-gray-color !important;
+    color: #000;
+}
+
+.tooltips {
+    display: none;
+    position: fixed;
+    left: 657px;
+    top: 569px;
+    background: rgba(255, 255, 0, 0.7);
+    padding: 5px;
+    font-size: 0.5em;
+    border: 1px solid black;
+}
+
+.btn_apply {
+    margin: 0 auto;
+    width: -webkit-fill-available;
+    filter: drop-shadow(2px 4px 6px #E3E3E3);
+}
+
+.div_area {
+    margin: 5px;
+    border: 0.5px solid;
+    border-color: #E3E3E3;
+}
+
+.back_button {
+    font-size: 0.8125rem;
+    padding: 5px;
+    min-height: 32px;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border: none;
+    color: #000;
+    cursor: pointer;
+    background: #d3d3d3 !important;
+    width: 100%;
+    line-height: 2em;
+}
+
+.back_button:hover {
+    box-shadow: none;
+    border-color: transparent;
+}
+
+.customloaderParent {
+    background: rgba(0, 0, 0, .3);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+}

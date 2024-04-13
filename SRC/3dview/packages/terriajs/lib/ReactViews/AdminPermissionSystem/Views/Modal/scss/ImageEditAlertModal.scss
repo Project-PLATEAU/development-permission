@@ -1,0 +1,79 @@
+@import "~terriajs-variables";
+
+.overlay {
+    /*　画面全体を覆う設定　*/
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background-color:rgba(0,0,0,0.5);
+    z-index: 99999;
+
+    /*　画面の中央に要素を表示させる設定　*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal {
+    width: 600px;
+    height: 275px;
+    position: absolute;
+    padding: 0;
+    background: #fff;
+    z-index: 99999;
+
+}
+.scrollContainer {
+    max-height: 180px;
+    width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+.custom_nuv {
+    padding: 0;
+    margin: 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: left;
+    background-color: $view-main-color;
+    color: #fff;
+    font-weight: 600;
+    padding-left: 1em;
+    cursor: move;
+    user-select: none;
+}
+
+.container {
+    padding: 1em;
+    ul {
+        padding-left: 1em;
+    }
+    li {
+        list-style: disc;
+        margin-bottom: 10px;
+        img {
+            width: 20px;
+            height: auto;
+        }
+
+    }
+    .confirmButton {
+        text-align: center;
+        margin-top: 30px;
+        button{
+            width: 100px;
+            display: inline-block;
+            background-color: $view-main-color;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    }
+}
+

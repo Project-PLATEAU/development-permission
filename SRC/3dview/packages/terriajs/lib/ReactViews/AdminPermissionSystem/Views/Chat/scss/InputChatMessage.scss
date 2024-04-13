@@ -1,0 +1,205 @@
+@import "~terriajs-variables";
+
+
+.custom_nuv {
+    padding: 0;
+    margin: 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: left;
+    background-color: $view-main-pale-color;
+    color: black;
+    padding-left: 1em;
+    user-select: none;
+}
+
+.selection_table {
+    width: 100%;
+    font-size: 0.9em;
+}
+
+.selection_table thead th {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  background-color: $view-main-color;
+  line-height: 2.5em;
+  z-index: 1;
+}
+
+.selection_table tr {
+    background: #f5f5f5;
+    line-height: 2em;
+}
+
+.selection_table td{
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.selection_table .table_header {
+    background: $view-main-color;
+    color: #fff;
+    font-weight: bold;
+}
+
+.selection_table tr:nth-child(2n) {
+    background: #d3d3d3 !important;
+}
+
+.download_button,
+.close_button {
+    font-size: 0.8125rem;
+    width: 90px;
+    padding: 5px;
+    line-height: 2em;
+    display: block;
+    min-height: 32px;
+    flex-direction: row;
+    justify-content: center;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    background: $view-main-color !important;
+    margin: 5px auto;
+    border-radius: 10px;
+}
+
+.close_button {
+    background: #696969 !important;
+    margin-left: 1px;
+}
+
+.download_button {
+    line-height: 1em;
+    min-height: 22px;
+}
+
+.input_message_area {
+    height: 100px;
+    margin-top: -1px;
+}
+
+.list_item1{
+    padding: 0px 5px;
+    width: 40%;
+}
+
+.list_item2{
+    padding: 0px 10px;
+    width: 60%;
+}
+
+.custom_selection {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: left;
+    background-color: $view-main-pale-color;
+    color: black;
+    padding-left: 1em;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content:space-between;
+    width: 100%;
+    border: none;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
+}
+.checked {
+    background-color: $view-main-color;
+}
+
+.answer_content_area{
+    height: 100px;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
+}
+
+.ellipse{
+    background-color: rgb(136, 187, 17);
+    border-radius:50%;
+    width: 40px;
+    height: 30px;
+    margin: 5px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.answerContentDiv {
+    position: fixed;
+    left: 600px;
+    bottom: 0px;
+    background-color: #fff;
+    display: inline-flex;
+    padding-top: 10px;
+}
+
+.address_btn{
+   background-color: $view-main-color;
+   color: #fff;
+   padding: 5px;
+   font-size: 1rem;
+   margin-left: 10px;
+   border: none;
+   border-radius: 10px;
+}
+
+.self_mesage{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    float: right;
+    width: 85%;
+    margin-bottom: 10px;
+}
+
+.other_mesage{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    float: left;
+    width: 85%;
+    margin-bottom: 10px;
+}
+
+.mesage_address{
+    box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.self_mesage_content{
+    border: 1px solid;
+    padding: 5px;
+    margin: 10px;
+    border-radius: 6px;
+    background-color: $view-main-pale-color;
+    float: right;
+    border-color: $view-main-color;
+    // text-align: end;
+    margin-top: 0;
+    // レイアウト案①
+    // margin-bottom: 0;
+}
+
+.other_mesage_content{
+    border: 1px solid;
+    padding: 5px;
+    margin: 10px;
+    border-radius: 6px;
+    background-color: #fff;
+    float: left;
+    border-color: $view-main-color;
+    margin-top: 0;
+    // レイアウト案①
+    // margin-bottom: 0;
+}
+
+.details_button{
+    width: 20%;
+    background: $view-main-color;
+    color: white;
+}

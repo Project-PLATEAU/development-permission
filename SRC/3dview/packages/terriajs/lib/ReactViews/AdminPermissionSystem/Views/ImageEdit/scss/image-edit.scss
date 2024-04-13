@@ -1,0 +1,46 @@
+@import "~terriajs-variables";
+
+.back_button,
+.edit_button,
+.save_button {
+  font-size: 0.8125rem;
+  width: 110px;
+  padding: 5px;
+  margin: 10px 10px;
+  line-height: 2em;
+//   display: block;
+  min-height: 32px !important;
+  flex-direction: row;
+//   justify-content: center;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  background: $view-main-color !important;
+  border-radius: 10px;
+}
+
+.back_button {
+  background: #696969 !important;
+  margin-left: 1px;
+}
+
+.edit_button {
+  background: $view-main-color !important;
+  color: #FFF !important;
+}
+
+.save_button {
+    background: green !important;
+    color: #FFF !important;
+}
+
+.viewerHeader {
+  display: flex;
+  justify-content: space-between;
+  background-color: $view-main-pale-color;
+  color: #000;
+
+  div {
+    margin: 10px;
+  }
+}

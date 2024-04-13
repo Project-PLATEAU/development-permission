@@ -1,0 +1,18 @@
+-- 地番
+WITH lon_number_geom AS (   
+SELECT    
+ST_Transform(   
+   CAST(ST_Buffer(   
+  CAST(ST_Transform(geom, 4612) AS geography), 5.0
+  ) AS geometry), 2450) AS geom    
+  FROM    
+  f_lot_number    
+    WHERE    
+    chiban_id = any (CAST(regexp_split_to_array('%lot_numbers%', '_') AS integer[]))
+), 
+--道路LOD2レイヤ
+lod2_geom AS ( 
+    SELECT geom FROM f_road_lod2 WHERE object_id = any (CAST(regexp_split_to_array('%side_walks%', '_') AS integer[]))
+) 
+SELECT ST_Intersection(ST_Union(lon_number_geom.geom), ST_Union(lod2_geom.geom) ) AS geom 
+FROM lon_number_geom, lod2_geom

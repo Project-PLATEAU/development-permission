@@ -1,0 +1,27 @@
+@import "~terriajs-variables";
+
+.viewerHeader {
+    display: flex;
+    justify-content: space-between;
+    background-color: $view-main-pale-color;
+    color: #000;
+  
+    div {
+      margin: 10px;
+    }
+}
+
+.edit_button {
+  font-size: 0.8125rem;
+  width: 200px;
+  padding: 5px;
+  margin: 10px 10px;
+  line-height: 2em;
+  min-height: 32px !important;
+  flex-direction: row;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  background: $view-main-color !important;
+  border-radius: 10px;
+}

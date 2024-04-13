@@ -1,0 +1,112 @@
+{
+  "config": {
+      "apiUrl":"/api",
+      "pdfViewerUrl": "/pdfjs",
+      "geoserverUrl":"/geoserver/devps/wms",
+      "geoserverWfsUrl": "/geoserver/devps/ows",
+      "landmarkUrl":"/gis/landmark/landmark.czml",
+      "maxFileSize":"50",
+      "maxRequestFileSize":"100",
+      "answerReportName":"行政回答レポート",
+      "questionnaireUrlForBusiness":"https://path.to.questinnaire/for/business",
+      "questionnaireUrlForGoverment":"https://path.to.questinnaire/for/government"
+  },
+  "layer": {
+      "lotnumberSearchLayerNameForGoverment":"devps:地番検索結果（行政）",
+      "lotnumberSearchLayerDisplayNameForGoverment":"地番検索結果（行政）",
+      "lotnumberSearchViewParamNameForGoverment":"lot_numbers:",
+      "lotnumberSearchLayerNameForBusiness":"devps:地番検索結果（事業者）",
+      "lotnumberSearchLayerDisplayNameForBusiness":"地番検索結果（事業者）",
+      "lotnumberSearchViewParamNameForBusiness":"lot_numbers:",
+      "lotnumberSearchLayerNameForSelected":"devps:選択中地番",
+      "lotnumberSearchLayerDisplayNameForSelected":"選択中地番",
+      "lotnumberSearchViewParamNameForSelected":"lot_numbers:",
+      "lotnumberSearchLayerNameForApplicationTarget":"devps:申請対象地番",
+      "lotnumberSearchLayerDisplayNameForApplicationTarget":"申請対象地番",
+      "lotnumberSearchViewParamNameForApplicationTarget":"lot_numbers:",
+      "lotnumberSearchLayerNameForApplying":"devps:申請中地番",
+      "lotnumberSearchLayerDisplayNameForApplying":"申請中地番",
+      "lotnumberSearchLayerNameForAll":"devps:全地番",
+      "lotnumberSearchLayerDisplayNameForAll":"筆界",
+      "lotnumberSearchLayerNameForApplicationSearchTarget":"devps:申請情報表示地番",
+      "lotnumberSearchLayerDisplayNameForApplicationSearchTarget":"申請情報表示地番",
+      "lotnumberSearchViewParamNameForApplicationSearchTarget":"lot_numbers:"
+  },
+  "landMark":{
+      "id":"//ランドマーク/ランドマーク",
+      "displayName":"ランドマーク"
+  },
+  "buildingModel":{
+      "id":"//3D都市モデル/建物モデル（○○市）"
+  },
+  "wfs": {
+      "identify_text": "@wfs",
+      "road_width_identify_text": "{widthText}",
+      "czmlTemplate": {
+          "road_width": {
+              "label": {
+                "fillColor": {
+                  "rgba": [
+                    0,
+                    0,
+                    0,
+                    255
+                  ]
+                },
+                "font": "13pt Lucida Console bold",
+                "horizontalOrigin": "CENTER",
+                "outlineColor": {
+                  "rgba": [
+                    255,
+                    255,
+                    255,
+                    255
+                  ]
+                },
+                "translucencyByDistance": {
+                  "nearFarScalar": [
+                    1000,
+                    1.0,
+                    1000,
+                    0.0
+                  ]
+                },
+                "showBackground ": true,
+                "backgroundColor": {
+                  "rgba": [
+                    80,
+                    68,
+                    236,
+                    255
+                  ]
+                },
+                "backgroundPadding ": [
+                  100,
+                  100
+                ],
+                "outlineWidth": 7.0,
+                "pixelOffset": {
+                  "cartesian2": [
+                    0,
+                    25
+                  ]
+                },
+                "heightReference": "RELATIVE_TO_GROUND",
+                "style": "FILL_AND_OUTLINE",
+                "text": {
+                  "reference": "#properties.label_text"
+                }
+              }
+          }
+      }
+  },
+  "NotDraggableItem":[
+      "//ランドマーク",
+      "//3D都市モデル"
+  ],
+  "QuestionaryActived":{
+      "UserAgreementView":"false",
+      "GeneralConditionDiagnosisView":"true",
+      "ApplyCompletedView":"true"
+  }
+}
