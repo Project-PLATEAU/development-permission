@@ -15,10 +15,10 @@
 本システムは3D都市モデルをはじめとする空間情報をPostGISとGeoServerを組み合わせたリレーショナルデータベースで管理し、空間解析機能等のバックエンド機能を備えるウェブシステムとなっています。また、CesiumJS及びTerriaJSをフロントエンドで利用しています。
 
 本システムの使い方は下記の操作マニュアルを参照ください。  
-[開発許可申請管理システム　操作マニュアル](https://aas-basicsystemsdevelopmentdept.github.io/PLATEAU-UC22-012-development-permission/manual/user_manual.html)
+[開発許可申請管理システム　操作マニュアル](https://project-plateau.github.io/development-permission/manual/user_manual.html)
 
 本システムの構築方法については下記の環境構築手順書を参照ください。  
-[環境構築手順書](https://aas-basicsystemsdevelopmentdept.github.io/PLATEAU-UC22-012-development-permission/manual/environment.html)
+[環境構築手順書](https://project-plateau.github.io/development-permission/manual/environment.html)
 
 ## **2．「開発許可申請管理システム v2」について**
 
@@ -42,7 +42,7 @@
 ### **インストール**
 
 * 本システムで必要となるソフトウェアを下表に示します。
-[環境構築手順書](https://aas-basicsystemsdevelopmentdept.github.io/PLATEAU-UC22-012-development-permission/manual/environment.html)を参照の上、ソフトウェアのインストール及びセットアップを完了させてください。
+[環境構築手順書](https://project-plateau.github.io/development-permission/manual/environment.html)を参照の上、ソフトウェアのインストール及びセットアップを完了させてください。
 
     |ソフトウェア|プロジェクトフォルダ|
     | - | - |
@@ -56,7 +56,7 @@
 
     |ファイル|プロジェクトフォルダ|備考|
     | - | - | - |
-    |1.環境設定ファイル一式|[/Settings/environmant_settings](Settings/environment_settings/)|各ファイルについては[環境構築手順書](https://aas-basicsystemsdevelopmentdept.github.io/PLATEAU-UC22-012-development-permission/manual/environment.html)を参照してください。
+    |1.環境設定ファイル一式|[/Settings/environmant_settings](Settings/environment_settings/)|各ファイルについては[環境構築手順書](https://project-plateau.github.io/development-permission/manual/environment.html)を参照してください。
 
 ### **使い方**
 #### **利用できる動作環境**
@@ -67,7 +67,7 @@
 #### **操作マニュアル**<!-- 納品時リンク変更 -->
 
 本システムの使い方は下記の操作マニュアルを参照ください。<br>
-[開発許可申請管理システム　操作マニュアル](https://aas-basicsystemsdevelopmentdept.github.io/PLATEAU-UC22-012-development-permission/manual/user_manual.html)
+[開発許可申請管理システム　操作マニュアル](https://project-plateau.github.io/development-permission/manual/user_manual.html)
 
 ## **4.システム概要**
 
@@ -139,17 +139,17 @@ V2では前面道路判定機能、コミュニケーション機能を追加し
 |[/SRC/api](./SRC/api/)|API側のソースコード一式|
 |[/SRC/pdfjs/](./SRC/pdfjs/)|PDFビューワ（PDF.js）スタイルシート|
 
-## **8.ライセンス** <!-- 定型文のため変更しない -->
+## **8.ライセンス**
 * ソースコードおよび関連ドキュメントの著作権は国土交通省に帰属します。
 * 本ドキュメントは[Project PLATEAUのサイトポリシー](https://www.mlit.go.jp/plateau/site-policy/)（CCBY4.0および政府標準利用規約2.0）に従い提供されています。
 
-## **9.注意事項** <!-- 定型文のため変更しない -->
+## **9.注意事項**
 
 * 本レポジトリは参考資料として提供しているものです。動作保証は行っておりません。
 * 予告なく変更・削除する可能性があります。
 * 本レポジトリの利用により生じた損失及び損害等について、国土交通省はいかなる責任も負わないものとします。
 
-## **10.参考資料**　 <!-- 各リンクは納品時に更新 -->
+## **10.参考資料**
 * GitHubPages：https://Project-PLATEAU.github.io/development-permission/
 * 対外情報発信：https://www.mlit.go.jp/plateau/use-case/uc23-06/
 * 開発許可のDXv2 技術検証レポート：https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0076_ver01.pdf
