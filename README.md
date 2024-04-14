@@ -150,11 +150,9 @@ V2では前面道路判定機能、コミュニケーション機能を追加し
 * 本レポジトリの利用により生じた損失及び損害等について、国土交通省はいかなる責任も負わないものとします。
 
 ## **10.参考資料**
-* GitHubPages：https://Project-PLATEAU.github.io/development-permission/
-* 対外情報発信：https://www.mlit.go.jp/plateau/use-case/uc23-06/
 * 開発許可のDXv2 技術検証レポート：https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0076_ver01.pdf
 * 開発許可のDXv1 技術検証レポート：https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0024_ver01.pdf
-* PLATEAU Webサイト Use caseページ「開発許可のDX」: https://www.mlit.go.jp/plateau/use-case/uc23-06/
+* PLATEAU Webサイト Use caseページ「開発許可のDX v2.0」: https://www.mlit.go.jp/plateau/use-case/uc23-06/
 * Project-PLATEAU PLATEAU-VIEW:https://github.com/Project-PLATEAU/PLATEAU-VIEW
 * Project-PLATEAU terriajs:https://github.com/Project-PLATEAU/terriajs
 * GeoServer:https://geoserver.org/
