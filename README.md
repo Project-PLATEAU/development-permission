@@ -1,5 +1,5 @@
 # 開発許可申請管理システム
-![image](https://github.com/AAS-BasicSystemsDevelopmentDept/PLATEAU-UC22-012-development-permission/assets/79615787/53d12219-0d0c-4701-82e4-968e3e9a9c48)
+![image](./img/key_visual.png)
 
 
 ## 更新履歴
