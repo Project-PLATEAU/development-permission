@@ -40,6 +40,21 @@ class AnswerStatusList extends React.Component {
         this.state.viewState.setAdminBackPage(this.props.referrer, "");
     }
 
+    /**
+     * 一覧の行をクリックする
+     * @param {*} resultData 
+     */
+    showLotNumberLayers(event, resultData){
+        const applicationId = resultData.applicationId;
+        const LotNumbers = resultData.lotNumbers;
+
+        if(applicationId!==undefined && applicationId !== null && Number(applicationId) > 0){
+            if(LotNumbers){
+                this.props.callback(applicationId, LotNumbers);
+            }
+        }
+    }
+
     render(){
         let answers = this.props.answers;
         return (
@@ -48,16 +63,18 @@ class AnswerStatusList extends React.Component {
                     <thead>
                         <tr>
                             <th style={{width: "40%"}}>ステータス</th>
-                            <th style={{width: "40%"}}>申請ID</th>
-                            <th style={{width: "20%"}}></th>
+                            <th style={{width: "20%"}}>申請ID</th>
+                            <th style={{width: "20%"}}>期限</th>
+                            <th className="no-sort" style={{width: "20%"}}></th>
                         </tr>
                     </thead>
                     <tbody>
                         {answers && Object.keys(answers).map(key => ( 
-                            <tr key={`answers-${key}`}>
-                                <td>{answers[key]["status"]}</td>
-                                <td>{answers[key]["applicationId"]}</td>
-                                <td><Button primary fullWidth onClick={e=>{this.showApplyDdetail(answers[key]["applicationId"])}}>詳細</Button></td>
+                            <tr key={`answers-${key}`} onClick={event => {this.showLotNumberLayers(event, answers[key])}}>
+                                <td style={{color: answers[key]["warning"]? "red":""}}>{answers[key]["status"]}</td>
+                                <td style={{color: answers[key]["warning"]? "red":""}}>{answers[key]["applicationId"]}</td>
+                                <td style={{color: answers[key]["warning"]? "red":""}}>{answers[key]["deadlineDate"]?answers[key]["deadlineDate"]:""}</td>
+                                <td><Button primary fullWidth onClick={e=>{this.showApplyDdetail(answers[key]["applicationId"])}}> 詳細 </Button></td>
                             </tr>
                         ))}
                     </tbody>

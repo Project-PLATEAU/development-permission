@@ -5,11 +5,12 @@ import { withTranslation } from "react-i18next";
 import { withTheme } from "styled-components";
 import Spacing from "../../../../Styled/Spacing";
 import Box from "../../../../Styled/Box";
-import CustomStyle from "./scss/answer-file-list.scss";
+import CustomStyle from "./scss/file-list.scss";
 import Config from "../../../../../customconfig.json";
+import _isEqual from 'lodash/isEqual';
 
 /**
- * 回答内容確認画面の回答添付ファイル一覧コンポーネント
+ * 回答添付ファイル一覧コンポーネント
  */
 @observer
 class AnswerFileList extends React.Component {
@@ -19,48 +20,32 @@ class AnswerFileList extends React.Component {
         viewState: PropTypes.object.isRequired,
         theme: PropTypes.object,
         t: PropTypes.func.isRequired,
-        selectedAnswers: PropTypes.object
+        answerFiles: PropTypes.array
     }
+
     constructor(props) {
         super(props);
         this.state = {
             viewState: props.viewState,
             terria: props.terria,
-            height: 0,
-            //表示用回答内容リスト
-            answers: props.answerContentList,
+            height: "0",
+            //回答ファイル一覧
+            answerFiles: props.answerFiles
         };
     }
 
     /**
      * 初期処理
      */
-    componentDidMount() {
-
-        this.getWindowSize(); 
-    }
+    componentDidMount() { }
 
     /**
-     * リサイズのために、高さ再計算
+     * props更新時
      */
-    getWindowSize() {
-        let win = window;
-        let e = window.document.documentElement;
-        let g = window.document.documentElement.getElementsByTagName('body')[0];
-        let h = win.innerHeight|| e.clientHeight|| g.clientHeight;
-
-        const getRect = document.getElementById("AnswerFileListTable");
-        let height = h - getRect.getBoundingClientRect().top;
-
-        if(this.props.viewState.showChatView){
-            let map = window.document.documentElement.getElementsByTagName('canvas')[0];
-            height = map.clientHeight/2 - 80;
-        }else if(this.props.viewState.showConfirmAnswerInformationView){
-            const answerContent = document.getElementById("AnswerContentListTable");
-            height = h - answerContent.getBoundingClientRect().top;
-            height = (height-170)/2;
+    componentDidUpdate(prevProps) {
+        if (!_isEqual(this.props.answerFiles, prevProps.answerFiles)) {
+            this.setState({answerFiles: this.props.answerFiles});
         }
-        this.setState({height: height});
     }
 
     /**
@@ -71,7 +56,7 @@ class AnswerFileList extends React.Component {
      */
     output(path, file, fileNameKey) {
         //ダウンロード時に認証が必要ため、申請ID及び照合IDとパスワードをセット
-        if(file){
+        if(!this.props.terria.authorityJudgment() && file){
             file.applicationId = this.props.viewState.answerContent.applicationId;
             file.loginId = this.props.viewState.answerContent.loginId;
             file.password = this.props.viewState.answerContent.password;
@@ -115,66 +100,52 @@ class AnswerFileList extends React.Component {
     }
 
     render() {
-        let answers = this.props.answerContentList;
-        let height = this.state.height;
-        let isChatView = this.props.viewState.showChatView;
+        const answerFiles = this.state.answerFiles;
+
         return (
-            <>
-                <Box
-                    centered
-                    displayInlineBlock
-                    className={CustomStyle.custom_content}
-                >
-                    {isChatView && (
-                        <h2 className={CustomStyle.title_in_chat_view}>添付ファイル一覧</h2>
-                    )}
-                    {!isChatView && (
-                        <h2 className={CustomStyle.title}>回答添付ファイル一覧</h2>
-                    )}
-                    <Spacing bottom={1} />
-                    {!isChatView && (
-                        <span style={{margin:"5px"}}>選択中の対象：{answers[0]["judgementInformation"]["title"]}</span>
-                    )}
-                    <Spacing bottom={1} />
-                    <div className={CustomStyle.scrollContainer} id="AnswerFileListTable" style={{height: height + "px"}}>    
-                        <table className={CustomStyle.selection_table}>
-                            <thead>
-                                <tr className={CustomStyle.table_header}>
-                                    <th style={{ width: 100 + "px" }}>回答ファイル</th>
-                                    <th style={{ width: 100 + "px" }}>対象</th>
-                                    <th style={{ width: 50 + "px" }}>拡張子</th>
-                                    <th>ファイル名</th>
+            <Box
+                centered
+                displayInlineBlock
+                className={CustomStyle.custom_content}
+            >
+                <h2 className={CustomStyle.title}>回答添付ファイル一覧</h2>
+                <Spacing bottom={1} />
+                <div className={CustomStyle.scroll_container} id="AnswerFileListTable" style={{height: "18vh", minHeight:"200px"}}>    
+                    <table className={CustomStyle.selection_table}>
+                        <thead>
+                            <tr className={CustomStyle.table_header}>
+                                <th className="no-sort" style={{ width: "20%" }}>回答ファイル</th>
+                                <th style={{ width: "35%" }}>対象</th>
+                                <th style={{ width: "15%" }}>拡張子</th>
+                                <th style={{ width: "30%" }}>ファイル名</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {answerFiles && Object.keys(answerFiles).map(key => (
+                                <tr>
+                                    <td>
+                                        <button
+                                            className={CustomStyle.download_button}
+                                            onClick={e => {
+                                                this.output("/answer/file/download", answerFiles[key], "answerFileName");
+                                            }}
+                                        >
+                                            <span>ダウンロード</span>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        {answerFiles[key].judgementInformation?answerFiles[key].judgementInformation.title:""}
+                                    </td>
+                                    <td>{this.getExtension(answerFiles[key]["answerFileName"])}</td>
+                                    <td style={{ width: 250 + "px", overflow: "hidden", wordWrap: "break-word" }}>
+                                        {answerFiles[key]["answerFileName"]}
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {answers && Object.keys(answers).map(index => (
-                                    Object.keys(answers[index]["answerFiles"]).map(key => (
-                                        <tr>
-                                            <td>
-                                                <button
-                                                    className={CustomStyle.download_button}
-                                                    onClick={e => {
-                                                        this.output("/answer/file/download", answers[index]["answerFiles"][key], "answerFileName");
-                                                    }}
-                                                >
-                                                    <span>ダウンロード</span>
-                                                </button>
-                                            </td>
-                                            <td>
-                                                {answers[index]["judgementInformation"]["title"]}
-                                            </td>
-                                            <td>{this.getExtension(answers[index]["answerFiles"][key]["answerFileName"])}</td>
-                                            <td style={{ width: 250 + "px", overflow: "hidden", wordWrap: "break-word" }}>
-                                                {answers[index]["answerFiles"][key]["answerFileName"]}
-                                            </td>
-                                        </tr>
-                                    ))
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </Box>
-            </>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </Box>
         );
     }
 }

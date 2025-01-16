@@ -23,6 +23,10 @@ public class ApplicationSearchConditionForm implements Serializable {
 	/** シリアルバージョンUID */
 	private static final long serialVersionUID = 1L;
 
+	/** 申請ID */
+	@ApiModelProperty(value = "申請ID", example = "1")
+	private Integer applicationId;
+
 	/** 申請者情報一覧 */
 	@ApiModelProperty(value = "申請者情報一覧")
 	private List<ApplicantInformationItemForm> applicantInformationItemForm;
@@ -39,6 +43,10 @@ public class ApplicationSearchConditionForm implements Serializable {
 	@ApiModelProperty(value = "問い合わせステータス")
 	private List<AnswerStatusForm> answerStatus;
 
+	/** 条文ステータス */
+	@ApiModelProperty(value = "条文ステータス")
+	private List<ItemAnswerStatusForm> itemAnswerStatus;
+	
 	/** 部署 */
 	@ApiModelProperty(value = "部署")
 	private List<DepartmentForm> department;
@@ -46,4 +54,16 @@ public class ApplicationSearchConditionForm implements Serializable {
 	/** 回答者 */
 	@ApiModelProperty(value = "回答者")
 	private List<AnswerNameForm> answerName;
+	
+	/** 申請種類 */
+	@ApiModelProperty(value = "申請種類")
+	private List<ApplicationTypeForm> applicationTypes;
+	
+	/** 申請段階 */
+	@ApiModelProperty(value = "申請段階")
+	private List<ApplicationStepForm> applicationSteps;
+	
+	/** 申請追加情報一覧 */
+	@ApiModelProperty(value = "申請追加情報一覧")
+	private List<ApplicantInformationItemForm> applicantAddInformationItemForm;
 }

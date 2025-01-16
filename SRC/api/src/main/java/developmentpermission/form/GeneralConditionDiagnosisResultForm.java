@@ -30,6 +30,22 @@ public class GeneralConditionDiagnosisResultForm implements Serializable {
 	/** 区分判定ID */
 	@ApiModelProperty(value = "区分判定ID", example = "0001")
 	private String judgementId;
+	
+	/** 複数行の区分判定結果のインデックス */
+	@ApiModelProperty(value = "複数行の区分判定結果のインデックス", example = "1")
+	private Integer judgementResultIndex;
+
+	/** 申請種類ID */
+	@ApiModelProperty(value = "申請種類ID", example = "1")
+	private Integer applicationTypeId;
+
+	/** 申請段階ID */
+	@ApiModelProperty(value = "申請段階ID", example = "1")
+	private Integer applicationStepId;
+
+	/** 部署ID */
+	@ApiModelProperty(value = "部署ID", example = "10001")
+	private String departmentId;
 
 	/** タイトル */
 	@ApiModelProperty(value = "タイトル", example = "○○市生活環境保全条例（観光")
@@ -102,4 +118,8 @@ public class GeneralConditionDiagnosisResultForm implements Serializable {
 	/** 最大座標(緯度) */
 	@ApiModelProperty(value = "最大座標（緯度）", example = "35.01")
 	private Double maxlat;
+	
+	/** データ種類 */
+	@ApiModelProperty(value = "データ種類", example = "0")
+	private String dataType;
 }

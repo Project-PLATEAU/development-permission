@@ -1,6 +1,7 @@
 package developmentpermission.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import developmentpermission.entity.Answer;
+import developmentpermission.entity.Chat;
 import developmentpermission.form.AnswerConfirmLoginForm;
+import developmentpermission.form.AnswerFileForm;
 import developmentpermission.form.AnswerHistoryForm;
 import developmentpermission.form.ApplicationSearchConditionForm;
 import developmentpermission.form.ChatRequestForm;
@@ -32,6 +35,7 @@ import developmentpermission.form.ChatForm;
 import developmentpermission.form.ChatRelatedInfoForm;
 import developmentpermission.form.ResponseEntityForm;
 import developmentpermission.form.ResponsibleInquiryFrom;
+import developmentpermission.repository.ChatRepository;
 import developmentpermission.service.AnswerService;
 import developmentpermission.service.ApplicationService;
 import developmentpermission.service.ChatService;
@@ -81,6 +85,10 @@ public class ChatApiController extends AbstractApiController {
 	@Value("${app.csv.log.path.chat.government.message.post}")
 	private String postGovernmentChatMessageLogPath;
 
+	final private Integer APPLICATION_STEP_ID1 = 1;
+	final private Integer APPLICATION_STEP_ID2 = 2;
+	final private Integer APPLICATION_STEP_ID3 = 3;
+
 	/**
 	 * チャット新規作成（事業者）
 	 * 
@@ -93,7 +101,7 @@ public class ChatApiController extends AbstractApiController {
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
 			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class),
-			@ApiResponse(code = 503, message = "チャット新規作成にエラー発生", response = ResponseEntityForm.class)})
+			@ApiResponse(code = 503, message = "チャット新規作成にエラー発生", response = ResponseEntityForm.class) })
 	public ChatForm createChat(
 			@ApiParam(required = true, value = "チャットリクエストフォーム") @RequestBody ChatRequestForm chatRequestForm,
 			@CookieValue(value = "token", required = false) String token) {
@@ -144,30 +152,47 @@ public class ChatApiController extends AbstractApiController {
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
-			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class)})
-	public ChatForm getBusinessChatMessages(
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class) })
+	public List<ChatForm> getBusinessChatMessages(
 			@ApiParam(required = true, value = "チャットリクエストフォーム") @RequestBody ChatRequestForm chatRequestForm,
 			@CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("事業者向けチャットメッセージ一覧取得開始");
 		try {
 
 			// 権限チェック（事業者か否か）
-			// 照合ID,パスワードチェック
+			// 照合ID,パスワードチェック,申請IDチェック
 			validateLoginInfo(token, chatRequestForm.getLoginId(), chatRequestForm.getPassword(),
-					chatRequestForm.getAnswer().getAnswerId());
+					chatRequestForm.getAnswerId(), chatRequestForm.getApplicationId(),
+					chatRequestForm.getApplicationStepId(), chatRequestForm.getDepartmentAnswerId());
+			// 該当の問い合わせがあるか
+			int chatId = 0;
+			// パラメータのチャットIDが空(null)かどうか
+			if (chatRequestForm.getChatId() == null) {
+				// チャットIDが空の場合の存在チェックを行う
+				if (APPLICATION_STEP_ID1.equals(chatRequestForm.getApplicationStepId())) {
+					// 申請段階IDが1:事前相談の場合
+					chatId = chatService.searchChatMessageExistStep1(chatRequestForm.getApplicationId(),
+							chatRequestForm.getAnswerId(), chatRequestForm.getApplicationStepId());
+				} else if (APPLICATION_STEP_ID2.equals(chatRequestForm.getApplicationStepId())) {
+					// 申請段階IDが2:事前協議の場合
+					chatId = chatService.searchChatMessageExistStep2(chatRequestForm.getApplicationId(),
+							chatRequestForm.getApplicationStepId(), chatRequestForm.getDepartmentAnswerId());
+				} else if (APPLICATION_STEP_ID3.equals(chatRequestForm.getApplicationStepId())) {
+					// 申請段階IDが3:許可判定の場合
+					chatId = chatService.searchChatMessageExistStep3(chatRequestForm.getApplicationId(),
+							chatRequestForm.getApplicationStepId());
+				}
+			} else {
+				// チャットIDが空でない場合は存在チェックを行う
+				chatService.searchChatMessageExist(chatRequestForm.getChatId());
+				chatId = chatRequestForm.getChatId();
+			}
 
 			// チャットメッセージ一覧取得
-			Integer answerId = chatRequestForm.getAnswer().getAnswerId();
-			if (answerId != null) {
-				// 回答IDに紐づく事業者向けチャットメッセージ一覧を取得し、行政からメッセージを既読にする
-				ChatForm chatMessageSearchResult = chatService.searchChatMessage(answerId);
+			List<ChatForm> reurnChatFormList = chatService
+					.searchChatMessageListForApplicationId(chatRequestForm.getApplicationId(), chatId, chatRequestForm.getUnreadFlag());
+			return reurnChatFormList;
 
-				// メッセージ一覧を返す
-				return chatMessageSearchResult;
-			} else {
-				LOGGER.warn("回答IDがnull");
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-			}
 		} finally {
 			LOGGER.info("事業者向けチャットメッセージ一覧取得完了");
 		}
@@ -184,7 +209,7 @@ public class ChatApiController extends AbstractApiController {
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
-			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class) ,
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class),
 			@ApiResponse(code = 503, message = "チャットメッセージ投稿時にエラー発生", response = ResponseEntityForm.class) })
 	public ChatForm postBusinessChatMessage(
 			@ApiParam(required = true, value = "メッセージ投稿リクエストフォーム") @RequestBody MessagePostRequestForm messagePostRequestForm,
@@ -216,14 +241,12 @@ public class ChatApiController extends AbstractApiController {
 			// チャット投稿 ログ出力
 			try {
 
-				// ログ出力のために、申請ID、回答IDを取得する
-				Answer answer = chatService.getApplicationId(chatId);
 				// アクセスID
 				String accessId = AuthUtil.getAccessId(token);
 
-				// アクセスID、申請ID、回答ID、アクセス日時
-				Object[] logData = { accessId, answer.getApplicationId(), answerId,
-						LogUtil.localDateTimeToString(LocalDateTime.now()) };
+				// ログ内容を編集:アクセスID、アクセス日時、申請ID、申請種類、申請段階、回答ID、問合せ部署
+				Object[] logData = chatService.editLogContentList(false, accessId, null, null, chatId);
+
 				LogUtil.writeLogToCsv(postBusinessChatMessageLogPath, postBusinessChatMessageLogHeader, logData);
 
 			} catch (Exception ex) {
@@ -251,9 +274,9 @@ public class ChatApiController extends AbstractApiController {
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
-			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class)})
-	public ChatForm getGovernmentChatMessages(
-			@ApiParam(required = true, value = "チャットフォーム") @RequestBody ChatForm chatForm,
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class) })
+	public List<ChatForm> getGovernmentChatMessages(
+			@ApiParam(required = true, value = "チャットフォーム") @RequestBody ChatRequestForm chatRequestForm,
 			@CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("行政向けチャットメッセージ一覧取得開始");
 		try {
@@ -269,10 +292,26 @@ public class ChatApiController extends AbstractApiController {
 			LOGGER.info("権限チェック（行政か否か） 終了");
 
 			// パラメータチェック
-			Integer chatId = chatForm.getChatId();
+			Integer chatId = chatRequestForm.getChatId();
+			// パラメータのチャットIDが空(null)かどうか
 			if (chatId == null) {
-				LOGGER.warn("チャットIDが空");
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+				// チャットIDが空の場合の存在チェックを行う
+				if (APPLICATION_STEP_ID1.equals(chatRequestForm.getApplicationStepId())) {
+					// 申請段階IDが1:事前相談の場合
+					chatId = chatService.searchChatMessageExistStep1(chatRequestForm.getApplicationId(),
+							chatRequestForm.getAnswerId(), chatRequestForm.getApplicationStepId());
+				} else if (APPLICATION_STEP_ID2.equals(chatRequestForm.getApplicationStepId())) {
+					// 申請段階IDが2:事前協議の場合
+					chatId = chatService.searchChatMessageExistStep2(chatRequestForm.getApplicationId(),
+							chatRequestForm.getApplicationStepId(), chatRequestForm.getDepartmentAnswerId());
+				} else if (APPLICATION_STEP_ID3.equals(chatRequestForm.getApplicationStepId())) {
+					// 申請段階IDが3:許可判定の場合
+					chatId = chatService.searchChatMessageExistStep3(chatRequestForm.getApplicationId(),
+							chatRequestForm.getApplicationStepId());
+				}
+			} else {
+				// チャットIDが空でない場合は存在チェックを行う
+				chatService.searchChatMessageExist(chatId);
 			}
 			String departmentId = AuthUtil.getDepartmentId(token);
 			if (departmentId == null || "".equals(departmentId)) {
@@ -282,7 +321,7 @@ public class ChatApiController extends AbstractApiController {
 			}
 
 			// 回答IDに紐づく行政向けチャットメッセージ一覧を取得し、行政からメッセージを既読にする
-			ChatForm chatMessageSearchResult = chatService.searchChatMessageForGovernment(chatId, departmentId);
+			List<ChatForm> chatMessageSearchResult = chatService.searchChatMessageForGovernment(chatId, departmentId, chatRequestForm.getUnreadFlag());
 
 			// メッセージ一覧を返す
 			return chatMessageSearchResult;
@@ -303,8 +342,8 @@ public class ChatApiController extends AbstractApiController {
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
 			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class),
-			@ApiResponse(code = 503, message = "行政チャットメッセージ投稿にエラー発生", response = ResponseEntityForm.class)})
-	public ChatForm postGovernmentChatMessage(
+			@ApiResponse(code = 503, message = "行政チャットメッセージ投稿にエラー発生", response = ResponseEntityForm.class) })
+	public List<ChatForm> postGovernmentChatMessage(
 			@ApiParam(required = true, value = "メッセージ投稿リクエストフォーム") @RequestBody MessagePostRequestForm messagePostRequestForm,
 			@CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("行政チャットメッセージ投稿開始");
@@ -348,33 +387,22 @@ public class ChatApiController extends AbstractApiController {
 				LOGGER.warn("チャットIDが空");
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 			}
-			Integer displayedMaxMessageId = messagePostRequestForm.getDisplayedMaxMessageId();
-			if (displayedMaxMessageId == null) {
-				LOGGER.warn("画面に表示されるの最大メッセージIDが空");
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-			}
 
 			// メッセージ登録処理
-			ChatForm form = chatService.registerMessageForGovernment(messagePostRequestForm, useId, departmentId,
+			List<ChatForm> form = chatService.registerMessageForGovernment(messagePostRequestForm, useId, departmentId,
 					departmentName);
 
 			// チャット投稿 ログ出力
 			try {
 
-				// ログ出力のために、申請ID、回答IDを取得する
-				Answer answer = chatService.getApplicationId(chatId);
-
 				// アクセスID
 				String accessId = AuthUtil.getAccessId(token);
+				// 操作ユーザ
+				String loginId = AuthUtil.getLoginId(token);
 
-				// ユーザーID
-				String userId = AuthUtil.getUserId(token);
-				// ユーザー氏名
-				String userName = chatService.getUserName(userId);
+				// ログ内容を編集：アクセスID、アクセス日時、操作ユーザ、操作ユーザ所属部署、申請ID、申請種類、申請段階、回答ID、問合せ部署
+				Object[] logData = chatService.editLogContentList(true, accessId, loginId, departmentName, chatId);
 
-				// アクセスID、申請ID、回答ID、操作ユーザ、操作ユーザ所属部署、アクセス日時
-				Object[] logData = { accessId, answer.getApplicationId(), answer.getAnswerId(), userName,
-						AuthUtil.getDepartmentName(token), LogUtil.localDateTimeToString(LocalDateTime.now()) };
 				LogUtil.writeLogToCsv(postGovernmentChatMessageLogPath, postGovernmentChatMessageLogHeader, logData);
 
 			} catch (Exception ex) {
@@ -384,7 +412,7 @@ public class ChatApiController extends AbstractApiController {
 			// 最新なメッセージ一覧を返却する
 			return form;
 
-		}catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			LOGGER.error("既読済みに更新する処理にエラー発生", ex);
 			throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);
 		} finally {
@@ -441,7 +469,7 @@ public class ChatApiController extends AbstractApiController {
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
-			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class)})
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class) })
 	public ResponsibleInquiryFrom getResponsibleInquiries(
 			@CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("担当課問合せ情報取得開始");
@@ -462,7 +490,7 @@ public class ChatApiController extends AbstractApiController {
 			if (departmentId == null || "".equals(departmentId)) {
 				// 登録データが空
 				LOGGER.warn("部署IDがnullまたは空");
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);	
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 			}
 
 			// 部署に紐づく問合せと回答一覧を取得する
@@ -472,7 +500,7 @@ public class ChatApiController extends AbstractApiController {
 			// 検索結果を返す
 			return from;
 		} finally {
-			LOGGER.info("担当課問合せ情報取得開始");
+			LOGGER.info("担当課問合せ情報取得終了");
 		}
 	}
 
@@ -482,19 +510,19 @@ public class ChatApiController extends AbstractApiController {
 	 * @param messagePostRequestForm メッセージリクエスト
 	 * @return チャットフォーム
 	 */
-	@RequestMapping(value = "/government/related/{chat_id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/government/related", method = RequestMethod.POST)
 	@ApiOperation(value = "行政向け問合せの関連情報検索", notes = "行政向け問合せの関連情報検索を検索する.")
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
-			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class)})
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class) })
 	public ChatRelatedInfoForm searchChatRelatedInfoForGoverment(
-			@ApiParam(required = true, value = "チャットID") @PathVariable(value = "chat_id") Integer chatId,
+			@ApiParam(required = true, value = "チャットID") @RequestBody ChatRequestForm chatRequestForm,
 			@CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("行政向け問合せの関連情報検索開始");
 		try {
 
-			ChatRelatedInfoForm from = new ChatRelatedInfoForm();
+			ChatRelatedInfoForm form = new ChatRelatedInfoForm();
 
 			// 権限チェック（行政か否か）
 			LOGGER.info("権限チェック（行政か否か） 開始");
@@ -506,21 +534,39 @@ public class ChatApiController extends AbstractApiController {
 			}
 			LOGGER.info("権限チェック（行政か否か） 終了");
 
-			// 部署
-			String departmentId = AuthUtil.getDepartmentId(token);
-			if (departmentId == null || "".equals(departmentId)) {
-				LOGGER.warn("部署名がnullまたは空");
+			// ユーザーID
+			String useId = AuthUtil.getUserId(token);
+			if (useId == null || "".equals(useId)) {
+				// 登録データが空
+				LOGGER.warn("ユーザーIDがnullまたは空");
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 			}
 
+			// 必須チェック
+			if (chatRequestForm.getChatId() == null) {
+				// パラメータ不正
+				LOGGER.warn("パラメータ不正");
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			}
+
+			List<Chat> chatList = chatService.getChatMessage(chatRequestForm.getChatId());
+
+			// 回答一覧取得
+			int answerId = 0;
+			if(chatList.get(0).getAnswerId() != null ) {
+				answerId = chatList.get(0).getAnswerId();
+			}
+			List<Answer> answerList = answerService.getAnswerMessage(chatList.get(0).getApplicationId(),
+					chatList.get(0).getApplicationStepId(), answerId,
+					chatRequestForm.getDepartmentAnswerId(), true);
+
 			// 問合せ関連情報検索
-			from = applicationService.searchChatRelatedInfo(chatId, null, departmentId, true);
+			form = applicationService.searchChatRelatedInfo(answerList, true, useId, chatList.get(0).getApplicationId(),
+					chatList.get(0).getApplicationStepId(),chatList.get(0).getDepartmentAnswerId());
 
-			// 回答履歴を取得
-			List<AnswerHistoryForm> answerHistorys = answerService.getAnswerHistoryFromAnswerId(from.getAnswerId());
-			from.setAnswerHistorys(answerHistorys);
-
-			return from;
+			form.setChatId(chatRequestForm.getChatId());
+			form.setApplicationId(chatRequestForm.getApplicationId());
+			return form;
 
 		} finally {
 			LOGGER.info("行政向け問合せの関連情報検索完了");
@@ -533,38 +579,79 @@ public class ChatApiController extends AbstractApiController {
 	 * @param messagePostRequestForm メッセージリクエスト
 	 * @return チャットフォーム
 	 */
-	@RequestMapping(value = "/business/related/{answer_id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/business/related", method = RequestMethod.POST)
 	@ApiOperation(value = "事業者向け問合せの関連情報検索", notes = "事業者向け問合せの関連情報検索を検索する.")
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
-			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class)})
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class) })
 	public ChatRelatedInfoForm searchChatRelatedInfoForBusiness(
-			@ApiParam(required = true, value = "チャットID") @PathVariable(value = "answer_id") Integer answerId,
+			@ApiParam(required = true, value = "チャットID") @RequestBody ChatRequestForm chatRequestForm,
 			@CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("事業者向け問合せの関連情報検索開始");
 		try {
 
-			ChatRelatedInfoForm from = new ChatRelatedInfoForm();
+			ChatRelatedInfoForm form = new ChatRelatedInfoForm();
 
 			// 権限チェック（事業者か否か）
 			LOGGER.info("権限チェック（事業者か否か） 開始");
 			String role = AuthUtil.getRole(token);
-			if ( !AuthUtil.ROLE_BUSINESS.equals(role)) {
+			if (!AuthUtil.ROLE_BUSINESS.equals(role)) {
 				// 事業者しかアクセス不可
 				LOGGER.warn("ロール不適合:" + role);
 				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 			}
 			LOGGER.info("権限チェック（事業者か否か） 終了");
 
+			// 必須チェック
+			LOGGER.info("必須チェック 開始");
+			if (chatRequestForm.getLoginId() != null && !"".equals(chatRequestForm.getLoginId()) //
+					&& chatRequestForm.getPassword() != null && !"".equals(chatRequestForm.getPassword())
+					&& chatRequestForm.getApplicationId() != null && chatRequestForm.getApplicationStepId() != null) {
+				if (APPLICATION_STEP_ID1.equals(chatRequestForm.getApplicationStepId())) {
+					if (chatRequestForm.getAnswerId() == null) {
+						// パラメータ不正
+						LOGGER.warn("パラメータ不正");
+						throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+					}
+				} else if (APPLICATION_STEP_ID2.equals(chatRequestForm.getApplicationStepId())) {
+					if (chatRequestForm.getDepartmentAnswerId() == null) {
+						// パラメータ不正
+						LOGGER.warn("パラメータ不正");
+						throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+					}
+				}
+			} else {
+				// パラメータ不正
+				LOGGER.warn("パラメータ不正");
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			}
+			LOGGER.info("必須チェック 終了");
+			// チャット情報取得
+			List<Chat> chatList = new ArrayList<Chat>();
+			// パラメータのチャットIDが空(null)かどうか
+			if (chatRequestForm.getChatId() == null) {
+				chatList = chatService.getChatMessage(chatRequestForm.getApplicationId(),
+						chatRequestForm.getApplicationStepId(), chatRequestForm.getAnswerId(),
+						chatRequestForm.getDepartmentAnswerId());
+			} else {
+				// チャットIDが空でない場合はそのチャットIDで取得を行う
+				chatList = chatService.getChatMessage(chatRequestForm.getChatId());
+			}
+
+			// 回答一覧取得
+			List<Answer> answerList = answerService.getAnswerMessage(chatRequestForm.getApplicationId(),
+					chatRequestForm.getApplicationStepId(), chatRequestForm.getAnswerId(),
+					chatRequestForm.getDepartmentAnswerId(), false);
+
 			// 問合せ関連情報検索
-			from = applicationService.searchChatRelatedInfo(null, answerId, null, false);
+			form = applicationService.searchChatRelatedInfo(answerList, false, null, chatRequestForm.getApplicationId(),
+					chatRequestForm.getApplicationStepId(),chatRequestForm.getDepartmentAnswerId());
 
-			// 事業者向け回答履歴を取得
-			List<AnswerHistoryForm> answerHistorys = answerService.getAnswerHistoryFromAnswerIdForBusiness(from.getAnswerId());
-			from.setAnswerHistorys(answerHistorys);
+			form.setChatId(chatRequestForm.getChatId());
+			form.setApplicationId(chatRequestForm.getApplicationId());
 
-			return from;
+			return form;
 
 		} finally {
 			LOGGER.info("事業者向け問合せの関連情報検索完了");
@@ -615,7 +702,7 @@ public class ChatApiController extends AbstractApiController {
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
 			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class),
 			@ApiResponse(code = 404, message = "ファイルが存在しない場合", response = ResponseEntityForm.class),
-			@ApiResponse(code = 503, message = "問合せファイルダウンロードにエラー発生", response = ResponseEntityForm.class)})
+			@ApiResponse(code = 503, message = "問合せファイルダウンロードにエラー発生", response = ResponseEntityForm.class) })
 	public ResponseEntity<Resource> downloadInquiryFile(
 			@ApiParam(required = true, value = "問合せファイルフォーム") @RequestBody InquiryFileForm inquiryFileForm,
 			@CookieValue(value = "token", required = false) String token) {
@@ -672,7 +759,86 @@ public class ChatApiController extends AbstractApiController {
 							LOGGER.warn("照合IDとパスワードによる認証失敗：" + role);
 							throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 						} else {
-							if (!chatService.validateLoginInfo(applicationId, answerId)) {
+							if (answerId != null && answerId != 0 && !chatService.validateLoginInfo(applicationId, answerId)) {
+								// 照合IDとパスワードによる認証失敗
+								LOGGER.warn("照合IDとパスワードによる認証失敗：" + role);
+								throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+							}
+						}
+					} else {
+						// パラメータ不正
+						LOGGER.warn("パラメータ不正");
+						throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+					}
+				} finally {
+					LOGGER.warn("照合ID,パスワードチェック 終了");
+				}
+			} else {
+				// 事業者ユーザしかアクセス不可
+				LOGGER.warn("ロール不適合:" + role);
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
+		} finally {
+			LOGGER.warn("権限チェック 終了");
+		}
+	}
+
+	/**
+	 * 事業者側：処理前に、引数チャットを行う <br>
+	 * ・権限チェック（事業者か否か） <br>
+	 * ・照合ID,パスワードチェック ・申請IDチェック
+	 * 
+	 * @param token              トークン
+	 * @param collationId        申請情報の照会ID
+	 * @param password           申請情報のパスワード
+	 * @param answerId           回答ID
+	 * @param applicationIdParm  申請ID
+	 * @param applicationStepId  申請段階ID
+	 * @param departmentAnswerId 部署回答ID
+	 */
+	private void validateLoginInfo(String token, String collationId, String password, Integer answerId,
+			Integer applicationIdParm, Integer applicationStepId, Integer departmentAnswerId) {
+		try {
+			LOGGER.warn("権限チェック 開始");
+
+			// 権限チェック（事業者か否か）
+			String role = AuthUtil.getRole(token);
+			if (AuthUtil.ROLE_BUSINESS.equals(role)) {
+				try {
+					LOGGER.warn("照合ID,パスワードチェック 開始");
+
+					if (collationId != null && !"".equals(collationId) //
+							&& password != null && !"".equals(password) && applicationIdParm != null
+							&& applicationStepId != null) {
+						if (APPLICATION_STEP_ID1.equals(applicationStepId)) {
+							if (answerId == null) {
+								// パラメータ不正
+								LOGGER.warn("パラメータ不正");
+								throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+							}
+						} else if (APPLICATION_STEP_ID2.equals(applicationStepId)) {
+							if (departmentAnswerId == null) {
+								// パラメータ不正
+								LOGGER.warn("パラメータ不正");
+								throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+							}
+						}
+
+						AnswerConfirmLoginForm answerConfirmLoginForm = new AnswerConfirmLoginForm(collationId,
+								password, false);
+						// 申請ID
+						Integer applicationId = applicationService
+								.getApplicationIdFromApplicantInfo(answerConfirmLoginForm);
+						if (applicationId == null) {
+							// 照合IDとパスワードによる認証失敗
+							LOGGER.warn("照合IDとパスワードによる認証失敗：" + role);
+							throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+						} else if (!applicationId.equals(applicationIdParm)) {
+							// 申請IDとパラメータの申請IDが一緒かどうか
+							LOGGER.warn("照合IDとパスワードによる認証失敗：" + role);
+							throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+						} else {
+							if (answerId != null && answerId != 0 && !chatService.validateLoginInfo(applicationId, answerId)) {
 								// 照合IDとパスワードによる認証失敗
 								LOGGER.warn("照合IDとパスワードによる認証失敗：" + role);
 								throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);

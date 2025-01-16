@@ -68,6 +68,7 @@ class LotNumberSelect extends React.Component {
      */
     componentDidUpdate(){
         this.updateMapLayer();
+        this.updateMapLayerForFullFlag();
     }
 
     /**
@@ -113,6 +114,63 @@ class LotNumberSelect extends React.Component {
             console.error('処理に失敗しました', error);
         }
     }
+    
+    updateMapLayerForFullFlag(){
+        const applicationPlace = this.props.viewState.applicationPlace;
+        const applicationPlaceWithFullFlag = Object.keys(this.props.viewState.applicationPlace)?.map(key => {if(applicationPlace[key].fullFlag === "1") return this.props.viewState.applicationPlace[key].chibanId }).filter(chibanId => {return chibanId !== undefined}).join("_")
+        const id = Config.layer.lotnumberSearchLayerNameForSelectedFullFlag;
+        try {
+            const item = new webMapServiceCatalogItem(id, this.state.terria);
+            const wmsUrl = Config.config.geoserverUrl;
+            const items = this.state.terria.workbench.items;
+            let initFlag = true;
+            if(Object.keys(applicationPlaceWithFullFlag).length > 0){
+                for (const aItem of items) {
+                    if (aItem.uniqueId === id) {
+                        aItem.setTrait(CommonStrata.user,
+                        "parameters",
+                        {
+                            "viewparams": Config.layer.lotnumberSearchViewParamNameForSelectedFullFlag + applicationPlaceWithFullFlag,
+                        });
+                        aItem.loadMapItems();
+                        initFlag = false;
+                    }
+                }
+                if(initFlag == true){
+                    item.setTrait(CommonStrata.definition, "url", wmsUrl);
+                    item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForSelectedFullFlag);
+                    item.setTrait(
+                        CommonStrata.user,
+                        "layers",
+                        Config.layer.lotnumberSearchLayerNameForSelectedFullFlag);
+                    item.setTrait(CommonStrata.user,
+                        "parameters",
+                        {
+                            "viewparams": Config.layer.lotnumberSearchViewParamNameForSelectedFullFlag + applicationPlaceWithFullFlag,
+                        });
+                    item.loadMapItems();
+                    this.state.terria.workbench.add(item);
+                }
+            }else{
+                for (const aItem of items) {
+                    if (aItem.uniqueId === id) {
+                        this.state.terria.workbench.remove(aItem);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('処理に失敗しました', error);
+        }
+    }
+    
+    /**
+     * 全筆かからない筆を設定
+     */
+    setFullFlag(applicationPlace){
+        this.props.viewState.setFullFlag(applicationPlace);
+        // this.updateMapLayer();
+        this.updateMapLayerForFullFlag();
+    }
 
     /**
      * 選択状態の申請地を削除
@@ -121,6 +179,7 @@ class LotNumberSelect extends React.Component {
     deleteApplicationPlace(applicationPlace){
         this.props.viewState.deleteApplicationPlace(applicationPlace);
         this.updateMapLayer();
+        this.updateMapLayerForFullFlag();
     }
 
     /**
@@ -129,6 +188,7 @@ class LotNumberSelect extends React.Component {
     deleteAllApplicationPlace(){
         this.props.viewState.deleteAllApplicationPlace();
         this.updateMapLayer();
+        this.updateMapLayerForFullFlag();
     }
 
     render() {
@@ -150,14 +210,17 @@ class LotNumberSelect extends React.Component {
                         className={CustomStyle.custom_header}
                     >
                         <Box className={CustomStyle.custom_header_content}>
-                            <div style={{ height: 100 + "%" }}><nav>申請地番選択結果</nav></div>
+                            <div style={{ height: 100 + "%" }}>
+                                <nav>申請地番選択結果</nav>
+                                <nav style={{fontSize: 0.7 + "em"}}>全筆かからない筆をチェックしてください</nav>
+                            </div>
                             <div>
                                 <button className={CustomStyle.trash_all_button} 
                                     disabled={Object.keys(applicationPlace).length > 0? false: true}
                                     onClick={() => {
                                         this.deleteAllApplicationPlace();
                                     }}>
-                                    <span>全て削除</span>
+                                    <span style={{verticalAlign: "middle"}}>全て削除</span>
                                 </button>
                             </div>
                         </Box>
@@ -171,17 +234,28 @@ class LotNumberSelect extends React.Component {
                         <table className={CustomStyle.result_table}>
                             <thead>
                                 {Object.keys(table).length > 0 && (
-                                    <tr className={CustomStyle.table_header}>
+                                    <tr className={CustomStyle.table_header + " add-sort"}>
+                                        <th className="no-sort" style={{ width: "5%" }}><div style={{ width: "35px" }}></div></th>
                                         {Object.keys(table).map(tableKey => (
                                             <th key={"applicationPlace-th" + tableKey} style={{ width: table[tableKey].tableWidth + "%" }}>{table[tableKey].displayColumnName}</th>
                                         ))}
-                                        <th style={{ width: "10%" }}><div style={{ width: "70px" }}></div></th>
+                                        <th className="no-sort" style={{ width: "10%" }}><div style={{ width: "70px" }}></div></th>
                                     </tr>
                                 )}
                             </thead>
                             <tbody style={{height: 180 + "px"}}>
                                 {Object.keys(applicationPlace).map(idx => (
-                                    <tr key={"applicationPlace-tr" + idx} >
+                                    <tr key={"applicationPlace-tr" + idx} css={applicationPlace[idx].fullFlag == "1" ? "background-color: #add8e6 !important" : ""}>
+                                        <td style={{ width: "5%", textAlign:"center" }}>
+                                            <input
+                                                type="checkbox"
+                                                id={"chibanNo" + idx}
+                                                className="chibanFullFlags"
+                                                checked={applicationPlace[idx].fullFlag == "1"}
+                                                onClick={e => this.setFullFlag(applicationPlace[idx])}
+                                            >
+                                            </input>
+                                        </td>
                                         {Object.keys(table).map(tableKey => (
                                             <>
                                                 {applicationPlace[idx]?.attributes && table[tableKey]?.responseKey &&
@@ -190,7 +264,7 @@ class LotNumberSelect extends React.Component {
                                             </>
                                         ))}
                                         <td style={{ width: "10%", textAlign:"center" }}><button className={CustomStyle.trash_button} onClick={() => {
-                                            this.deleteApplicationPlace(applicationPlace[idx]);
+                                            this.deleteApplicationPlace(applicationPlace[idx], idx);
                                         }}><Icon style={{ fill: "#fff", height: 25 + "px", display: "block", margin: "0 auto" }} glyph={Icon.GLYPHS.trashcan} />
                                         </button></td>
                                     </tr>

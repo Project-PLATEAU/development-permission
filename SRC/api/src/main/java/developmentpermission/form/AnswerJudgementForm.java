@@ -1,6 +1,7 @@
 package developmentpermission.form;
 
 import java.io.Serializable;
+import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,12 @@ public class AnswerJudgementForm implements Serializable {
 	@ApiModelProperty(value = "タイトル", example = "○○市生活環境保全条例（観光")
 	private String title;
 
+//	TODO：担当部署が複数になるため、該当定義が削除予定
 	/** 部署 */
 	@ApiModelProperty(value = "部署")
 	private DepartmentForm department;
+	
+	/** 部署 */
+	@ApiModelProperty(value = "部署")
+	private List<DepartmentForm> departments;
 }

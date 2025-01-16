@@ -177,7 +177,7 @@ class InitAndLotNumberSearchView extends React.Component {
     }
 
     /**
-     * 3D建物モデル表示・非表示
+     * 建物モデル表示・非表示
      * @param {*} isShow 表示するかどうか
      */
     changeCesium3DTilesShow(isShow){
@@ -189,6 +189,12 @@ class InitAndLotNumberSearchView extends React.Component {
                 "style",
                 {"show": isShow});
             cesium3DTiles.loadMapItems();
+            const leaflet2DModel = this.state.terria.getModelById(BaseModel, Config.buildingModelFor2d.id);
+            leaflet2DModel.setTrait(
+                CommonStrata.user,
+                "show",
+                isShow);
+            leaflet2DModel.loadMapItems();
         } catch (error) {
             console.error('処理に失敗しました', error);
         }
@@ -304,14 +310,12 @@ class InitAndLotNumberSearchView extends React.Component {
                             {/* 検索TAB */}
                             <If condition = {activeTab == "lotSearchTab"}>
                                 <div id="tabArea" style={{height: "auto"}}
-                                    // style={{height: this.props.viewState.showLotNumberSelected ? "auto" : tabAreaHeight + "px"}}
                                 >
                                     <ApplicationLotNumberSelection terria={this.props.terria} viewState={this.state.viewState}/>
                                 </div>
                             </If>
                             {/* レイヤTAB */}
                             <If condition = {activeTab == "layerTab"}>
-                                {/* <div id="tabArea" style={{height: tabAreaHeight-10 + "px"}}> */}
                                 <div id="tabArea" style={{height: "auto"}}>
                                     <LayerTab terria={this.props.terria} viewState={this.state.viewState}  tabAreaHeight = {tabAreaHeight} />
                                 </div>
@@ -323,7 +327,6 @@ class InitAndLotNumberSearchView extends React.Component {
                             <div className={Styles.div_area} style={{marginBottom:10 + "px"}}>
                                 <AnswerLogin terria={this.props.terria} viewState={this.props.viewState} t={t}></AnswerLogin>
                             
-                                {/* <Box paddedRatio={2}></Box> */}
                             </div>
                         </If>
                     </div>

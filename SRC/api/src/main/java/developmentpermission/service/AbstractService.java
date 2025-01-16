@@ -6,7 +6,12 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,25 +34,45 @@ import com.google.common.base.CaseFormat;
 
 import developmentpermission.dao.ApplicationDao;
 import developmentpermission.entity.AnswerName;
+import developmentpermission.entity.ApplicantInformationItem;
+import developmentpermission.entity.ApplicantInformationItemOption;
 import developmentpermission.entity.ApplicationCategoryMaster;
 import developmentpermission.entity.ApplicationCategorySelectionView;
+import developmentpermission.entity.ApplicationStep;
+import developmentpermission.entity.ApplicationType;
+import developmentpermission.entity.ApplyLotNumber;
 import developmentpermission.entity.Department;
+import developmentpermission.entity.DevelopmentDocument;
 import developmentpermission.entity.InquiryAddress;
+import developmentpermission.entity.LedgerMaster;
 import developmentpermission.entity.LotNumberAndDistrict;
 import developmentpermission.entity.LotNumberSearchResultDefinition;
 import developmentpermission.form.ApplicationCategoryForm;
 import developmentpermission.form.ApplicationCategorySelectionViewForm;
+import developmentpermission.form.ApplicationTypeForm;
+import developmentpermission.form.ApplicationStepForm;
+import developmentpermission.form.ApplyLotNumberForm;
 import developmentpermission.form.DepartmentForm;
+import developmentpermission.form.DevelopmentDocumentFileForm;
 import developmentpermission.form.InquiryAddressForm;
+import developmentpermission.form.ItemAnswerStatusForm;
 import developmentpermission.form.JudgementTypeForm;
+import developmentpermission.form.LedgerMasterForm;
 import developmentpermission.form.LotNumberForm;
 import developmentpermission.form.QuestionaryPurposeForm;
 import developmentpermission.form.StatusForm;
 import developmentpermission.form.AnswerStatusForm;
+import developmentpermission.form.ApplicantInformationItemForm;
+import developmentpermission.form.ApplicantInformationItemOptionForm;
 import developmentpermission.form.AnswerNameForm;
 import developmentpermission.repository.DepartmentRepository;
 import developmentpermission.repository.GovernmentUserRepository;
 import developmentpermission.repository.AnswerNameRepository;
+import developmentpermission.repository.ApplicantInformationItemOptionRepository;
+import developmentpermission.repository.ApplicantInformationItemRepository;
+import developmentpermission.repository.ApplicationStepRepository;
+import developmentpermission.repository.ApplicationTypeRepository;
+import developmentpermission.util.CalendarUtil;
 import developmentpermission.util.MailMessageUtil;
 import developmentpermission.util.MailSendUtil;
 import developmentpermission.util.model.MailItem;
@@ -103,6 +128,158 @@ public abstract class AbstractService {
 	/** 回答ファイル更新タイプ: 3: 削除 */
 	public static final Integer ANSWER_FILE_HISTORY_DELETE = 3;
 
+	/** 権限の種類: 権限なし */
+	public static final String AUTH_TYPE_NONE = "0";
+	/** 権限の種類: 自身部署のみ操作可 */
+	public static final String AUTH_TYPE_SELF = "1";
+	/** 権限の種類: 他の部署も操作可 */
+	public static final String AUTH_TYPE_ALL = "2";
+
+	/** 申請段階: 1（：事前相談） */
+	public static final Integer APPLICATION_STEP_ID_1 = 1;
+	/** 申請段階: 2（：事前協議） */
+	public static final Integer APPLICATION_STEP_ID_2 = 2;
+	/** 申請段階: 3（：許可判定） */
+	public static final Integer APPLICATION_STEP_ID_3 = 3;
+
+	/** 申請ステータス: 事前相談：未回答 */
+	public static final String STATUS_CONSULTATION_NOTANSWERED = "101";
+	/** 申請ステータス: 事前相談：未完（回答準備中） */
+	public static final String STATUS_CONSULTATION_ANSWERED_PREPARING = "102";
+	/** 申請ステータス: 事前相談：未完（回答精査中） */
+	public static final String STATUS_CONSULTATION_ANSWERED_REVIEWING = "103";
+	/** 申請ステータス: 事前相談：未完（要再申請） */
+	public static final String STATUS_CONSULTATION_REAPP = "104";
+	/** 申請ステータス: 事前相談：完了 */
+	public static final String STATUS_CONSULTATION_COMPLETED = "105";
+	/** 申請ステータス: 事前協議：未回答 */
+	public static final String STATUS_DISCUSSIONS_NOTANSWERED = "201";
+	/** 申請ステータス: 事前協議：未完（回答準備中） */
+	public static final String STATUS_DISCUSSIONS_ANSWERED_PREPARING = "202";
+	/** 申請ステータス: 事前協議：未完（回答精査中） */
+	public static final String STATUS_DISCUSSIONS_ANSWERED_REVIEWING = "203";
+	/** 申請ステータス: 事前協議：未完（協議進行中） */
+	public static final String STATUS_DISCUSSIONS_IN_PROGRESS = "204";
+	/** 申請ステータス: 事前協議：未完（要再申請） */
+	public static final String STATUS_DISCUSSIONS_REAPP = "205";
+	/** 申請ステータス: 事前協議：完了 */
+	public static final String STATUS_DISCUSSIONS_COMPLETED = "206";
+	/** 申請ステータス: 許可判定：未回答 */
+	public static final String STATUS_PERMISSION_NOTANSWERED = "301";
+	/** 申請ステータス: 許可判定：未完（回答準備中） */
+	public static final String STATUS_PERMISSION_ANSWERED_PREPARING = "302";
+	/** 申請ステータス: 許可判定：未完（回答精査中） */
+	public static final String STATUS_PERMISSION_ANSWERED_REVIEWING = "303";
+	/** 申請ステータス: 許可判定：未完（要再申請） */
+	public static final String STATUS_PERMISSION_REAPP = "304";
+	/** 申請ステータス: 許可判定：完了 */
+	public static final String STATUS_PERMISSION_COMPLETED = "305";
+
+	/** 回答ステータス: 未回答 */
+	public static final String ANSWER_STATUS_NOTANSWERED = "0";
+	/** 回答ステータス: 回答済み */
+	public static final String ANSWER_STATUS_ANSWERED = "1";
+	/** 回答ステータス: 承認待ち */
+	public static final String ANSWER_STATUS_APPROVING = "2";
+	/** 回答ステータス: 否認済み */
+	public static final String ANSWER_STATUS_DENIED = "3";
+	/** 回答ステータス: 承認済み */
+	public static final String ANSWER_STATUS_APPROVED = "4";
+	/** 回答ステータス: 却下 */
+	public static final String ANSWER_STATUS_REJECTED = "5";
+	/** 回答ステータス: 同意済み */
+	public static final String ANSWER_STATUS_AGREED = "6";
+
+	/** 回答データ種類:登録 */
+	public static final String ANSWER_DATA_TYPE_INSERT = "0";
+	/** 回答データ種類: 更新 */
+	public static final String ANSWER_DATA_TYPE_UPDATE = "1";
+	/** 回答データ種類: 追加 */
+	public static final String ANSWER_DATA_TYPE_ADD = "2";
+	/** 回答データ種類: 行政追加 */
+	public static final String ANSWER_DATA_TYPE_GOVERNMENT_ADD = "3";
+	/** 回答データ種類: 一律追加 */
+	public static final String ANSWER_DATA_TYPE_UNIFORM = "4";
+	/** 回答データ種類: 削除済み */
+	public static final String ANSWER_DATA_TYPE_DELETE = "5";
+	/** 回答データ種類: 引継 */
+	public static final String ANSWER_DATA_TYPE_TAKEOVER = "6";
+	/** 回答データ種類: 削除済み（行政） */
+	public static final String ANSWER_DATA_TYPE_GOVERNMENT_DELETE = "7";
+
+	/** 申請者項目データ型: テキスト */
+	public static final String APPLICANT_ITEM_TYPE_TEXT = "0";
+	
+	/** 申請者項目データ型: テキストエリア */
+	public static final String APPLICANT_ITEM_TYPE_TEXTAREA = "1";
+	
+	/** 申請者項目データ型: 日付 */
+	public static final String APPLICANT_ITEM_TYPE_DATE = "2";
+	
+	/** 申請者項目データ型: 数値 */
+	public static final String APPLICANT_ITEM_TYPE_NUMBER = "3";
+	
+	/** 申請者項目データ型: ドロップダウン(単一選択) */
+	public static final String ITEM_TYPE_SINGLE_SELECTION = "4";
+
+	/** 申請者項目データ型: ドロップダウン（複数選択） */
+	public static final String ITEM_TYPE_MULTIPLE_SELECTION = "5";
+
+	/** 申請者項目データ型: 日付：フォーマット */
+	public static final String ITEM_TYPE_DATE_FORMAT = "yyyy-MM-dd";
+
+	/** 事業者合否ステータス　"":未選択 */
+	public static final String BUSINESS_PASS_STATUS_NOT_SELECTED = "";
+	/** 事業者合否ステータス 1:合意 */
+	public static final String BUSINESS_PASS_STATUS_1_AGREE = "1";
+	/** 事業者合否ステータス0:否決 */
+	public static final String BUSINESS_PASS_STATUS_0_AGREE = "0";
+
+	/** 事業者合否ステータス名　"":未選択 */
+	public static final String BUSINESS_PASS_STATUS_NOT_SELECTED_NAME = "未選択";
+	/** 事業者合否ステータス名 1:合意 */
+	public static final String BUSINESS_PASS_STATUS_1_AGREE_NAME = "合意";
+	/** 事業者合否ステータス名　0:否決 */
+	public static final String BUSINESS_PASS_STATUS_0_AGREE_NAME = "否決";
+	
+	/** 申請者情報 連絡先フラグ 無効 */
+	public static final String CONTACT_ADDRESS_INVALID = "0";
+
+	/** 申請者情報 連絡先フラグ 有効 */
+	public static final String CONTACT_ADDRESS_VALID = "1";
+
+	/** 事前協議の受付フラグ 0=未確認 */
+	public static final String ACCEPTING_FLAG_0_UNCONFIRMED = "0";
+	/** 事前協議の受付フラグ 1=受付 */
+	public static final String ACCEPTING_FLAG_1_ACCEPTED = "1";
+	/** 事前協議の受付フラグ 2=差戻 */
+	public static final String ACCEPTING_FLAG_2_REMANDED = "2";
+	
+	/** 回答通知種類 0:事業者に回答通知 */
+	public static final String NOTIFY_TYPE_0_ANSWERED = "0";
+	/** 回答通知種類 1：事業者に差戻通知 */
+	public static final String NOTIFY_TYPE_1_REMANDED = "1";
+	/** 回答通知種類 2：担当課に受付通知 */
+	public static final String NOTIFY_TYPE_2_ACCEPTED = "2";
+	/** 回答通知種類 3：統括部署管理者に回答許可通知 */
+	public static final String NOTIFY_TYPE_3_ANSWER_PERMISSION = "3";
+	/** 回答通知種類 4：統括部署管理者に行政確定登録許可通知 */
+	public static final String NOTIFY_TYPE_4_GOVERNMENT_CONFIRM_PERMISSION = "4";
+	
+	/** 行政確定登録ステータス 0:合意 */
+	public static final String GOVERNMENT_CONFIRM_STATUS_0_AGREE = "0";
+	/** 行政確定登録ステータス 1:取下 */
+	public static final String GOVERNMENT_CONFIRM_STATUS_1_WITHDRAW = "1";
+	/** 行政確定登録ステータス 2:却下 */
+	public static final String GOVERNMENT_CONFIRM_STATUS_2_REJECT= "2";
+
+	/** 行政確定登録ステータス名 0:合意 */
+	public static final String GOVERNMENT_CONFIRM_STATUS_0_AGREE_NAME = "合意";
+	/** 行政確定登録ステータス名 1:取下 */
+	public static final String GOVERNMENT_CONFIRM_STATUS_1_WITHDRAW_NAME = "取下";
+	/** 行政確定登録ステータス名 2:却下 */
+	public static final String GOVERNMENT_CONFIRM_STATUS_2_REJECT_NAME = "却下";
+	
 	/** EPSG(初期値:4612) */
 	@Value("${app.epsg:4612}")
 	protected int epsg; // 変数をstaticにすると@Valueで値が設定されなくなるので注意
@@ -121,7 +298,11 @@ public abstract class AbstractService {
 	/** ステータス定義JSON */
 	@Value("${app.def.answerstatus}")
 	protected String answerStatusJSON;
-
+	
+	/** 条文ステータス定義JSON */
+	@Value("${app.def.itemanswerstatus}")
+	protected String itemAnswerStatusJSON;
+	
 	/** アンケートの利用目的定義JSON */
 	@Value("${app.def.questionarypurpose}")
 	protected String questionarypurposeJSON;
@@ -176,7 +357,23 @@ public abstract class AbstractService {
 	/** 問い合わせファイル管理フォルダパス */
 	@Value("${app.file.inquiry.folder}")
 	protected String inquiryFolderName;
-	
+
+	/** 行政で追加された回答の関連条項の表示文言 */
+	@Value("${app.application.goverment.add.answer.title}")
+	protected String govermentAddAnswerTitle;
+
+	/** 許可判定の申請登録時に、一律追加の条項の判定項目ID */
+	@Value("${app.application.permission.default.add.judgementItemId}")
+	protected List<String> defaultAddJudgementItemIdList;
+
+	/** 回答通知時の回答レポートのファイルID */
+	@Value("${app.answer.report.fileid}")
+	protected String answerReportFileId;
+
+	/** 申請不可能な申請種類（カンマ区切り） */
+	@Value("${app.applicationtype.inapplicable}")
+	protected String inapplicableApplicationType;
+
 	/** メール送信ユーティリティ */
 	@Autowired
 	MailSendUtil mailSendutil;
@@ -184,6 +381,10 @@ public abstract class AbstractService {
 	/** メールメッセージ定義ユーティリティ */
 	private MailMessageUtil mailUtil = null;
 
+	/** カレンダーユーティリティ */
+	@Autowired
+	CalendarUtil calendarUtil;
+	
 	/** Entityマネージャファクトリ */
 	@Autowired
 	protected EntityManagerFactory emf; // DAOでは@Autowiredが効かないのでここで定義...
@@ -200,6 +401,23 @@ public abstract class AbstractService {
 	@Autowired
 	protected AnswerNameRepository answerNameRepository;
 
+	/** M_申請区分Repositoryインスタンス */
+	@Autowired
+	private ApplicationStepRepository applicationStepRepository;
+
+	/** M_申請種類Repositoryインスタンス */
+	@Autowired
+	private ApplicationTypeRepository applicationTypeRepository;
+	
+	/** M_申請者情報項目Repositoryインスタンス */
+	@Autowired
+	private ApplicantInformationItemRepository applicantInformationItemRepository;
+	
+	
+	/** 申請情報項目選択肢Repositoryインスタンス */
+	@Autowired
+	private ApplicantInformationItemOptionRepository applicantInformationItemOptionRepository;
+	
 	/**
 	 * ステータスフォームリストを取得
 	 * 
@@ -247,7 +465,41 @@ public abstract class AbstractService {
 			LOGGER.trace("ステータスフォームリスト取得 終了");
 		}
 	}
-
+	/**
+	 * 条文回答ステータスフォームリストを取得
+	 * 
+	 * @return 条文回答ステータスフォームリスト
+	 * @throws Exception 例外
+	 */
+	public List<ItemAnswerStatusForm> getItemAnswerStatusList() throws Exception {
+		LOGGER.trace("条文回答ステータスフォームリスト取得 開始");
+		try {
+			List<ItemAnswerStatusForm> formList = new ArrayList<ItemAnswerStatusForm>();
+			Map<String, String> statusMap = getItemAnswerStatusMap();
+			Map<String, List<String>> collectMap = new HashMap<String, List<String>>();
+			for (Map.Entry<String, String> entry : statusMap.entrySet()) {
+				if (collectMap.containsKey(entry.getValue())) {
+					collectMap.get(entry.getValue()).add(entry.getKey());
+				} else {
+					List<String> aList = new ArrayList<String>();
+					aList.add(entry.getKey());
+					collectMap.put(entry.getValue(), aList);
+				}
+			}
+			// 同じラベルとなるキーをカンマ区切り文字列で集約
+			for (Map.Entry<String, List<String>> entry: collectMap.entrySet()) {
+				ItemAnswerStatusForm form = new ItemAnswerStatusForm();
+				form.setValue(String.join(",",entry.getValue()));
+				form.setText(entry.getKey());
+				form.setChecked(false);
+				formList.add(form);
+			}
+			
+			return formList;
+		} finally {
+			LOGGER.trace("ステータスフォームリスト取得 終了");
+		}
+	}
 	/**
 	 * アンケート利用目的フォームリストを取得
 	 * 
@@ -333,6 +585,84 @@ public abstract class AbstractService {
 			LOGGER.trace("回答者一覧取得 終了");
 		}
 	}
+	
+	/**
+	 * 申請種類一覧を取得
+	 * 
+	 * @return 申請種類一覧
+	 */
+	public List<ApplicationTypeForm> getApplicationTypeList() {
+		LOGGER.trace("申請種類一覧取得 開始");
+		try {
+			List<ApplicationTypeForm> formList = new ArrayList<ApplicationTypeForm>();
+			List<ApplicationType> applicationTypeList = applicationTypeRepository.getApplicationTypeList();
+			for (ApplicationType applicationType : applicationTypeList) {
+				formList.add(getApplicationTypeFormEntity(applicationType));
+			}
+			return formList;
+		} finally {
+			LOGGER.trace("申請種類一覧取得 終了");
+		}
+	}
+	
+	/**
+	 * 申請段階一覧を取得
+	 * 
+	 * @return 申請段階一覧
+	 */
+	public List<ApplicationStepForm> getApplicationStepList() {
+		LOGGER.trace("申請段階一覧取得 開始");
+		try {
+			List<ApplicationStepForm> formList = new ArrayList<ApplicationStepForm>();
+			List<ApplicationStep> applicationStepList = applicationStepRepository.findByApplicationStepList();
+			for (ApplicationStep applicationStep : applicationStepList) {
+				formList.add(getApplicationStepFormEntity(applicationStep));
+			}
+			return formList;
+		} finally {
+			LOGGER.trace("申請種類一覧取得 終了");
+		}
+	}
+	
+	/**
+	 * "申請追加情報一覧を取得
+	 * 
+	 * @return 申請追加情報一覧
+	 */
+	public List<ApplicantInformationItemForm> getApplicantInformationItemList() {
+		LOGGER.trace("申請追加情報一覧取得 開始");
+		try {
+			List<ApplicantInformationItemForm> formList = new ArrayList<ApplicantInformationItemForm>();
+			List<ApplicantInformationItem> applicantInformationItemFormList = applicantInformationItemRepository.getApplicantItemsAddFlagOn();
+			// 申請段階情報を取得
+			List<ApplicationStepForm> applicationStepList = getApplicationStepList();
+			for (ApplicantInformationItem applicantInformationItemForm : applicantInformationItemFormList) {
+				formList.add(getApplicantInformationItemFormEntityForSearhCondition(applicantInformationItemForm, applicationStepList));
+			}
+			return formList;
+		} finally {
+			LOGGER.trace("申請追加情報一覧取得 終了");
+		}
+	}
+	
+	/**
+	 * "申請情報項目選択肢一覧を取得
+	 * 
+	 * @return 申請情報項目選択肢一覧
+	 */
+	public List<ApplicantInformationItemOptionForm> getApplicantInformationItemOptionList(String applicantInformationItemId) {
+		LOGGER.trace("申請情報項目選択肢一覧取得 開始");
+		try {
+			List<ApplicantInformationItemOptionForm> formList = new ArrayList<ApplicantInformationItemOptionForm>();
+			List<ApplicantInformationItemOption> applicantInformationItemOptionList = applicantInformationItemOptionRepository.findByApplicantInformationItemId(applicantInformationItemId);
+			for (ApplicantInformationItemOption applicantInformationItemOption : applicantInformationItemOptionList) {
+				formList.add(getApplicantInformationItemOptionFormEntity(applicantInformationItemOption));
+			}
+			return formList;
+		} finally {
+			LOGGER.trace("申請情報項目選択肢一覧取得 終了");
+		}
+	}
 
 	/**
 	 * ステータス定義を取得
@@ -371,7 +701,24 @@ public abstract class AbstractService {
 			LOGGER.trace("問い合わせステータス定義取得 終了");
 		}
 	}
-
+	/**
+	 * 条文回答ステータス定義を取得
+	 * 
+	 * @return ステータス定義
+	 * @throws Exception 例外
+	 */
+	protected Map<String, String> getItemAnswerStatusMap() throws Exception {
+		LOGGER.trace("条文回答ステータス定義取得 開始");
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			Map<String, String> map = objectMapper.readValue(itemAnswerStatusJSON,
+					new TypeReference<LinkedHashMap<String, String>>() {
+					});
+			return map;
+		} finally {
+			LOGGER.trace("条文回答ステータス定義取得 終了");
+		}
+	}
 	/**
 	 * アンケートの利用目的定義を取得
 	 * 
@@ -441,6 +788,7 @@ public abstract class AbstractService {
 		form.setDepartmentName(entity.getDepartmentName());
 		form.setChecked(false);
 		form.setMailAddress(entity.getMailAddress());
+		form.setAdminMailAddress(entity.getAdminMailAddress());
 		return form;
 	}
 
@@ -456,6 +804,68 @@ public abstract class AbstractService {
 		form.setUserName(entity.getUserName());
 		form.setDepartmentId(entity.getDepartmentId());
 		form.setDepartmentName(entity.getDepartmentName());
+		form.setChecked(false);
+		return form;
+	}
+	
+	/**
+	 * 
+	 * @param entity 申請種類Entity
+	 * @return 申請種類フォーム
+	 */
+	protected ApplicationTypeForm getApplicationTypeFormEntity(ApplicationType entity) {
+		ApplicationTypeForm form = new ApplicationTypeForm();
+		form.setApplicationTypeId(entity.getApplicationTypeId());
+		form.setApplicationTypeName(entity.getApplicationTypeName());
+		form.setApplicationSteps(getApplicationStepList());
+		return form;
+	}
+	
+	/**
+	 * 
+	 * @param entity 申請段階Entity
+	 * @return 申請段階フォーム
+	 */
+	protected ApplicationStepForm getApplicationStepFormEntity(ApplicationStep entity) {
+		ApplicationStepForm form = new ApplicationStepForm();
+		form.setApplicationStepId(entity.getApplicationStepId());
+		form.setApplicationStepName(entity.getApplicationStepName());
+		return form;
+	}
+	
+	/**
+	 * 
+	 * @param entity 申請追加情報Entity
+	 * @return 申請追加情報フォーム
+	 */
+	protected ApplicantInformationItemForm getApplicantInformationItemFormEntity(ApplicantInformationItem entity) {
+		ApplicantInformationItemForm form = new ApplicantInformationItemForm();
+		form.setId(entity.getApplicantInformationItemId());
+		form.setOrder(entity.getDisplayOrder());
+		form.setDisplayFlag(entity.getDisplayFlag());
+		form.setRequireFlag(entity.getRequireFlag());
+		form.setSearchConditionFlag(entity.getSearchConditionFlag());
+		form.setName(entity.getItemName());
+		form.setRegularExpressions(entity.getRegex());
+		form.setMailAddress(entity.getMailAddress());
+		form.setItemType(entity.getItemType());
+		form.setAddInformationItemFlag(entity.getAddInformationItemFlag());
+		form.setApplicationSteps(getApplicationStepList());
+		form.setItemOptions(getApplicantInformationItemOptionList(entity.getApplicantInformationItemId()));
+		return form;
+	}
+	
+	/**
+	 * 
+	 * @param entity 申請情報項目選択肢Entity
+	 * @return 申請情報項目選択肢フォーム
+	 */
+	protected ApplicantInformationItemOptionForm getApplicantInformationItemOptionFormEntity(ApplicantInformationItemOption entity) {
+		ApplicantInformationItemOptionForm form = new ApplicantInformationItemOptionForm();
+		form.setId(entity.getApplicantInformationItemOptionId());
+		form.setItemId(entity.getApplicantInformationItemId());
+		form.setDisplayOrder(entity.getDisplayOrder());
+		form.setContent(entity.getApplicantInformationItemOptionName());
 		form.setChecked(false);
 		return form;
 	}
@@ -482,11 +892,14 @@ public abstract class AbstractService {
 	/**
 	 * M_申請区分選択画面EntityをM_申請区分選択画面フォームに詰めなおす
 	 * 
-	 * @param entity M_申請区分選択画面Entity
+	 * @param entity             M_申請区分選択画面Entity
+	 * @param applicationId      申請ID
+	 * @param applicationStepId  申請段階ID
+	 * @param versionInformation 申請版情報
 	 * @return M_申請区分選択画面フォーム
 	 */
 	protected ApplicationCategorySelectionViewForm getSelectionViewFormFromEntity(
-			ApplicationCategorySelectionView entity, int applicationId) {
+			ApplicationCategorySelectionView entity, int applicationId, int applicationStepId, int versionInformation) {
 		ApplicationCategorySelectionViewForm form = new ApplicationCategorySelectionViewForm();
 		form.setEnable(entity.getViewFlag());
 		form.setExplanation(entity.getTitle());
@@ -499,7 +912,7 @@ public abstract class AbstractService {
 
 		ApplicationDao dao = new ApplicationDao(emf);
 		List<ApplicationCategoryMaster> categoryList = dao.getApplicationCategoryMasterList(applicationId,
-				entity.getViewId());
+				entity.getViewId(), applicationStepId, versionInformation);
 		for (ApplicationCategoryMaster category : categoryList) {
 			categoryFormList.add(getApplicationCategoryFormFromEntity(category));
 		}
@@ -523,6 +936,26 @@ public abstract class AbstractService {
 		return form;
 	}
 
+	/**
+	 * F_地番EntityをF_地番フォームに詰めなおす
+	 * 
+	 * @param entity F_地番Entity
+	 * @return F_地番フォーム
+	 */
+	protected ApplyLotNumberForm getApplyingLotNumberFormFromEntity(ApplyLotNumber entity) {
+		ApplyLotNumberForm form = new ApplyLotNumberForm();
+		form.setApplicationId(entity.getApplicationId());
+		form.setLot_numbers(entity.getLotNumbers());
+		form.setLon(entity.getLon());
+		form.setLat(entity.getLat());
+		form.setMaxlon(entity.getMaxlon());
+		form.setMaxlat(entity.getMaxlat());
+		form.setMinlon(entity.getMinlon());
+		form.setMinlat(entity.getMinlat());
+		form.setStatus(entity.getStatus());
+		return form;
+	}
+	
 	/**
 	 * F_地番EntityをF_地番フォームに詰めなおす
 	 * 
@@ -614,10 +1047,11 @@ public abstract class AbstractService {
 			}
 		}
 		form.setAttributes(attributes);
+		form.setFullFlag(entity.getFullFlag());
 
 		return form;
 	}
-	
+
 	/**
 	 * O_問合せ宛先EntityをO_問合せ宛先フォームに詰めなおす
 	 * 
@@ -642,6 +1076,154 @@ public abstract class AbstractService {
 		return form;
 	}
 
+	/**
+	 * M_申請種類EntityをM_申請種類フォームに詰めなおす
+	 * 
+	 * @param entity M_申請種類Entity
+	 * 
+	 * @return M_申請種類フォーム
+	 */
+	protected ApplicationTypeForm getApplicationTypeFormFromEntity(ApplicationType entity) {
+		ApplicationTypeForm form = new ApplicationTypeForm();
+		form.setApplicationTypeId(entity.getApplicationTypeId());
+		form.setApplicationTypeName(entity.getApplicationTypeName());
+		form.setChecked(String.valueOf(judgementTypeValue).equals(entity.getApplicationTypeId().toString()));
+
+		List<ApplicationStepForm> applicationStepFormList = new ArrayList<ApplicationStepForm>();
+		String applicationStepStr = entity.getApplicationStep();
+		if (applicationStepStr != null && !applicationStepStr.isEmpty()) {
+			String[] applicationStepIdList = applicationStepStr.split(COMMA);
+			for (String applicationStepId : applicationStepIdList) {
+				LOGGER.trace("申請段階取得 開始");
+				List<ApplicationStep> results = applicationStepRepository
+						.findByApplicationStepId(Integer.valueOf(applicationStepId));
+				ApplicationStepForm applicationStepForm = new ApplicationStepForm();
+				if (results.size() > 0) {
+					applicationStepForm = geApplicationStepFormFromEntity(results.get(0));
+					applicationStepFormList.add(applicationStepForm);
+				}
+
+				LOGGER.trace("申請段階取得 開始");
+			}
+		}
+
+		// 申請種類に対する申請段階リスト
+		form.setApplicationSteps(applicationStepFormList);
+
+		// 申請可能
+		final String[] inapplicableApplicationTypes = inapplicableApplicationType.split(",");
+		form.setApplicable(!Arrays.asList(inapplicableApplicationTypes).contains(entity.getApplicationTypeId().toString()));
+		
+		return form;
+	}
+
+	/**
+	 * M_申請段階EntityをM_申請段階フォームに詰めなおす
+	 * 
+	 * @param entity M_申請段階Entity
+	 * @return M_申請段階フォーム
+	 */
+	protected ApplicationStepForm geApplicationStepFormFromEntity(ApplicationStep entity) {
+		ApplicationStepForm form = new ApplicationStepForm();
+		form.setApplicationStepId(entity.getApplicationStepId());
+		form.setApplicationStepName(entity.getApplicationStepName());
+		form.setChecked(false);
+		return form;
+	}
+
+	/**
+	 * M_帳票EntityをM_帳票フォームに詰めなおす
+	 * 
+	 * @param entity
+	 * @param value
+	 * @return
+	 */
+	protected LedgerMasterForm geledgerMasterFormFromEntity(LedgerMaster entity, String value) {
+		LedgerMasterForm form = new LedgerMasterForm();
+		form.setLedgerId(entity.getLedgerId());
+		form.setLedgerName(entity.getLedgerName());
+		form.setApplicationStepId(entity.getApplicationStepId());
+		form.setDisplayName(entity.getDisplayName());
+		form.setTemplatePath(entity.getTemplatePath());
+		form.setOutputType(entity.getOutputType());
+		form.setNotificationFlag(entity.getNotificationFlag());
+		if (value != null && !EMPTY.equals(value)) {
+			String[] ledgerIdList = value.split(COMMA);
+			form.setChecked(Arrays.asList(ledgerIdList).contains(entity.getLedgerId()));
+		} else {
+			form.setChecked(false);
+		}
+
+		return form;
+	}
+	
+	/**
+	 * O_開発登録簿Entityを開発登録簿ファイルフォームに詰めなおす
+	 * 
+	 * @param entity O_開発登録簿Entity
+	 * @return 開発登録簿ファイルフォーム
+	 */
+	protected DevelopmentDocumentFileForm getDevelopmentDocumentFileFormEntity(DevelopmentDocument entity,Map<Integer, String> documentNameMap) {
+		DevelopmentDocumentFileForm form = new DevelopmentDocumentFileForm();
+		
+		/** ファイルID */
+		form.setFileId(entity.getFileId());
+				
+		/** 開発登録簿マスタID */
+		form.setDevelopmentDocumentId(entity.getDevelopmentDocumentId());
+		
+		/** 申請ID */
+		form.setApplicationId(entity.getApplicationId());
+		
+		/** 書類名 */
+		form.setDocumentName(documentNameMap.get(entity.getDevelopmentDocumentId()));
+		
+		/** ログインID */
+		form.setLoginId("");
+
+		/** パスワード */
+		form.setPassword("");
+		
+		/** アップロード日時 */
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+		String registerDatetime = dateTimeFormatter.format(entity.getRegisterDatetime());
+		form.setUploadDatetime(registerDatetime);
+		
+		return form;
+	}
+	
+	/**
+	 * 検索条件向け申請追加情報取得
+	 * @param entity 申請追加情報Entity
+	 * @return 申請追加情報フォーム
+	 */
+	private ApplicantInformationItemForm getApplicantInformationItemFormEntityForSearhCondition(ApplicantInformationItem entity, List<ApplicationStepForm> applicationStepList) {
+		ApplicantInformationItemForm form = new ApplicantInformationItemForm();
+		form.setId(entity.getApplicantInformationItemId());
+		form.setOrder(entity.getDisplayOrder());
+		form.setDisplayFlag(entity.getDisplayFlag());
+		form.setRequireFlag(entity.getRequireFlag());
+		form.setSearchConditionFlag(entity.getSearchConditionFlag());
+		form.setName(entity.getItemName());
+		form.setRegularExpressions(entity.getRegex());
+		form.setMailAddress(entity.getMailAddress());
+		form.setItemType(entity.getItemType());
+		form.setAddInformationItemFlag(entity.getAddInformationItemFlag());
+		final String[] applicationStepString = entity.getApplicationStep().split(",");
+		final List<ApplicationStepForm> applicationStepForm = new ArrayList<ApplicationStepForm>();
+		// 申請情報と紐づく申請段階を取得
+		for (String aStep: applicationStepString) {
+			for (ApplicationStepForm aForm :applicationStepList) {
+				if ((aForm.getApplicationStepId() + "").equals(aStep)) {
+					aForm.setChecked(false);
+					applicationStepForm.add(aForm);
+				}
+			}
+		}
+		form.setApplicationSteps(applicationStepForm);
+		form.setItemOptions(getApplicantInformationItemOptionList(entity.getApplicantInformationItemId()));
+		return form;
+	}
 	/**
 	 * ファイルのContentTypeを取得
 	 * 
@@ -702,5 +1284,34 @@ public abstract class AbstractService {
 			}
 		}
 		return mailUtil.getFormattedValue(key, mailItem);
+	}
+	
+	/**
+	 * システム日付からN営業日後の日付を取得
+	 * 
+	 * @param key キー
+	 * @return メッセージ
+	 */
+	protected LocalDateTime getDeadlineDatetime(Integer answerDays) {
+
+		LocalDateTime deadlineDatetime = null;
+
+		if (answerDays != null) {
+
+			try {
+
+				// N営業日後の日付を取得
+				Date date = calendarUtil.calcDeadlineDatetime(new Date(), answerDays);
+				if (date != null) {
+					// LocalDateTimeデータ型に変換
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+					String str = date.toString().replace("-", "/")+ " 00:00";
+					deadlineDatetime = LocalDateTime.parse(str, formatter);
+				}
+			} catch (Exception e) {
+				LOGGER.error("N営業日後の日付取得で例外発生", e);
+			}
+		}
+		return deadlineDatetime;
 	}
 }

@@ -43,7 +43,6 @@ public class Picture implements CellValue {
 	public Picture() {
 		filePath = null;
 		fileData = null;
-		// type = Workbook.PICTURE_TYPE_JPEG;
 		type = Workbook.PICTURE_TYPE_PNG;
 		sheet = 0;
 		startRow = 0;

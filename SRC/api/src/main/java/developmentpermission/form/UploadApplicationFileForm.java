@@ -32,6 +32,14 @@ public class UploadApplicationFileForm implements Serializable {
 	/** 申請ID */
 	@ApiModelProperty(value = "申請ID", example = "1")
 	private Integer applicationId;
+	
+	/** 申請段階ID */
+	@ApiModelProperty(value = "申請段階ID", example = "1")
+	private Integer applicationStepId;
+	
+	/** 申請段階ID */
+	@ApiModelProperty(value = "申請段階名称", example = "事前相談")
+	private String applicationStepName;
 
 	/** 申請ファイルID */
 	@ApiModelProperty(value = "申請ファイルID", example = "1001")
@@ -68,4 +76,16 @@ public class UploadApplicationFileForm implements Serializable {
 	/** アップロード日時 */
 	@ApiModelProperty(value = "アップロード日時", example = "2023/04/20 16:00")
 	private String uploadDatetime;
+	
+	/** 指示元部署一覧(カンマ区切り部署名) */
+	@ApiModelProperty(value = "test1,test2")
+	private String directionDepartment;
+	
+	/** 指示元部署一覧(カンマ区切り部署ID) */
+	@ApiModelProperty(value = "0001,0002")
+	private String directionDepartmentId;
+	
+	/** 修正内容 */
+	@ApiModelProperty(value = "修正内容", example = "xxxxxxxxxxx")
+	private String reviseContent;
 }

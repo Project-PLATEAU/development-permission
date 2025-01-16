@@ -40,7 +40,7 @@ public class LabelApiController extends AbstractApiController {
 	/** 事業者ユーザのロール */
 	@Value("${app.role.business}")
 	private String businessUserRole;
-	
+
 	/** ラベルServiceインスタンス */
 	@Autowired
 	private LabelService labelService;
@@ -54,10 +54,11 @@ public class LabelApiController extends AbstractApiController {
 	@RequestMapping(value = "/{view_code}", method = RequestMethod.GET)
 	@ApiOperation(value = "指定した画面のラベル一覧取得", notes = "指定した画面のラベル一覧をJSON形式で取得する.")
 	@ResponseBody
-	@ApiResponses(value = { 
+	@ApiResponses(value = {
 			@ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class) })
-	public List<LabelForm> getLabel(@ApiParam(required = true, value = "画面ID")@PathVariable(value = "view_code") String viewCode,
+	public List<LabelForm> getLabel(
+			@ApiParam(required = true, value = "画面ID") @PathVariable(value = "view_code") String viewCode,
 			@CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("ラベル一覧取得 開始");
 		try {
@@ -86,6 +87,48 @@ public class LabelApiController extends AbstractApiController {
 	}
 
 	/**
+	 * 指定した申請段階のラベル一覧取得
+	 * 
+	 * @param viewCode          画面コード
+	 * @param applicationStepId 申請段階ID
+	 * @return ラベル一覧
+	 */
+	@RequestMapping(value = "/{view_code}/{application_step_id}", method = RequestMethod.GET)
+	@ApiOperation(value = "指定した画面のラベル一覧取得", notes = "指定した画面のラベル一覧をJSON形式で取得する.")
+	@ResponseBody
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class) })
+	public List<LabelForm> getLabel(
+			@ApiParam(required = true, value = "画面ID") @PathVariable(value = "view_code") String viewCode,
+			@ApiParam(required = true, value = "申請段階ID") @PathVariable(value = "application_step_id") String applicationStepId,
+			@CookieValue(value = "token", required = false) String token) {
+		LOGGER.info("ラベル一覧取得 開始");
+		try {
+			// ロールを取得
+			String role = AuthUtil.getRole(token);
+			if (role == null || "".equals(role)) {
+				role = businessUserRole;
+			}
+			if (role != null && !"".equals(role)) {
+				if (isValidViewCode(viewCode) && isValidApplicationStepId(applicationStepId)) {
+					List<LabelForm> labelFormList = new ArrayList<LabelForm>();
+					LabelForm form = labelService.getLabelByApplicationStepId(viewCode, applicationStepId, role);
+					labelFormList.add(form);
+					return labelFormList;
+				} else {
+					LOGGER.warn("パラメータ不正");
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+				}
+			} else {
+				LOGGER.warn("ロール不適合");
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
+		} finally {
+			LOGGER.info("ラベル一覧取得 終了");
+		}
+	}
+
+	/**
 	 * ViewCodeが正しいものか判定する
 	 * 
 	 * @param viewCode 画面コード
@@ -94,6 +137,20 @@ public class LabelApiController extends AbstractApiController {
 	private boolean isValidViewCode(String viewCode) {
 		if (viewCode == null || "".equals(viewCode)) {
 			LOGGER.warn("画面コードがnullまたは空");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * applicationStepIdが正しいものか判定する
+	 * 
+	 * @param applicationStepId 申請段階ID
+	 * @return 判定結果
+	 */
+	private boolean isValidApplicationStepId(String applicationStepId) {
+		if (applicationStepId == null || "".equals(applicationStepId)) {
+			LOGGER.warn("申請段階IDがnullまたは空");
 			return false;
 		}
 		return true;

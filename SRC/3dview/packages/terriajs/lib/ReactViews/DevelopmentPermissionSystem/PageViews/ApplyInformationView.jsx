@@ -8,7 +8,7 @@ import Styles from "./scss/pageStyle.scss";
 import EnterApplicantInformation from "../Views/Apply/EnterApplicantInformation.jsx";
 import UploadApplicationInformation from "../Views/Apply/UploadApplicationInformation.jsx";
 import ConfirmApplicationDetails from "../Views/Apply/ConfirmApplicationDetails.jsx";
-
+import EnterAddInformation from "../Views/Apply/EnterAddInformation.jsx";
 /**
  * 事業者用画面：申請フォーム画面
  */
@@ -44,7 +44,13 @@ class ApplyInformationView extends React.Component {
         const t = this.props.t;
         let infoMessage = "";
         if(this.props.viewState.showEnterApplicantInformation){
-            infoMessage = t("infoMessage.tipsForInputApplicationInformation");
+            if(this.props.viewState.isReApply){
+
+                infoMessage = t("infoMessage.tipsForInputAddInformation");
+            }else{
+
+                infoMessage = t("infoMessage.tipsForInputApplicationInformation");
+            }
         }
         if(this.props.viewState.showUploadApplicationInformation) {
             infoMessage = t("infoMessage.tipsForRegistApplicationFile");
@@ -60,7 +66,7 @@ class ApplyInformationView extends React.Component {
                         <span dangerouslySetInnerHTML={{ __html: infoMessage }}></span>
                         </Box>
                     
-                        <If condition = {this.props.viewState.showEnterApplicantInformation}>
+                        <If condition = {this.props.viewState.showEnterApplicantInformation && !this.props.viewState.isReApply}>
                             <EnterApplicantInformation terria={this.props.terria} viewState={this.props.viewState} />
                         </If>
                         <If condition = {this.props.viewState.showUploadApplicationInformation}>
@@ -69,7 +75,9 @@ class ApplyInformationView extends React.Component {
                         <If condition = {this.props.viewState.showConfirmApplicationDetails}>
                             <ConfirmApplicationDetails terria={this.props.terria} viewState={this.props.viewState} />
                         </If>
-                        {/* <Box paddedRatio={2}></Box> */}
+                        <If condition = {this.props.viewState.showEnterApplicantInformation && this.props.viewState.isReApply}>
+                            <EnterAddInformation terria={this.props.terria} viewState={this.props.viewState} />
+                        </If>
                     </div>
                 </Box>
             </>

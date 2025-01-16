@@ -41,7 +41,13 @@ import ApplicationInformationSearch from "../AdminPermissionSystem/Views/Apply/A
 import ApplicationDetails from "../AdminPermissionSystem/Views/Apply/ApplicationDetails.jsx";
 import AnswerInput from "../AdminPermissionSystem/Views/Apply/AnswerInput.jsx";
 import ApplicationList from "../AdminPermissionSystem/Views/Apply/ApplicationList.jsx";
-
+import SelectApplicationClassModal from "../AdminPermissionSystem/Views/Modal/SelectApplicationClassModal.jsx";
+import ConfirmAnswerNotificationModal from "../AdminPermissionSystem/Views/Modal/ConfirmAnswerNotificationModal.jsx";
+import AnswerContentInputModal from "../AdminPermissionSystem/Views/Modal/AnswerContentInputModal.jsx";
+import GeneralConditionDiagnosisrReport from "../DevelopmentPermissionSystem/Views/Apply/GeneralConditionDiagnosisrReport.jsx";
+import FileUploadModal from "../AdminPermissionSystem/Views/Modal/FileUploadModal.jsx";
+import IssuanceFileUploadModal from "../AdminPermissionSystem/Views/Modal/IssuanceFileUploadModal.jsx"
+import FileDownLoadModal from "../AdminPermissionSystem/Views/Modal/FileDownLoadModal.jsx";
 import PrintView from "../../ReactViews/Map/Panels/SharePanel/Print/PrintView";
 
 import withFallback from "../HOCs/withFallback";
@@ -74,6 +80,7 @@ import WebMapServiceCatalogItem from "../../Models/Catalog/Ows/WebMapServiceCata
 import CommonStrata from "../../Models/Definition/CommonStrata";
 import MapFitButton from "../DevelopmentPermissionSystem/Views/Map/MapFitButton";
 import MapFitButtonForAChatView from "../DevelopmentPermissionSystem/Views/Map/MapFitButtonForAChatView";
+import Tablesort from 'tablesort';
 
 export const showStoryPrompt = (viewState, terria) => {
   terria.configParameters.showFeaturePrompts &&
@@ -227,6 +234,96 @@ const StandardUserInterface = observer(
           width: 300
         });
       }
+            
+      // Tablesortのカスタムソートロジック
+      Tablesort.extend('custom', function(item) {
+        if (item == null) return false;
+        // 数字と文字を分ける
+        const parts = item.match(/(\d+|[^\d]+)/g) || [];
+        // 数値と文字列の部分に分けて処理
+        return parts.map(part => {
+            // 数値の場合は整数に変換し、文字列の場合はそのまま
+            return isNaN(part) ? part : parseInt(part, 10);
+        });
+      }, function(a, b) {
+          if (a == null) return -1;
+          if (b == null) return 1;
+          // 数値と文字を分ける
+          const partsA = a.match(/(\d+|[^\d]+)/g) || [];
+          const partsB = b.match(/(\d+|[^\d]+)/g) || [];
+          // 数値部分を先に比較
+          const maxLength = Math.max(partsA.length, partsB.length);
+          for (let i = 0; i < maxLength; i++) {
+              const partA = i < partsA.length ? partsA[i] : '';
+              const partB = i < partsB.length ? partsB[i] : '';
+              if (!isNaN(partA) && !isNaN(partB)) {
+                  if (parseInt(partA) < parseInt(partB)) return -1;
+                  if (parseInt(partA) > parseInt(partB)) return 1;
+              }
+          }
+          // 数値部分での比較が終わった後、文字列全体で比較
+          // 空白や記号の違いを考慮するために localeCompare を使用
+          const comparison = String(a).localeCompare(String(b), undefined, { sensitivity: 'base' });
+          if (comparison !== 0) return comparison;
+          // 長さが異なる場合、長い方を後にする
+          return a.length - b.length;
+      });
+
+      // 指定のTable要素にソート機能を当て込む
+      // MutationObserverのインスタンスを作成
+      this.observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach(node => {
+              if(node.classList?.contains('no-sort')) return;
+              if (node.tagName === 'TABLE') {
+                if (node.querySelector('th')) {
+                  node.querySelectorAll('th')?.forEach(_th => {
+                      if (_th.classList.contains('no-sort')) {
+                          _th.setAttribute('data-sort-method', 'none');
+                      }
+                  });
+                  if (!node.hasAttribute('data-tablesort-initialized')) {
+                    new Tablesort(node);
+                    node.setAttribute('data-tablesort-initialized', 'true');
+                  }
+                }
+              } else if (node.querySelectorAll) {
+                node.querySelectorAll('table').forEach(table => {
+                  if(table.classList?.contains('no-sort')) return;
+                  if (table.querySelector('th')) {
+                    table.querySelectorAll('th')?.forEach(_th => {
+                        if (_th.classList.contains('no-sort')) {
+                            _th.setAttribute('data-sort-method', 'none');
+                        }
+                    });
+                    if (!table.hasAttribute('data-tablesort-initialized')) {
+                      new Tablesort(table);
+                      table.setAttribute('data-tablesort-initialized', 'true');
+                    }
+                  }
+                });
+              }
+              if (node.classList?.contains('add-sort')) {
+                const table = node.closest('table');
+                if (table) {
+                  table.querySelectorAll('th')?.forEach(_th => {
+                      if (_th.classList.contains('no-sort')) {
+                          _th.setAttribute('data-sort-method', 'none');
+                      }
+                  });
+                  if (!table.hasAttribute('data-tablesort-initialized')) {
+                    new Tablesort(table);
+                    table.setAttribute('data-tablesort-initialized', 'true');
+                  }
+                }
+              }
+            });
+          }
+        });
+      });
+      // ドキュメントの変更を監視
+      this.observer.observe(document.body, { childList: true, subtree: true });
     },
 
     componentDidMount() {
@@ -237,6 +334,11 @@ const StandardUserInterface = observer(
     componentWillUnmount() {
       window.removeEventListener("resize", this.resizeListener, false);
       document.removeEventListener("dragover", this.dragOverListener, false);
+
+      // クリーンアップ関数で監視を停止
+      if (this.observer) {
+        this.observer.disconnect();
+      }
     },
 
     acceptDragDropFile() {
@@ -272,10 +374,7 @@ const StandardUserInterface = observer(
               if(Object.keys(res).length === 1 && applocationId){
                 this.props.viewState.closeApplicationLotNumberPanelView();
                 this.props.viewState.nextApplicationDetailsView(applocationId);
-                const htmlElement = document.getElementById("refreshConfirmApplicationDetails");
-                if(htmlElement){
-                    htmlElement.click();
-                }
+                this.props.viewState.refreshConfirmApplicationDetails();
               }else if(Object.keys(res).length > 1){
                 this.props.viewState.showApplicationLotNumberPanelView(res);
               }
@@ -300,7 +399,7 @@ const StandardUserInterface = observer(
                   aItem.setTrait(CommonStrata.user,
                       "parameters",
                       {
-                          "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + Object.keys(lotNumbers)?.map(key => { return lotNumbers[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_"),
+                          "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + Object.keys(lotNumbers)?.map(key => { return lotNumbers[key].applicationId }).filter(applicationId => { return applicationId !== null }).join("_"),
                       });
                   aItem.loadMapItems();
                   layerFlg = true;
@@ -320,7 +419,7 @@ const StandardUserInterface = observer(
               item.setTrait(CommonStrata.user,
                   "parameters",
                   {
-                      "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + Object.keys(lotNumbers)?.map(key => { return lotNumbers[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_"),
+                      "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + Object.keys(lotNumbers)?.map(key => { return lotNumbers[key].applicationId }).filter(applicationId => { return applicationId !== null }).join("_"),
                   });
               item.loadMapItems();
               this.props.terria.workbench.add(item);
@@ -330,83 +429,56 @@ const StandardUserInterface = observer(
       }
     },
 
-        /**
+    /**
      * フォーカス処理ドライバー
      * @param {object} 申請地情報
      */
-        focusMapPlaceDriver(lotNumbers) {
-          let applicationPlace = Object.values(lotNumbers);
-          applicationPlace = applicationPlace.filter(Boolean);
-          let maxLon = 0;
-          let maxLat = 0;
-          let minLon = 0;
-          let minLat = 0;
-          Object.keys(applicationPlace).map(key => {
-              const targetMaxLon = parseFloat(applicationPlace[key].maxlon);
-              const targetMaxLat = parseFloat(applicationPlace[key].maxlat);
-              const targetMinLon = parseFloat(applicationPlace[key].minlon);
-              const targetMinLat = parseFloat(applicationPlace[key].minlat);
-              if (key === 0 || key === "0") {
-                  maxLon = targetMaxLon;
-                  maxLat = targetMaxLat;
-                  minLon = targetMinLon;
-                  minLat = targetMinLat;
-              } else {
-                  if (maxLon < targetMaxLon) {
-                      maxLon = targetMaxLon;
-                  }
-                  if (maxLat < targetMaxLat) {
-                      maxLat = targetMaxLat;
-                  }
-                  if (minLon > targetMinLon) {
-                      minLon = targetMinLon;
-                  }
-                  if (minLat > targetMinLat) {
-                      minLat = targetMinLat;
-                  }
-              }
-          })
-          this.outputFocusMapPlace(maxLon, maxLat, minLon, minLat, (maxLon + minLon) / 2, (maxLat + minLat) / 2);
-      },
+      focusMapPlaceDriver(lotNumbers) {
+        let applicationPlace = Object.values(lotNumbers);
+        applicationPlace = applicationPlace.filter(Boolean);
+        let maxLon = 0;
+        let maxLat = 0;
+        let minLon = 0;
+        let minLat = 0;
+        Object.keys(applicationPlace).map(key => {
+            const targetMaxLon = parseFloat(applicationPlace[key].maxlon);
+            const targetMaxLat = parseFloat(applicationPlace[key].maxlat);
+            const targetMinLon = parseFloat(applicationPlace[key].minlon);
+            const targetMinLat = parseFloat(applicationPlace[key].minlat);
+            if (key === 0 || key === "0") {
+                maxLon = targetMaxLon;
+                maxLat = targetMaxLat;
+                minLon = targetMinLon;
+                minLat = targetMinLat;
+            } else {
+                if (maxLon < targetMaxLon) {
+                    maxLon = targetMaxLon;
+                }
+                if (maxLat < targetMaxLat) {
+                    maxLat = targetMaxLat;
+                }
+                if (minLon > targetMinLon) {
+                    minLon = targetMinLon;
+                }
+                if (minLat > targetMinLat) {
+                    minLat = targetMinLat;
+                }
+            }
+        })
+        this.outputFocusMapPlace(maxLon, maxLat, minLon, minLat, (maxLon + minLon) / 2, (maxLat + minLat) / 2);
+    },
   
-      /**
-       * フォーカス処理
-       * @param {number} maxLon 最大経度
-       * @param {number} maxLat 最大緯度
-       * @param {number} minLon 最小経度
-       * @param {number} minLat 最小緯度
-       * @param {number} lon 経度
-       * @param {number} lat 緯度
-       */
-      outputFocusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat) {
-          // 3dmodeにセット
-          this.props.viewState.set3dMode();
-          //現在のカメラ位置等を取得
-          const currentSettings = getShareData(this.props.terria, this.props.viewState);
-          const currentCamera = currentSettings.initSources[0].initialCamera;
-          let newCamera = Object.assign(currentCamera);
-          //新規の表示範囲を設定
-          let currentLonDiff = Math.abs(maxLon - minLon);
-          let currentLatDiff = Math.abs(maxLat - minLat);
-          newCamera.north = maxLon + currentLatDiff / 2;
-          newCamera.south = minLon - currentLatDiff / 2;
-          newCamera.east = maxLat + currentLonDiff / 2;
-          newCamera.west = minLat - currentLonDiff / 2;
-          //camera.positionを緯度経度に合わせて設定
-          const scene = this.props.terria.cesium.scene;
-          const terrainProvider = scene.terrainProvider;
-          const positions = [Cartographic.fromDegrees(lon, minLat)];
-          let height = 0;
-          sampleTerrainMostDetailed(terrainProvider, positions).then((updatedPositions) => {
-              height = updatedPositions[0].height
-              let coord_wgs84 = Cartographic.fromDegrees(lon, minLat, parseFloat(height) + parseInt((400000 * currentLatDiff )) + 200 );
-              let coord_xyz = Ellipsoid.WGS84.cartographicToCartesian(coord_wgs84);
-              newCamera.position = { x: coord_xyz.x, y: coord_xyz.y, z: coord_xyz.z - parseInt((300000 * currentLatDiff )) - 170 };
-              //カメラの向きは統一にさせる
-              newCamera.direction = { x: this.props.terria.focusCameraDirectionX, y: this.props.terria.focusCameraDirectionY, z: this.props.terria.focusCameraDirectionZ };
-              newCamera.up = { x: this.props.terria.focusCameraUpX, y: this.props.terria.focusCameraUpY, z:this.props.terria.focusCameraUpZ };
-              this.state.terria.currentViewer.zoomTo(newCamera, 5);
-          })
+    /**
+     * フォーカス処理
+     * @param {number} maxLon 最大経度
+     * @param {number} maxLat 最大緯度
+     * @param {number} minLon 最小経度
+     * @param {number} minLat 最小緯度
+     * @param {number} lon 経度
+     * @param {number} lat 緯度
+     */
+    outputFocusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat) {
+        this.props.terria.focusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat, this.props.viewState);
     },
 
     render() {
@@ -477,7 +549,11 @@ const StandardUserInterface = observer(
                     animationDuration={animationDuration}
                   />
                 </Medium>
-                <div className={Styles.uiInner}>
+                <div className={Styles.uiInner}
+                    css={`
+                    ${this.props.viewState.isSidePanelFullScreen &&
+                    `display:block!important;`}
+                  `}>
                   <If condition={!this.props.viewState.hideMapUi}>
                     <Small>
                       <MobileHeader
@@ -502,6 +578,13 @@ const StandardUserInterface = observer(
                               .isMapFullScreen
                           }
                         )}
+                        css={`
+                          ${this.props.viewState.isSidePanelFullScreen &&
+                          `width: 100%;
+                           height:100%;
+                           max-width: 100%;
+                           flex-basis: auto;`}
+                        `}
                         tabIndex={0}
                         onClick={action(() => {
                           this.props.viewState.topElement = "SidePanel";
@@ -543,7 +626,23 @@ const StandardUserInterface = observer(
                     </div>
                   </Medium>
 
-                  <section className={Styles.map}>
+                  <section className={Styles.map} css={`
+                          ${this.props.viewState.isSidePanelFullScreen &&
+                          `position: absolute;
+                           width: ${this.props.viewState.mapWidth};
+                           height: ${this.props.viewState.mapHeight};
+                           z-index: 99999999;`}
+                          ${this.props.viewState.isSidePanelFullScreen && this.props.viewState.mapBottom !== "" &&
+                          `bottom: ${this.props.viewState.mapBottom};`}
+                          ${this.props.viewState.isSidePanelFullScreen && this.props.viewState.mapRight !== "" &&
+                          `right: ${this.props.viewState.mapRight};`}
+                          ${this.props.viewState.isSidePanelFullScreen && this.props.viewState.mapTop !== "" &&
+                          `top: ${this.props.viewState.mapTop};`}
+                          ${this.props.viewState.isSidePanelFullScreen && this.props.viewState.mapLeft !== "" &&
+                          `left: ${this.props.viewState.mapLeft};`}
+                           ${this.props.viewState.isSidePanelFullScreen &&
+                          `display: ${this.props.viewState.showPdfViewer? "none": ""};`}
+                        `}>
                     <ProgressBar terria={terria} />
                     <MapColumn
                       terria={terria}
@@ -666,81 +765,68 @@ const StandardUserInterface = observer(
                 evt.stopPropagation();
                 this.getApplication();
             }}></div>
-            {/* {this.props.viewState.showLotNumberSearch &&(
-              <LotNumberSearch terria={terria} viewState={this.props.viewState} />
-            )} */}
-            {/* {this.props.viewState.showGeneralConditionDiagnosis && !this.props.terria.authorityJudgment() &&(
-              <GeneralConditionDiagnosis terria={terria} viewState={this.props.viewState} />
-            )} */}
-
-            {/* {this.props.viewState.showApplicationCategorySelection && !this.props.terria.authorityJudgment() &&(
-              <ApplicationCategorySelection terria={terria} viewState={this.props.viewState} />
-            )} */}
             {this.props.viewState.showCharacterSelection && !this.props.terria.authorityJudgment() &&(
               <CharacterSelection terria={terria} viewState={this.props.viewState} />
             )}
             {this.props.viewState.showMapSelection && !this.props.terria.authorityJudgment() &&(
               <MapSelection terria={terria} viewState={this.props.viewState} />
             )}
-            {/* {this.props.viewState.showEnterApplicantInformation && !this.props.terria.authorityJudgment() &&(
-              <EnterApplicantInformation terria={terria} viewState={this.props.viewState} />
-            )}
-            {this.props.viewState.showUploadApplicationInformation && !this.props.terria.authorityJudgment() &&(
-              <UploadApplicationInformation terria={terria} viewState={this.props.viewState} />
-            )}
-            {this.props.viewState.showConfirmApplicationDetails && !this.props.terria.authorityJudgment() &&(
-              <ConfirmApplicationDetails terria={terria} viewState={this.props.viewState} />
-            )}*/}
             {this.props.viewState.showCustomMessage &&(
               <CustomMessage terria={terria} viewState={this.props.viewState} />
             )}
-            {/* {this.props.viewState.showAnswerLogin && !this.props.terria.authorityJudgment() &&(
-              <AnswerLogin terria={terria} viewState={this.props.viewState} />
-            )} */}
-            {/* {this.props.viewState.showAnswerContent && !this.props.terria.authorityJudgment() &&(
-              <AnswerContent terria={terria} viewState={this.props.viewState} />
-            )} */}
             {this.props.viewState.showUserAgreement && !this.props.terria.authorityJudgment() &&(
               <UserAgreement terria={terria} viewState={this.props.viewState} />
             )}
-
-            {this.props.viewState.showApplicationInformationSearch && this.props.terria.authorityJudgment() &&(
-              <ApplicationInformationSearch terria={terria} viewState={this.props.viewState} />
-            )}
-
-            {this.props.viewState.showApplicationDetails && this.props.terria.authorityJudgment() &&(
-              <ApplicationDetails terria={terria} viewState={this.props.viewState} />
-            )}
-
-            {this.props.viewState.showAnswerInput && this.props.terria.authorityJudgment() &&(
-              <AnswerInput terria={terria} viewState={this.props.viewState} />
-            )}
-
-            {this.props.viewState.showApplicationList && this.props.terria.authorityJudgment() &&(
-              <ApplicationList terria={terria} viewState={this.props.viewState} />
-            )}
-
             {this.props.viewState.showApplicationLotNumberPanel && this.props.terria.authorityJudgment() &&(
               <ApplicationLotNumberPanel terria={terria} viewState={this.props.viewState} />  
             )}
+            { this.props.viewState.selectApplicationClassModalShow && this.props.terria.authorityJudgment() && (
+              <SelectApplicationClassModal terria={terria} viewState={this.props.viewState}/>
+            )}
+            { this.props.viewState.confirmAnswerNotificationModalShow && this.props.terria.authorityJudgment()  && (
+              <ConfirmAnswerNotificationModal terria={terria} viewState={this.props.viewState}/>
+            )}
+            { this.props.viewState.generalConditionDiagnosisrReportShow && !this.props.terria.authorityJudgment()  && (
+              <GeneralConditionDiagnosisrReport terria={terria} viewState={this.props.viewState}/>
+            )}
+            {/* 回答内容入力モーダル */}
+            { this.props.viewState.inputAnswerContentModalShow && this.props.terria.authorityJudgment()  && (
+              <AnswerContentInputModal terria={terria} viewState={this.props.viewState}/>
+            )}
+            {/* ファイルダウンロードモーダル */}
+            <If condition={this.props.terria.authorityJudgment()}>
+              <If condition={this.props.viewState.adminTabActive === "applySearch" && this.props.viewState.applyPageActive === "applyDetail"}>
+                { this.props.viewState.fileDownloadModalShow && (
+                  // 行政の申請情報詳細画面が表示される場合、ファイルダウンロードモーダルが、一番上に表示できる
+                  <FileDownLoadModal terria={terria} viewState={this.props.viewState}/>
+                )}
+              </If>
+            </If>
+            <If condition={!this.props.terria.authorityJudgment()}>
+              <If condition = {this.props.viewState.showConfirmAnswerInformationView}>
+                { this.props.viewState.fileDownloadModalShow && (
+                  // 事業者の回答内容確認画面が表示される場合、ファイルダウンロードモーダルが、一番上に表示できる
+                  <FileDownLoadModal terria={terria} viewState={this.props.viewState}/>
+                )}
+              </If>
+            </If>
 
-            {(this.props.viewState.adminTabActive === "applySearch" && 
-              (this.props.viewState.applyPageActive === "applyDetail" 
-              || this.props.viewState.applyPageActive === "answerRegister") &&
-              !this.props.viewState.showPdfViewer) && (
-              <MapFitButton terria={terria} viewState={this.props.viewState} />
-            )}
-            {(!this.props.terria.authorityJudgment() && 
-              (this.props.viewState.showInputApplyConditionView
-                 || this.props.viewState.showGeneralAndRoadJudgementResultView
-                 || this.props.viewState.showApplyInformationView
-                 || this.props.viewState.showConfirmAnswerInformationView)) && (
-              <MapFitButton terria={terria} viewState={this.props.viewState} />
-            )}
-            {((this.props.viewState.adminTabActive === "applySearch" && this.props.viewState.applyPageActive === "chat") 
-            || (!this.props.terria.authorityJudgment() && this.props.viewState.showChatView)) && (
-              <MapFitButtonForAChatView terria={terria} viewState={this.props.viewState} />
-            )}
+            {/* ファイルアップロードモーダル */}
+            <If condition={this.props.terria.authorityJudgment()}>
+              <If condition={this.props.viewState.adminTabActive === "applySearch" && this.props.viewState.applyPageActive === "answerRegister"}>
+                { this.props.viewState.fileUploadModalShow && (
+                  // 行政回答登録画面が表示される場合、ファイルアップロードモーダルが、一番上に表示できる
+                  <FileUploadModal terria={terria} viewState={this.props.viewState}/>
+                )}
+              </If>
+            </If>
+
+            {/* 発行様式アップロードモーダル */}
+            <If condition={this.props.terria.authorityJudgment()}>
+              { this.props.viewState.issuanceFileUploadModalShow && (
+                  <IssuanceFileUploadModal terria={terria} viewState={this.props.viewState}/>
+               )}
+            </If>
 
             <Disclaimer viewState={this.props.viewState} />
           </div>
@@ -752,6 +838,9 @@ const StandardUserInterface = observer(
               closeCallback={() => this.props.viewState.setPrintWindow(null)}
             />
           )}
+          <div id="customloader_main" className={Styles.customloaderParent}>
+              <div className={Styles.customloader}>Loading...</div>
+          </div>
         </ThemeProvider>
       );
     }

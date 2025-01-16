@@ -3,6 +3,9 @@ package developmentpermission.form;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +24,7 @@ import lombok.Setter;
 public class ChatSearchResultForm  implements Serializable {
 	/** シリアルバージョンUID */
 	private static final long serialVersionUID = 1L;
+	
 	/** 申請ID */
 	@ApiModelProperty(value = "申請ID", example = "1")
 	private Integer applicationId;
@@ -67,6 +71,6 @@ public class ChatSearchResultForm  implements Serializable {
 	
 	/** 地番一覧 */
 	@ApiModelProperty(value = "地番一覧")
-	private List<LotNumberForm> lotNumbers;
+	private List<ApplyLotNumberForm> lotNumbers;
 	
 }

@@ -25,6 +25,19 @@ public class AnswerFileForm implements Serializable {
 	/** 回答ID */
 	@ApiModelProperty(value = "回答ID", example = "1")
 	private Integer answerId;
+
+	/** 申請ID */
+	@ApiModelProperty(value = "申請ID", example = "1")
+	private Integer applicationId;
+	
+	/** 申請段階ID */
+	@ApiModelProperty(value = "申請段階ID", example = "1")
+	private Integer applicationStepId;
+	
+	/** 部署UID */
+	@ApiModelProperty(value = "部署ID", example = "1001")
+	private String departmentId;
+	
 	/** 回答ファイルID */
 	@ApiModelProperty(value = "回答ファイルID", example = "1")
 	private Integer answerFileId;
@@ -43,13 +56,15 @@ public class AnswerFileForm implements Serializable {
 	/** アップロードファイル */
 	@ApiModelProperty(value = "アップロードファイル")
 	private MultipartFile uploadFile;
-	/** 申請ID */
-	@ApiModelProperty(value = "申請ID", example = "1")
-	private Integer applicationId;
+
 	/** ログインID */
 	@ApiModelProperty(value = "ログインID", example = "00111223344")
 	private String loginId;
 	/** パスワード */
 	@ApiModelProperty(value = "パスワード", example = "password")
 	private String password;
+	
+	/** 区分判定情報 */
+	@ApiModelProperty(value = "区分判定情報")
+	private AnswerJudgementForm judgementInformation;
 }

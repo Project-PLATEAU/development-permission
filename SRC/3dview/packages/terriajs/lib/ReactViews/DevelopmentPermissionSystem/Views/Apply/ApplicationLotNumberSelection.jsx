@@ -33,7 +33,9 @@ class ApplicationLotNumberSelection extends React.Component {
             // 当前選択されたラジオ
             currentLotCheckModel:0,
             // 地番選択エリアの高さ
-            height:"auto"
+            height:"auto",
+            // 相談開始ボタンラベル
+            viewLabel:""
         };
     }
 
@@ -52,6 +54,33 @@ class ApplicationLotNumberSelection extends React.Component {
             this.clickMapSelectionModel();
         }
         this.getWindowSize("");
+        // ラベル取得
+        this.getViewLabel();
+    }
+
+    /**
+     * DBからラベル取得
+     */
+    getViewLabel(){
+        //サーバからlabelを取得
+        fetch(Config.config.apiUrl + "/label/2000")
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 401){
+                alert("認証情報が無効です。ページの再読み込みを行います。");
+                window.location.reload();
+                return null;
+            }
+            if (Object.keys(res).length > 0) {
+                let message = res[0]?.labels?.startConsult;
+                this.setState({ viewLabel: message });
+            }else{
+                alert("labelの取得に失敗しました。");
+            }
+        }).catch(error => {
+            console.error('通信処理に失敗しました', error);
+            alert('通信処理に失敗しました');
+        });
     }
 
     /**
@@ -244,7 +273,7 @@ class ApplicationLotNumberSelection extends React.Component {
     }
 
     /**
-     * 3D建物モデル表示・非表示
+     * 建物モデル表示・非表示
      * @param {*} isShow 表示かどうか
      */
     changeCesium3DTilesShow(isShow){
@@ -256,6 +285,12 @@ class ApplicationLotNumberSelection extends React.Component {
                 "style",
                 {"show": isShow});
             cesium3DTiles.loadMapItems();
+            const leaflet2DModel = this.state.terria.getModelById(BaseModel, Config.buildingModelFor2d.id);
+            leaflet2DModel.setTrait(
+                CommonStrata.user,
+                "show",
+                isShow);
+            leaflet2DModel.loadMapItems();
         } catch (error) {
             console.error('処理に失敗しました', error);
         }
@@ -311,7 +346,7 @@ class ApplicationLotNumberSelection extends React.Component {
     /**
      * 指定したレイヤをクリアする
      * 指定しない場合、下記を全てクリアする
-     *   選択中地番、全地番、地番検索結果（事業者）、ランドマーク
+     *   選択中地番、全地番、地番検索結果（事業者）、ランドマーク、全筆かからない筆
      * @param {string} layerName レイヤ名
      */
     clearlayer(layerName = ""){
@@ -321,7 +356,8 @@ class ApplicationLotNumberSelection extends React.Component {
                 if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForSelected 
                     || aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForAll 
                     || aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForBusiness
-                    || aItem.uniqueId === Config.landMark.id) {
+                    || aItem.uniqueId === Config.landMark.id
+                    || aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForSelectedFullFlag) {
                     this.state.terria.workbench.remove(aItem);
                     aItem.loadMapItems();
                 }
@@ -353,8 +389,14 @@ class ApplicationLotNumberSelection extends React.Component {
         let currentLotCheckModel = event.target.value;
         this.setState({currentLotCheckModel:currentLotCheckModel});
         if(currentLotCheckModel == "0"){
+            if(!this.props.terria.authorityJudgment()){
+                this.props.terria.setClickMode("");
+            }
             this.clickLotSearchModel();
         }else{
+            if(!this.props.terria.authorityJudgment()){
+                this.props.terria.setClickMode("1");
+            }
             this.clickMapSelectionModel();
             this.clearSamplePoint();
         }
@@ -380,6 +422,7 @@ class ApplicationLotNumberSelection extends React.Component {
         if(!this.props.viewState.showLotNumberSelected){
             height = "auto";
         }
+        const viewLabel = this.state.viewLabel ? this.state.viewLabel: "事前相談";
         return (
             <>
                 <div>
@@ -393,7 +436,6 @@ class ApplicationLotNumberSelection extends React.Component {
                                         type="radio"
                                         value="0"
                                         onChange={e => this.changeLotCheckModel(e)}
-                                        // checked={this.state.currentLotCheckModel == 0}
                                         checked={this.props.viewState.islotNumberSearch}
                                     />
                                     <span className={CustomStyle.custom_radio}/>
@@ -408,7 +450,6 @@ class ApplicationLotNumberSelection extends React.Component {
                                         type="radio"
                                         value="1"
                                         onChange={e => this.changeLotCheckModel(e)}
-                                        // checked={this.state.currentLotCheckModel == 1}
                                         checked={!this.props.viewState.islotNumberSearch}
                                     />
                                     <span className={CustomStyle.custom_radio} />
@@ -449,7 +490,7 @@ class ApplicationLotNumberSelection extends React.Component {
                                     evt.stopPropagation();
                                     this.moveToApplicationView();
                                 }}>
-                                <span>事前相談</span>
+                                <span>{viewLabel}</span>
                             </button>
                             
                             <button className={`${CustomStyle.btn_gry} ${CustomStyle.btn_baise_style} `}

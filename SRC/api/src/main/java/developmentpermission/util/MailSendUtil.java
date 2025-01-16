@@ -66,19 +66,23 @@ public class MailSendUtil {
 	 */
 	public void sendMail(String sendTo, String subject, String content) throws Exception {
 		if (sendMailFlg) {
-			LOGGER.trace("メール送信 開始");
-			SimpleMailMessage mailMessage = new SimpleMailMessage();
-			mailMessage.setFrom(sendFrom);
-			mailMessage.setTo(sendTo);
-			mailMessage.setSubject(subject);
-			mailMessage.setText(content);
-			try {
-				impl.send(mailMessage);
-			} catch (MailException e) {
-				LOGGER.error("メールの送信に失敗: ", e);
-				throw e;
+			if(sendTo != null && !"".equals(sendTo.trim())) {				
+				LOGGER.trace("メール送信 開始");
+				SimpleMailMessage mailMessage = new SimpleMailMessage();
+				mailMessage.setFrom(sendFrom);
+				mailMessage.setTo(sendTo);
+				mailMessage.setSubject(subject);
+				mailMessage.setText(content);
+				try {
+					impl.send(mailMessage);
+				} catch (MailException e) {
+					LOGGER.error("メールの送信に失敗: ", e);
+					throw e;
+				}
+				LOGGER.trace("メール送信 終了");
+			}else {
+				LOGGER.trace("メール送信 宛先が空");
 			}
-			LOGGER.trace("メール送信 終了");
 		} else {
 			LOGGER.trace("メール送信 無効");
 		}

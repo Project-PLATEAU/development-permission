@@ -100,6 +100,13 @@ import ShareDataService from "./ShareDataService";
 import TimelineStack from "./TimelineStack";
 import { isViewerMode, setViewerMode } from "./ViewerMode";
 import Workbench from "./Workbench";
+import L from 'leaflet';
+import {getShareData} from "../ReactViews/Map/Panels/SharePanel/BuildShareLink";
+import Cartographic from "terriajs-cesium/Source/Core/Cartographic";
+import Ellipsoid from "terriajs-cesium/Source/Core/Ellipsoid";
+import sampleTerrainMostDetailed from "terriajs-cesium/Source/Core/sampleTerrainMostDetailed";
+import Config from "../../customconfig.json";
+import * as querystring from 'querystring';
 
 // import overrides from "../Overrides/defaults.jsx";
 
@@ -678,15 +685,26 @@ export default class Terria {
   }
 
   /**
+   * ズームアウト(他コンポーネントから使用できるように)
+   * @type {any}
+   */
+  @observable cameraReset: any = null;
+
+  @action
+  setCameraReset(cameraReset: any) {
+    this.cameraReset = cameraReset;
+  }
+
+  /**
    * 地番検索、概況診断、申請情報検索でのフォーカス時のカメラ設定値
    * @type {number}
    */
-  focusCameraDirectionX: number = 0.6984744646088341;
-  focusCameraDirectionY: number = -0.6617056496661655;
-  focusCameraDirectionZ: number = 0.2725418417221117;
-  focusCameraUpX: number = -0.21791222301017105;
-  focusCameraUpY: number = 0.1660947782238842;
-  focusCameraUpZ: number = 0.9617311410729739;
+  focusCameraDirectionX: number = Config.focusCameraSettings.cesium.focusCameraDirectionX;
+  focusCameraDirectionY: number = Config.focusCameraSettings.cesium.focusCameraDirectionY;
+  focusCameraDirectionZ: number = Config.focusCameraSettings.cesium.focusCameraDirectionZ;
+  focusCameraUpX: number = Config.focusCameraSettings.cesium.focusCameraUpX;
+  focusCameraUpY: number = Config.focusCameraSettings.cesium.focusCameraUpY;
+  focusCameraUpZ: number = Config.focusCameraSettings.cesium.focusCameraUpZ;
 
   augmentedVirtuality?: any;
 
@@ -1034,12 +1052,43 @@ export default class Terria {
   loadPersistedMapSettings(): void {
     const persistViewerMode = this.configParameters.persistViewerMode;
     const hashViewerMode = this.userProperties.get("map");
-    if (hashViewerMode && isViewerMode(hashViewerMode)) {
-      setViewerMode(hashViewerMode, this.mainViewer);
-    } else if (persistViewerMode) {
-      const viewerMode = <string>this.getLocalProperty("viewermode");
-      if (isDefined(viewerMode) && isViewerMode(viewerMode)) {
-        setViewerMode(viewerMode, this.mainViewer);
+    const hashWithoutHash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash;
+    const params = querystring.parse(hashWithoutHash) as Record<string, string>;
+    if(params['applicationCategory'] && params['applicationPlace'] && params['generalConditionDiagnosisResults'] && params['folderName'] && params['fileName']){
+      setViewerMode('2d', this.mainViewer);
+    }else{
+      if (hashViewerMode && isViewerMode(hashViewerMode)) {
+        setViewerMode(hashViewerMode, this.mainViewer);
+      } else if (persistViewerMode) {
+        let viewerMode = ""
+        if(this.authorityJudgment()){
+          if(Config.persistViewerMode.goverment){
+            viewerMode = <string>this.getLocalProperty("goverment.viewermode");
+          }
+          if(!viewerMode || viewerMode == ""){
+            viewerMode = Config.defaultViewermode.goverment;
+          }
+        }else{
+          if(Config.persistViewerMode.business){
+            viewerMode = <string>this.getLocalProperty("business.viewermode");
+          }
+          if(!viewerMode || viewerMode == ""){
+            viewerMode = Config.defaultViewermode.business;
+          }
+        }
+        if (isDefined(viewerMode) && isViewerMode(viewerMode)) {
+          setViewerMode(viewerMode, this.mainViewer);
+        }
+      }else{
+        let viewerMode = ""
+        if(this.authorityJudgment()){
+          viewerMode = Config.defaultViewermode.goverment;
+        }else{
+          viewerMode = Config.defaultViewermode.business;
+        }
+        if (isDefined(viewerMode) && isViewerMode(viewerMode)) {
+          setViewerMode(viewerMode, this.mainViewer);
+        }
       }
     }
     const useNativeResolution = this.getLocalProperty("useNativeResolution");
@@ -1924,6 +1973,59 @@ export default class Terria {
     }
     window.localStorage.setItem(this.appName + "." + key, value.toString());
     return true;
+  }
+
+  
+  /**
+   * フォーカス処理
+   * @param {number} maxLon 最大経度
+   * @param {number} maxLat 最大緯度
+   * @param {number} minLon 最小経度
+   * @param {number} minLat 最小緯度
+   * @param {number} lon 経度
+   * @param {number} lat 緯度
+   * @param {boolean} isSelected 選択中地番であるか
+   */
+  focusMapPlace(maxLon:number, maxLat:number, minLon:number, minLat:number, lon:number, lat:number, viewState:any) {
+    try{
+      if(lon == 0 || lat == 0){
+        return;
+      }
+      const viewer:any = this.currentViewer;
+      if (viewer && viewer.map) {
+          const southWest = L.latLng(minLat, minLon);
+          const northEast = L.latLng(maxLat, maxLon);
+          const bounds = L.latLngBounds(southWest, northEast);
+          viewer.map.fitBounds(bounds);
+      }else if (viewer){
+          const currentSettings:any = getShareData(this, viewState);
+          const currentCamera = currentSettings.initSources[0].initialCamera;
+          let newCamera = Object.assign(currentCamera);
+          let currentLonDiff = Math.abs(maxLon - minLon);
+          let currentLatDiff = Math.abs(maxLat - minLat);
+          newCamera.north = maxLon + currentLatDiff / 2;
+          newCamera.south = minLon - currentLatDiff / 2;
+          newCamera.east = maxLat + currentLonDiff / 2;
+          newCamera.west = minLat - currentLonDiff / 2;
+          if(this.cesium){
+            const scene = this.cesium.scene;
+            const terrainProvider = scene.terrainProvider;
+            const positions = [Cartographic.fromDegrees(lon, lat)];
+            let height = 0;
+            sampleTerrainMostDetailed(terrainProvider, positions).then((updatedPositions:any) => {
+              height = updatedPositions[0].height
+              let coord_wgs84 = Cartographic.fromDegrees(lon, lat, parseFloat(String(height)) 
+                                  + parseInt(String((Config.focusCameraSettings.cesium.adjust.latitudeHeightAdjustmentFactor * currentLatDiff ))) 
+                                                                                                + Config.focusCameraSettings.cesium.adjust.baseHeightOffset );
+                let coord_xyz = Ellipsoid.WGS84.cartographicToCartesian(coord_wgs84);
+                newCamera.position = { x: coord_xyz.x, y: coord_xyz.y, z: coord_xyz.z};
+                newCamera.direction = { x: this.focusCameraDirectionX, y: this.focusCameraDirectionY-1.0, z: this.focusCameraDirectionZ };
+                newCamera.up = { x: this.focusCameraUpX, y: this.focusCameraUpY, z:this.focusCameraUpZ };
+                this.currentViewer.zoomTo(newCamera, 3);
+            })
+          }
+      }
+    }catch(e){}
   }
 }
 

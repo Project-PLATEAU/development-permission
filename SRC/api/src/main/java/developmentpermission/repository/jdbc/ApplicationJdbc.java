@@ -26,14 +26,14 @@ public class ApplicationJdbc extends AbstractJdbc {
 	 * 
 	 * @return 申請ID
 	 */
-	public Integer insert() {
+	public Integer insert(int applicationTypeId) {
 		LOGGER.debug("申請情報登録 開始");
 		try {
 			String sql = "" + //
 					"INSERT INTO o_application " + //
-					"(application_id, status, register_status, register_datetime, update_datetime, version_information) " + //
-					"VALUES (nextval('seq_application'), 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1)";
-			jdbcTemplate.update(sql);
+					"(application_id, status, register_status, register_datetime, update_datetime, application_type_id) " + //
+					"VALUES (nextval('seq_application'), 101, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?)";
+			jdbcTemplate.update(sql,applicationTypeId);
 			return jdbcTemplate.queryForObject("SELECT lastval()", Integer.class);
 		} finally {
 			LOGGER.debug("申請情報登録 終了");
@@ -123,6 +123,25 @@ public class ApplicationJdbc extends AbstractJdbc {
 					applicationId);
 		} finally {
 			LOGGER.debug("申請情報の版情報更新 終了");
+		}
+	}
+	
+	/**
+	 * 申請削除
+	 * 
+	 * @param applicationId 申請ID
+	 * @return
+	 */
+	public int delete(Integer applicationId) {
+		LOGGER.debug("申請削除 開始");
+		try {
+			String sql = "" + //
+					"DELETE FROM " + //
+					"  o_application " + //
+					"WHERE application_id=?";
+			return jdbcTemplate.update(sql, applicationId);
+		} finally {
+			LOGGER.debug("申請削除 終了");
 		}
 	}
 }

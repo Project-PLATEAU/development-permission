@@ -32,4 +32,11 @@ public abstract class AbstractDao {
 			sb.append("AND ");
 		}
 	}
+	
+	/** 申請段階: 1（：事前相談） */
+	public static final Integer APPLICATION_STEP_ID_1 = 1;
+	/** 申請段階: 2（：事前協議） */
+	public static final Integer APPLICATION_STEP_ID_2 = 2;
+	/** 申請段階: 3（：許可判定） */
+	public static final Integer APPLICATION_STEP_ID_3 = 3;
 }

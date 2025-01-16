@@ -44,6 +44,10 @@
     width: 48%;
     margin-right: 7px;
   }
+
+  .applicant_type_box_div {
+    width: 48%;
+  }
 }
 
 .box {
@@ -250,6 +254,150 @@
   font-weight: 600;
 }
 
+.input_text_area{
+  display: block;
+  box-sizing: border-box;
+  height: $input-height;
+  border: none;
+  width: 100%;
+  border-radius: $radius-small;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: $text-black;
+  background: $overlay-invert;
+}
+
+.list_header_div{
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+}
+
+.csv_button {
+  font-size: 0.8125rem;
+  width: 90px;
+  padding: 5px;
+  line-height: 2em;
+  display: block;
+  min-height: 32px;
+  flex-direction: row;
+  justify-content: center;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  background: $view-main-color !important;
+  margin: 0 auto;
+  border-radius: 10px;
+}
+
+.sort_button{
+  border: none;
+  background-color: $view-main-color;
+  position: relative;
+  padding: 0px;
+}
+
+.sort_icon{
+  fill: #fff;
+}
+
+.sort_icon_checked{
+  fill: none !important;
+  stroke: #fff;
+  stroke-width: 1px;
+}
+
+.sort_icon_position{
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+}
+
+.transform180{
+  transform: rotate(180deg) !important;
+}
+
+.table_header_label{
+  width: 100%;
+  text-align: center;
+}
+
+.select_box_icon{
+  // padding-left: 9px;
+  // padding-right: 9px;
+  position: absolute;
+  right: 10px;
+  top: 33%;
+}
+
+.multi_select-container{
+  min-height: 34px;
+  width: 100%;
+  border: none;
+  border-radius: $radius-small;
+  // padding-left: 10px;
+  // padding-right: 30px;
+  color: $text-black;
+  background: $overlay-invert;
+}
+
+/** 複数選択の様式 */
+.container{
+  border: none;
+
+  :global{
+      
+      /** 入力エリア */
+      .multi_select__control{
+
+          background: $overlay-invert;
+          border-radius: $radius-small;
+          border: none;
+          box-shadow: none;
+          min-height: 28px;
+          margin-bottom: 5px;
+      }
+      .multi_select__control:hover{
+          // border: 2px solid #000;
+          outline-width: 2px !important;
+          outline-style: solid !important;
+          outline-color: #000 !important;
+      }
+      
+       /** 選択された結果表示 */
+      .multi_select__multi-value{
+          background: $view-main-pale-color ;
+          line-height: 0.85rem;
+      }
+       /** プルダウン部分 */
+      // .multi_select__menu{
+      //     // background: $overlay-invert;
+      // }
+      .multi_select__menu-list{
+        background: $overlay-invert;
+    }
+       /** 各選択肢 */
+      .multi_select__option{
+          padding: 1px 12px;
+          background: none;
+      }
+       /**  */
+      .multi_select__option:active,
+      .multi_select__option:hover{
+          background: rgba(0, 0, 0, 0.4);
+          color: #fff;
+      }
+  }
+}
+
+.custom_checkbox{
+  width: 50px;
+  accent-color: $view-main-color;
+  transform: scale(1.5);
+}
 @-webkit-keyframes load5 {
   0%,
   100% {

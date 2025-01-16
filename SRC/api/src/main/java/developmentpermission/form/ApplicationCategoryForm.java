@@ -38,8 +38,8 @@ public class ApplicationCategoryForm implements Serializable {
 	@ApiModelProperty(value = "選択肢名", example = "観光開発")
 	private String content;
 
-	/** 必須チェック有無 */
-	@ApiModelProperty(value = "必須チェック有無", example = "true")
+	/** チェック有無 */
+	@ApiModelProperty(value = "チェック有無", example = "true")
 	private Boolean checked;
 
 }

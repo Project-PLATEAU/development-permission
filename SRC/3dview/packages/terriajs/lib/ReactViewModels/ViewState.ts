@@ -183,6 +183,8 @@ export default class ViewState {
 
   // 行政：ファイルアップロードモーダル表示
   @observable fileUploadModalShow: boolean = false;
+  // 行政：発行様式アップロードモーダル表示
+  @observable issuanceFileUploadModalShow: boolean = false;
   // 行政：チャット宛先入力モーダル表示
   @observable inputChatAddressModalShow: boolean = false;
   // 行政: 回答テンプレート選択モーダル表示（仕様変更と伴い、回答入力モーダルを使うため、廃止）
@@ -215,13 +217,26 @@ export default class ViewState {
   // 申請内容確認画面表示有無
   @observable showAnswerContent: boolean = false;
 
+  /* ■ R6年度追加 ↓↓↓ */
+  // 行政: 回答申請種別選択モーダル表示
+  @observable selectApplicationClassModalShow: boolean = false;
+  // 行政: 回答通知確認画面モーダル表示
+  @observable confirmAnswerNotificationModalShow: boolean = false;
+  // 事業者:概況診断レポート一覧画面
+  @observable generalConditionDiagnosisrReportShow: boolean = false;
+
   //↑↑↑↑↑画面にコンポーネント表示・非表示制御用変数↑↑↑↑↑
 
   //↓↓↓↓↓各画面に利用している変数↓↓↓↓↓
 
   //------------共通------------
+
   //3dModeキー
   map3dModeKey: keyof typeof MapViewers = "3d";
+
+  /* ■ R6年度追加 */
+  // 1=事前相談,2=事前協議,3=許可判定
+  @observable checkedApplicationStepId:number = 1;
 
   //------------共通：カスタムメッセージ表示（申請完了（SC112）、回答登録完了（SC211）、回答完了通知（SC212））------------
 
@@ -229,6 +244,8 @@ export default class ViewState {
   @observable isApplyCompleted: boolean = false;
   // 回答完了であるかフラグ
   @observable isAnswerCompleted: boolean = false;
+  // 回答完了であるかフラグ
+  @observable isNotifiedCompleted: boolean = false;
   //カスタムメッセージ タイトル
   customMessageTitle:string = "";
   //カスタムメッセージ 内容
@@ -281,6 +298,8 @@ export default class ViewState {
   applicationPlaceTemp:any[] = [];
 
   //------------事業者：申請区分選択画面（SC104）------------
+  // 選択済み申請
+  selectedApplicationType:object = {};
   // 選択済み申請区分
   checkedApplicationCategory:Object = [];
   // 選択済み申請区分ローカル保持用
@@ -291,6 +310,11 @@ export default class ViewState {
   generalConditionDiagnosisResult:Object = {};
   // 一時フォルダ名
   folderName:string = "";
+  /* ■ R6年度追加 */
+  // 一時ファイル名
+  fileName:string = "";
+  // 申請ID
+  applicationId:number = 0;
 
   //------------事業者：申請者情報入力画面（SC108）------------
   // 申請者情報
@@ -311,9 +335,11 @@ export default class ViewState {
   answerContent:Object = {};
 
   //------------事業者：回答内容確認画面（SC114）------------
+  //選択中の回答内容の部署回答ID
+  currentDepartmentAnswerId:any="";
   //選択中の回答内容の回答ID
   currentAnswerId:any="";
-
+  
   //------------事業者：問合せファイル選択（SC117）------------
   // 問い合わせ添付ファイルリスト
   inquiryFiles: object[] = [];
@@ -335,6 +361,8 @@ export default class ViewState {
   answerTemplateTarget: Object = {}
   // 行政：申請回答情報
   applyAnswerForm:Object = {};
+  // 子コンポネントに渡すcallback関数
+  @observable callBackFunction:Function = ()=>{};
 
   //------------行政：申請ファイル選択ダイアログ画面（SC206）------------
   // 行政：ファイルダウンロードターゲット
@@ -343,8 +371,14 @@ export default class ViewState {
   fileDownloadFile:Object[] = [];
 
   //------------行政：回答ファイル選択ダイアログ画面（SC209）------------
-  // 行政：ファイル引用対象ファイル
+  // 行政：ファイル引用対象ファイル(申請ファイル)
   fileQuoteFile: Object = {};
+
+  // 行政：ファイル引用対象ファイル(登録済み回答ファイル)
+  answerQuoteFile: Object = {};
+
+  // 行政：発行様式アップロード対象
+  @observable issuanceLedgerForm: object = {};
 
   //------------行政：宛先選択ダイアログ画面（SC214）------------
   // 行政：チャット宛先入力
@@ -359,10 +393,61 @@ export default class ViewState {
 
   // 行政：ファイル編集ターゲット
   @observable fileEditTarget: string = "";
+
   //行政側か否か
   isUserGoverment: boolean = false;
 
+  //申請情報詳細リフレッシュ処理
+  @observable refreshConfirmApplicationDetails:Function = ()=>{};
+
+  /* ■ R6年度追加 */
+  //------------拡大/縮小MAP------------
+  //サイドパネルのフルスクリーン状態
+  @observable isSidePanelFullScreen: boolean = false;
+  //マップ拡大状態
+  @observable mapExpansionFlag: boolean = false;
+  //マップのリサイズ
+  @observable updateMapDimensions: Function = () => {};
+  //マップ位置(下)
+  @observable mapBottom: string = "";
+  //マップ位置(右)
+  @observable mapRight: string = "2vh";
+  //マップ位置(上)
+  @observable mapTop: string = "66vh";
+  //マップ位置(左)
+  @observable mapLeft: string = "";
+  //マップ位置(幅)
+  @observable mapWidth: string = "21vw";
+  //マップ位置(高さ)
+  @observable mapHeight: string = "23vh";
+  //マップ配置ベースコンテナ要素
+  @observable mapBaseContainerElement: Ref<HTMLElement> = null;
+  //マップ配置ベース要素
+  @observable mapBaseElement: Ref<HTMLElement> = null;
+
+  //------------シミュレート実行関連------------
+  //simulator実行中か否か
+  @observable isSimulateExecution:boolean =false;
+  //simulator進捗管理用
+  @observable simulateProgressList:[] = [];
+
+  //------------事業者： 再申請画面（SC115）------------
+  // 申請追加情報
+  applicantnAddInformation:Object = {};
+
+  // 再申請の場合、処理中申請段階ID
+  @observable reapplyApplicationStepId: number = 1;
+  // 再申請の場合、処理中申請の前回申請段階ID
+  @observable preReapplyApplicationStepId: number = 1;
+
   //↑↑↑↑↑各画面に利用している変数↑↑↑↑↑
+
+  //選択中地番への移動処理イベント
+  @observable mapFitButtonFunction:any = () => {};
+  @action
+  setMapFitButtonFunction(mapFitButtonFunction: any) {
+    this.mapFitButtonFunction = mapFitButtonFunction;
+  }
 
   //↑カスタム機能
   @action
@@ -607,6 +692,7 @@ export default class ViewState {
       disclaimerVisible => {
         if (disclaimerVisible) {
           this.isMapFullScreen = true;
+          this.setIsSidePanelFullScreen(false);
         } else if (!disclaimerVisible && this.isMapFullScreen) {
           this.isMapFullScreen = false;
         }
@@ -619,6 +705,9 @@ export default class ViewState {
         terria.userProperties.get("hideExplorerPanel") === "1",
       (isMapFullScreen: boolean) => {
         this.isMapFullScreen = isMapFullScreen;
+        if(this.isMapFullScreen){
+          this.setIsSidePanelFullScreen(false);
+        }
 
         // if /#hideWorkbench=1 exists in url onload, show stories directly
         // any show/hide workbench will not automatically show story
@@ -735,6 +824,9 @@ export default class ViewState {
     animationDuration = WORKBENCH_RESIZE_ANIMATION_DURATION
   ) {
     this.isMapFullScreen = bool;
+    if(this.isMapFullScreen){
+      this.setIsSidePanelFullScreen(false);
+    }
     // Allow any animations to finish, then trigger a resize.
 
     // (wing): much better to do by listening for transitionend, but will leave
@@ -1021,6 +1113,15 @@ export default class ViewState {
   }
 
   /**
+   * カスタムメッセージ表示/非表示
+   * @param bool 
+   */
+  @action 
+  setShowCustomMessage(bool:boolean){
+    this.showCustomMessage = bool;
+  }
+
+  /**
    * カスタムメッセージをセットする
    * @param {string} タイトル
    * @param {string} 内容
@@ -1041,7 +1142,9 @@ export default class ViewState {
     this.showCustomMessage = false;
     this.isApplyCompleted = false;
     this.isAnswerCompleted = false;
+    this.isNotifiedCompleted = false;
     this.isReApply = false;
+
     // 申請者の権限である場合
     if(!this.terria.authorityJudgment()){
       
@@ -1059,6 +1162,13 @@ export default class ViewState {
         this.showGeneralAndRoadJudgementResultView = false;
         // 再申請の場合、回答内容情報をクリアする
         this.answerContent = {};
+        // 情報クリア
+        this.reApplication = {};
+        this.reApplicationFile = {};
+        this.applicantnAddInformation = {};
+        /**■ R6年度 改修（再申請完了の画面を閉じる時に、申請種類、申請段階の初期化）　*/
+        this.selectedApplicationType = {};
+        this.checkedApplicationStepId = 1;
         // 申請対象地番レイヤをクリア
         const items = this.terria.workbench.items;
         for (const aItem of items) {
@@ -1111,6 +1221,7 @@ export default class ViewState {
   @action
   changeApplyPageActive(active: string) {
     this.applyPageActive = active;
+    this.setIsSidePanelFullScreen(active === "applyDetail" || active === "answerRegister");
   }
 
   //------------共通：地番検索（SC001）------------
@@ -1350,11 +1461,29 @@ export default class ViewState {
    */
   @action
   moveToInputApplyConditionView() {
+    this.selectedApplicationType = {};
+    this.checkedApplicationStepId = 1;
     this.showInitAndLotNumberSearchView = false;
     this.showInputApplyConditionView = true;
   }
 
   //------------事業者：トップ画面（SC102）-地番選択結果コンポーネント------------
+  /**
+  * 選択済み申請地の削除
+  * @param {any} 削除対象
+  */
+  @action
+  setFullFlag(applicationPlace: any) {
+    // 全筆フラグ更新
+    const index = this.applicationPlaceTemp.findIndex(obj => 
+      obj.chibanId == applicationPlace.chibanId
+    );
+    const flag = this.applicationPlaceTemp[index].fullFlag;
+    if(flag == "1") this.applicationPlaceTemp[index].fullFlag = "0";
+    if(flag == "0") this.applicationPlaceTemp[index].fullFlag = "1";
+    this.applicationPlace = Object.assign({},this.applicationPlaceTemp);
+  }
+
   /**
   * 選択済み申請地の削除
   * @param {any} 削除対象
@@ -1420,14 +1549,14 @@ export default class ViewState {
    * 事業者:概況診結果表示画面へ遷移
   */
   @action
-  moveToGeneralAndRoadJudgementResultView(checkedApplicationCategory:Object,checkedApplicationCategoryLocalSave:Object ) {
+  moveToGeneralAndRoadJudgementResultView(checkedApplicationCategory:Object,checkedApplicationCategoryLocalSave:Object,selectedApplicationType:Object) {
      this.showGeneralAndRoadJudgementResultView = true;
      this.showInputApplyConditionView = false;
      this.terria.setClickMode("");
      this.checkedApplicationCategory = checkedApplicationCategory;
      this.checkedApplicationCategoryLocalSave = checkedApplicationCategoryLocalSave;     
+     this.selectedApplicationType = selectedApplicationType;
   }
-
   
   //------------事業者：概況診断結果表示画面（SC105）------------
 
@@ -1441,14 +1570,40 @@ export default class ViewState {
   }
 
   /**
+   * 概況診断レポートの一時ファイル名をセットする
+   * @param {string} 一時ファイル名
+   */
+  @action
+  setFileName(fileName:string){
+    this.fileName = fileName;
+  }
+
+  /**
+   * 申請登録後の申請IDをセットする
+   * @param {number} 申請ID
+   */
+  @action
+  setApplicationId(applicationId:number){
+    this.applicationId = applicationId;
+  }
+
+  /**
    * 事業者用：概況診断結果表示画面からトップ画面に戻る
    */
   @action
   backFromGeneralAndRoadJudgementResultView() {
-    this.initInputApplication();
-    this.changeShowLotNumberSelectedFlg(false);
-    this.changeShowInitAndLotNumberSearchViewFlg(true);
-    this.islotNumberSearch = true;
+    if(this.isReApply){
+      // 【R6】改修：再申請の場合、概要診断結果一覧も表示可能になる
+      // 申請区分選択画面へ戻る
+      this.showInputApplyConditionView = true;
+      this.generalConditionDiagnosisResult = {};
+    }else{
+      this.initInputApplication();
+      this.changeShowLotNumberSelectedFlg(false);
+      this.changeShowInitAndLotNumberSearchViewFlg(true);
+      this.islotNumberSearch = true;
+    }
+
     this.showGeneralAndRoadJudgementResultView = false;
     // 申請対象地番レイヤをクリア
     const items = this.terria.workbench.items;
@@ -1482,6 +1637,15 @@ export default class ViewState {
     this.showInitAndLotNumberSearchView = bool;
   }
 
+  /**
+   * 概況診断レポート一覧画面切り替え
+   * @param bool 
+   */
+  @action
+  setGeneralConditionDiagnosisrReportShow(bool:boolean ) {
+    this.generalConditionDiagnosisrReportShow = bool;
+  }
+
   //------------事業者：申請者情報入力画面（SC108）------------
   /**
    * 申請対象ファイルアップロード画面画面に遷移
@@ -1489,7 +1653,11 @@ export default class ViewState {
    */
   @action
   moveToUploadApplicationInformationView(applicantInformation:Object){
-    this.applicantInformation = applicantInformation;
+    if(this.isReApply){
+      this.applicantnAddInformation = applicantInformation;
+    }else{
+      this.applicantInformation = applicantInformation;
+    }
     this.showEnterApplicantInformation = false;
     this.terria.analytics?.logEvent(Category.UploadApplicationInformation, UploadApplicationInformation.panelOpened);
     this.showUploadApplicationInformation = true;
@@ -1506,6 +1674,9 @@ export default class ViewState {
     this.showGeneralAndRoadJudgementResultView = true;
     this.applicantInformation = [];
     this.applicationFile = {};
+    //■R6 再申請用申請ファイルと申請追加情報のクリア
+    this.applicantnAddInformation = [];
+    this.reApplicationFile = {};
     this.showApplyInformationView = false;
     this.showEnterApplicantInformation = false;
     this.showUploadApplicationInformation = false;
@@ -1543,13 +1714,15 @@ export default class ViewState {
     }
     this.showUploadApplicationInformation = false;
     this.terria.analytics?.logEvent(Category.EnterApplicantInformation, EnterApplicantInformation.panelOpened);
-    if(Object.keys(this.answerContent).length > 0){
-      this.showApplyInformationView = false;
-      this.showConfirmAnswerInformationView = true;
-      this.isReApply = false;
-    }else{
+    // ■R6年度　改修 (再申請の場合でも、申請フォームを表示)
+    // if(Object.keys(this.answerContent).length > 0){
+    //   this.showApplyInformationView = false;
+    //   this.showConfirmAnswerInformationView = true;
+    //   this.isReApply = false;
+    //   this.setIsSidePanelFullScreen(true);
+    // }else{
       this.showEnterApplicantInformation = true;
-    }
+    // }
     
     // this.setTopElement("EnterApplicantInformation");
   }
@@ -1590,9 +1763,26 @@ export default class ViewState {
    */
   @action
   moveToConfirmAnswerInformationView(answerContent:Object ) {
+    if(this.isReApply){
+      this.reApplication = {};
+      this.reapplyApplicationStepId = 1;
+      this.preReapplyApplicationStepId = 1;
+      // 申請追加情報の入力画面を非表示
+      this.showEnterApplicantInformation = false;
+      //申請区分選択画面を非表示
+      this.showInputApplyConditionView = false;
+      this.isReApply = false;
+      // 情報クリア
+      this.reApplication = {};
+      this.reApplicationFile = {};
+      this.applicantnAddInformation = {};
+      this.initInputApplication();
+    }else{
       this.answerContent = answerContent;
-      this.showConfirmAnswerInformationView = true;
-      this.changeShowInitAndLotNumberSearchViewFlg(false);
+    }
+    this.showConfirmAnswerInformationView = true;
+    this.setIsSidePanelFullScreen(true);
+    this.changeShowInitAndLotNumberSearchViewFlg(false);
   }
 
   //------------事業者：回答内容確認画面（SC114） ------------
@@ -1602,11 +1792,12 @@ export default class ViewState {
    * @param {Object} 再申請ファイル一覧
    */
   @action
-  setReAppInformation(reApplication:Object,reApplicationFile:Object){
+  setReAppInformation(reApplication:Object){
     // 再申請情報
     this.reApplication = reApplication;
-    // 再申請ファイル
-    this.reApplicationFile = reApplicationFile;
+    //------------■R6年度　改修------------
+    // // 再申請ファイル
+    // this.reApplicationFile = reApplicationFile;
   }
   
   /**
@@ -1628,6 +1819,7 @@ export default class ViewState {
     this.showUploadApplicationInformation = true;
     this.showConfirmApplicationDetails = false;
     this.isReApply = true;
+    this.setIsSidePanelFullScreen(false);
   }
 
   /**
@@ -1636,22 +1828,55 @@ export default class ViewState {
   @action
   backFromConfirmAnswerInformationView() {
     this.initInputApplication();
+    /**■ R6年度 改修（申請種類、申請段階の初期化）　*/
+    this.selectedApplicationType = {};
+    this.checkedApplicationStepId = 1;
     this.changeShowLotNumberSelectedFlg(false);
     this.changeShowInitAndLotNumberSearchViewFlg(true);
     this.showConfirmAnswerInformationView = false;
     this.answerContent = {};
+    this.setIsSidePanelFullScreen(false);
   }
 
   /**
    * 事業者:問合せ画面へ遷移
    * @param answerId 問合せを行う回答ID
    */
+  /*
   @action
   moveToChatView(answerId: string){
     this.currentAnswerId = answerId;
     this.showConfirmAnswerInformationView = false;
+    this.setIsSidePanelFullScreen(false);
     this.showChatView = true;
   }
+  */
+  /**
+   * 問合せ画面へ遷移
+   * @param applicationId 申請ID
+   * @param applicationStepId 申請段階ID
+   * @param departmentAnswerId 部署回答ID
+   * @param answerId 回答ID
+   */
+    @action
+    moveToChatView(applicationId:number, applicationStepId:number, departmentAnswerId:number, answerId:number){
+      this.applicationId = applicationId;
+      this.checkedApplicationStepId = applicationStepId;
+      this.currentDepartmentAnswerId = departmentAnswerId;
+      this.currentAnswerId = answerId;
+      // 行政の場合
+      if(this.terria.authorityJudgment()){
+        this.currentChat = {};
+        this.backToPage = {"tab":this.adminTabActive,"page":this.applyPageActive}
+        this.applyPageActive = "chat";
+        this.setIsSidePanelFullScreen(false);
+      // 事業者の場合
+      }else{
+        this.showConfirmAnswerInformationView = false;
+        this.setIsSidePanelFullScreen(false);
+        this.showChatView = true;
+      }
+    }
 
   /**
    * 選択された回答内容レコードの回答IDを格納
@@ -1662,15 +1887,60 @@ export default class ViewState {
     this.currentAnswerId = answerId;
   }
 
+  //------------■R6年度　追加------------
+  /**
+   * 再申請のために、申請段階IDを設定
+   * @param reapplyApplicationStepId 処理中申請段階ID
+   * @param preReapplyApplicationStepId 前回の申請段階ID
+   */
+  @action
+  setReapplyApplicationStepId(reapplyApplicationStepId: number, preReapplyApplicationStepId: number){
+    this.reapplyApplicationStepId = reapplyApplicationStepId;
+    this.preReapplyApplicationStepId = preReapplyApplicationStepId;
+  }
+
+  /**
+   * 再申請のために、申請区分選択画面へ遷移
+   */
+   @action
+   moveToInputApplyConditionViewForReapply(){
+    this.showConfirmAnswerInformationView = false;
+    this.showApplyInformationView = false;
+    this.showEnterApplicantInformation = false;
+    this.showUploadApplicationInformation = false;
+    this.showConfirmApplicationDetails = false;
+    this.showInputApplyConditionView = true; 
+    this.isReApply = true;
+    this.setIsSidePanelFullScreen(false);
+   }
+
+  /**
+   * 再申請のために、再申請画面へ遷移
+   */
+  @action
+  moveToEnterAddInformation(){
+    this.showConfirmAnswerInformationView = false;
+    // 下記三つを設定した、再申請画面が表示
+    //申請フォーム
+    this.showApplyInformationView = true;
+    //申請者情報
+    this.showEnterApplicantInformation = true;
+    // 再申請
+    this.isReApply = true;
+    this.showUploadApplicationInformation = false;
+    this.showConfirmApplicationDetails = false;
+    this.setIsSidePanelFullScreen(false);
+  }
+
   //------------事業者：問合せ画面（SC116）------------
   /**
    * 事業者:問合せ画面から回答確認画面へ戻る
    * @param answer 
    */
   @action
-  backFromChatView(answer:object){
-    this.answerContent = answer;
+  backFromChatView(){
     this.showConfirmAnswerInformationView = true;
+    this.setIsSidePanelFullScreen(true);
     this.showChatView = false;
     this.currentAnswerId = "";
   }
@@ -1783,11 +2053,14 @@ export default class ViewState {
    * 回答入力画面へ遷移
    */
   @action
-  nextAnswerInputView( applyAnswerForm:Object){
+  nextAnswerInputView( applicationId:string, applyAnswerForm:Object, checkedApplicationStepId:number = 1){
     this.terria.analytics?.logEvent(Category.AnswerInput, AnswerInput.panelOpened);
-    // this.showAnswerInput = true;
+    this.showAnswerInput = true;
     // this.setTopElement("AnswerInput");
+    this.checkedApplicationStepId = checkedApplicationStepId;
     this.applyAnswerForm = applyAnswerForm;
+    this.applicationInformationSearchForApplicationId = applicationId;
+    // this.selectApplicationClassModalShow = false;
     this.changeApplyPageActive("answerRegister");
   }
 
@@ -1800,6 +2073,24 @@ export default class ViewState {
     this.fileQuoteFile = target;
   }
 
+  /**
+   * 行政：引用ファイル(登録済み回答ファイル)のセット
+   * @param answerFile 
+   */
+  @action
+  setAnswerQuoteFiles(answerFile: Object) {
+    this.answerQuoteFile = answerFile;
+  }
+
+  /**
+   * 行政：発行様式アップロード対象のセット
+   * @param issuanceLedgerForm 
+   */
+  @action
+  setIssuanceLedgerForm(issuanceLedgerForm: Object) {
+    this.issuanceLedgerForm = issuanceLedgerForm;
+  }
+    
   /**
    * 行政：PDFファイルビュワーの表示
    */
@@ -1815,6 +2106,15 @@ export default class ViewState {
   hideAnswerInputView() {
     this.showAnswerInput = false;
   }
+
+  /**
+   * コールバック関数を設定
+   */
+  @action
+  setCallBackFunction(callBackFunction:Function){
+    this.callBackFunction = callBackFunction;
+  }
+  
   //------------回答テンプレート選択ダイアログ画面（SC208） ------------
   /**
    * 行政：回答入力モーダル表示
@@ -1841,6 +2141,14 @@ export default class ViewState {
     this.fileUploadModalShow = !this.fileUploadModalShow;
   }
 
+  /**
+   * 行政：発行様式アップロードモーダル表示
+   */
+  @action
+  changeIssuanceFileUploadModalShow() {
+    this.issuanceFileUploadModalShow = !this.issuanceFileUploadModalShow;
+  }
+
   //------------回答登録完了（SC211）------------
 
   /**
@@ -1863,6 +2171,7 @@ export default class ViewState {
   @action
   nextAnswerNotificationView(){
     this.showApplicationDetails = false;
+    this.isNotifiedCompleted = true;
     this.initInputApplication();
     this.terria.analytics?.logEvent(Category.CustomMessage, CustomMessage.panelOpened);
     this.showCustomMessage = true;
@@ -1896,6 +2205,50 @@ export default class ViewState {
     );
     (index != -1)? this.inputChatAddress.splice(index, 1): this.inputChatAddress.push(address);
   }
+
+  /**■■ R6年度 新規追加画面　*/
+  //------------行政：回答申請種別選択ダイアログ画面（SC215）------------
+  
+  /**
+   * 回答申請種別選択モダールを開く
+   */
+  @action
+  showSelectApplicationClassModal( applicationId:string, applyAnswerForm:Object, checkedApplicationStepId:number = 1){
+    this.checkedApplicationStepId = checkedApplicationStepId;
+    this.applyAnswerForm = applyAnswerForm;
+    this.applicationInformationSearchForApplicationId = applicationId;
+    this.selectApplicationClassModalShow = true;
+  }
+
+  /**
+   * 回答申請種別選択モダールを閉じる
+   */
+  @action
+  closeSelectApplicationClassModal(checkedApplicationStepId:number = 1){
+    this.checkedApplicationStepId = checkedApplicationStepId;
+    this.selectApplicationClassModalShow = false;
+  }
+
+  //------------行政：回答通知確認ダイアログ画面（SC216）------------
+
+  /**
+   * 回答通知確認モダールを開く
+   */
+  @action
+  showConfirmAnswerNotificationModal(applyAnswerForm:Object, checkedApplicationStepId:number = 1){
+    this.applyAnswerForm = applyAnswerForm;
+    this.checkedApplicationStepId = checkedApplicationStepId;
+    this.confirmAnswerNotificationModalShow = true;
+  }
+
+  /**
+   * 回答通知確認モダールを閉じる
+   */
+    @action
+    closeConfirmAnswerNotificationModal(checkedApplicationStepId:number = 1){
+      this.checkedApplicationStepId = checkedApplicationStepId;
+      this.confirmAnswerNotificationModalShow = false;
+    }
 
   //-----------画面戻る時に、入力された情報をクリアする------------
   @action
@@ -2262,6 +2615,24 @@ export default class ViewState {
     this.showAnswerContent = false;
   }
 
+  /**
+   * 回答内容を保存
+   * @param {Object} 申請の回答内容
+   */
+  @action
+  setAnswerContent(answerContent:Object){
+    this.answerContent = answerContent;
+  }
+
+  /**
+   * 申請段階IDを保存
+   * @param {checkedApplicationStepId} 申請段階ID
+   */
+  @action
+  setCheckedApplicationStepId(checkedApplicationStepId:number){
+    this.checkedApplicationStepId = checkedApplicationStepId;
+  }
+
   //------------UI104申請情報検索------------
 
   /**
@@ -2304,6 +2675,289 @@ export default class ViewState {
   hideApplicationListView() {
     this.showApplicationList = false;
   }
+
+  /**
+   * 申請情報詳細リフレッシュ処理セット
+   * @param refreshConfirmApplicationDetails 
+   */
+  @action
+  setRefreshConfirmApplicationDetails(refreshConfirmApplicationDetails:Function){
+    this.refreshConfirmApplicationDetails = refreshConfirmApplicationDetails;
+  }
+
+  //------------拡大/縮小MAP------------
+  /**
+   * サイドパネルフルスクリーン
+   * @param isSidePanelFullScreen 
+   */
+  @action
+  setIsSidePanelFullScreen(isSidePanelFullScreen:boolean){
+    this.isSidePanelFullScreen = isSidePanelFullScreen;
+    if(!isSidePanelFullScreen){
+      runInAction(() => {
+        this.setMapExpansionFlag(false);
+        this.setMapBottom("");
+        this.setMapRight("2vh");
+        this.setMapTop("68vh");
+        this.setMapLeft("");
+        this.setMapWidth("21vw");
+        this.setMapHeight("23vh");
+      });
+    }
+    this.triggerResizeEvent();
+  }
+
+  /**
+   * Map 拡大状態
+   * @param mapExpansionFlag 
+   */
+  @action
+  setMapExpansionFlag(mapExpansionFlag:boolean){
+    this.mapExpansionFlag = mapExpansionFlag;
+  }
+
+  /**
+   * Map リサイズ関数
+   * @param updateMapDimensions 
+   */
+  @action
+  setUpdateMapDimensions(updateMapDimensions:Function){
+    this.updateMapDimensions = updateMapDimensions;
+  }
+
+  /**
+   * Map コンテナ位置(下)
+   * @param mapBottom 
+   */
+  @action
+  setMapBottom(mapBottom:string){
+    this.mapBottom = mapBottom;
+  }
+
+  /**
+   * Map コンテナ位置(右)
+   * @param mapBottom 
+   */
+  @action
+  setMapRight(mapRight:string){
+    this.mapRight = mapRight;
+  }
+
+  /**
+   * Map コンテナ位置(上)
+   * @param mapTop
+   */
+  @action
+  setMapTop(mapTop:string){
+    this.mapTop = mapTop;
+  }
+
+  /**
+   * Map コンテナ位置(左)
+   * @param mapLeft 
+   */
+  @action
+  setMapLeft(mapLeft:string){
+    this.mapLeft = mapLeft;
+  }
+  
+  /**
+   * Map コンテナ幅
+   * @param mapBottom 
+   */
+  @action
+  setMapWidth(mapWidth:string){
+    this.mapWidth = mapWidth;
+  }
+
+  /**
+   * Map コンテナ高さ
+   * @param mapBottom 
+   */
+  @action
+  setMapHeight(mapHeight:string){
+    this.mapHeight = mapHeight;
+  }
+
+  /**
+   * Map 基準コンテナ要素
+   * @param mapBaseContainerElement 
+   */
+  @action
+  setMapBaseContainerElement(mapBaseContainerElement:Ref<HTMLElement>){
+    this.mapBaseContainerElement = mapBaseContainerElement;
+  }
+
+  /**
+   * Map 基準要素
+   * @param mapBaseElement
+   */
+  @action
+  setMapBaseElement(mapBaseElement:Ref<HTMLElement>){
+    this.mapBaseElement = mapBaseElement;
+  }
+
+  //------------シミュレート実行関連------------
+  /**
+   * 申請地番のセット
+   * @param applicationPlace
+   */
+  @action
+  setApplicationPlace(applicationPlace:any){
+    this.applicationPlace = Object.assign({},applicationPlace);
+  }
+
+  /**
+   * 選択中申請区分のセット
+   * @param checkedApplicationCategory
+   */
+  @action
+  setCheckedApplicationCategory(checkedApplicationCategory:[]){
+    this.checkedApplicationCategory = checkedApplicationCategory;
+  }
+
+  /**
+   * 概況診断結果のセット
+   * @param generalConditionDiagnosisResult
+   */
+  setGeneralConditionDiagnosisResult(generalConditionDiagnosisResult:Object){
+    this.generalConditionDiagnosisResult = generalConditionDiagnosisResult;
+  }
+
+  /**
+   * 概況診断自動実行用遷移処理
+   */
+  @action
+  moveToGeneralAndRoadJudgementResultViewForSimulateExecution() {
+      this.showSidePanel = true;
+      this.showGeneralAndRoadJudgementResultView = true;
+      this.showInitAndLotNumberSearchView = false;
+      this.showInputApplyConditionView = false;
+      this.showUserAgreement = false;
+      this.isSimulateExecution = true;
+      this.terria.setClickMode(""); 
+  }
+  
+  /**
+   *  simulator進捗管理 初期化
+   */
+  @action
+  initSetProgressList(){
+    const progressListStr = window.localStorage.getItem('simulateProgressList');
+    let progressListTemp:any = [];
+    if(progressListStr){
+        progressListTemp = JSON.parse(progressListStr) || [];
+    }
+    this.simulateProgressList = progressListTemp;
+  }
+
+  /**
+   * simulator進捗管理 セット
+   * @param requestBody シミュレータAPIリクエストボディ
+   */
+  @action
+  setProgressList(requestBody:any){
+    const folderName = requestBody.folderName;
+    const fileName = requestBody.fileName;
+    const generalConditionDiagnosisResult = requestBody.generalConditionDiagnosisResults;
+    let captureMaxCount = 1;
+    //全ての処理数を算出
+    Object.keys(generalConditionDiagnosisResult).map((key) => {
+        if (generalConditionDiagnosisResult[key] && Object.keys(generalConditionDiagnosisResult[key].layers).length > 0) {
+          captureMaxCount = captureMaxCount + 1;
+        }
+    });
+    const progressListStr = window.localStorage.getItem('simulateProgressList');
+    let progressListTemp:any = [];
+    if(progressListStr){
+      progressListTemp = JSON.parse(progressListStr) || [];
+    }
+    const index = progressListTemp.findIndex((progressMap:any)=>progressMap.folderName === folderName);
+    if(index < 0){
+      const newProgressMap:any = {};
+      newProgressMap["folderName"] = folderName;
+      newProgressMap["fileName"] = fileName;
+      newProgressMap["captureMaxCount"] = captureMaxCount;
+      newProgressMap["capturedCount"] = 0;
+      newProgressMap["requestBody"] = requestBody;
+      newProgressMap["retry"] = false;
+      progressListTemp.push(newProgressMap);
+    }else{
+      progressListTemp[index]["folderName"] = folderName;
+      progressListTemp[index]["fileName"] = fileName;
+      progressListTemp[index]["captureMaxCount"] = captureMaxCount;
+      progressListTemp[index]["capturedCount"] = 0;
+      progressListTemp[index]["requestBody"] = requestBody;
+    }
+    window.localStorage.setItem('simulateProgressList', JSON.stringify(progressListTemp));
+    this.simulateProgressList = progressListTemp;
+  }
+
+  /**
+   * simulator進捗管理 更新
+   * @param folderName 一時フォルダ名
+   * @param capturedCount 処理済みキャプチャ数
+   * @param fileSize ファイルサイズ(任意)
+   * @param completeDateTime 完了日時(任意)
+   * @param retry 再試行判定フラグ
+   */
+  @action
+  updateProgressList(folderName:string,capturedCount:number,fileSize:string,completeDateTime:string,retry:boolean=false){
+    const progressListStr = window.localStorage.getItem('simulateProgressList');
+    let progressListTemp:any = [];
+    if(progressListStr){
+      progressListTemp = JSON.parse(progressListStr) || [];
+    }
+    const index = progressListTemp.findIndex((progressMap:any)=>progressMap.folderName === folderName);
+    if(index >= 0){
+      progressListTemp[index]["capturedCount"] = capturedCount;
+      if(fileSize){
+        progressListTemp[index]["fileSize"] = fileSize;
+      }
+      if(completeDateTime && !progressListTemp[index]["completeDateTime"]){
+        progressListTemp[index]["completeDateTime"] = completeDateTime;
+      }
+      progressListTemp[index]["retry"] = retry;
+    }
+    window.localStorage.setItem('simulateProgressList', JSON.stringify(progressListTemp));
+    this.simulateProgressList = progressListTemp;
+  }
+
+  /**
+   * simulator進捗管理 削除
+   * @param folderName 
+   * @param total 
+   */
+  @action
+  deleteProgressList(folderName:string){
+    const progressListStr = window.localStorage.getItem('simulateProgressList');
+    if(progressListStr){
+      const progressListTemp = JSON.parse(progressListStr) || [];
+      const index = progressListTemp.findIndex((progressMap:any)=>progressMap.folderName === folderName);
+      if(index >= 0){
+        progressListTemp.splice(index, 1);
+        window.localStorage.setItem('simulateProgressList', JSON.stringify(progressListTemp));
+        this.simulateProgressList = progressListTemp;
+      }
+    }
+  }
+
+  /**
+   * simulator実行の概況診断レポートファイル名を生成
+   * @returns ファイル名
+   */
+  getFileName(){
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 月は0から始まるため+1
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const formattedDate = `${year}${month}${day}${hours}${minutes}${seconds}`;
+    return "概況診断結果_" + formattedDate + ".xlsx";
+  }
+
   /**
    * ↑↑↑既存関数
    */

@@ -2,11 +2,13 @@ package developmentpermission.util;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.util.Date;
 
 import javax.servlet.http.Cookie;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +52,10 @@ public class AuthUtil {
 	public static final String SUBJECT = "devpermission";
 	/** トークンキー */
 	public static final String TOKEN = "token";
+	
+	static {
+		Security.addProvider(new BouncyCastleProvider());
+	}
 
 	@Value("${app.jwt.token.secretkey}")
 	public void setSECRET_KEY(String secretKey) {
@@ -82,9 +88,6 @@ public class AuthUtil {
 			Algorithm algorithm = Algorithm.HMAC256(secretKey);
 			String token = JWT.create()
 					// registered claims
-					// .withJWTId("jwtId") //"jti" : JWT ID
-					// .withAudience("audience") //"aud" : Audience
-					// .withIssuer("issuer") //"iss" : Issuer
 					.withSubject(SUBJECT) // "sub" : Subject
 					.withIssuedAt(issuedAt) // "iat" : Issued At
 					.withNotBefore(notBefore) // "nbf" : Not Before

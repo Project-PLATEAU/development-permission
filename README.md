@@ -5,12 +5,13 @@
 ## 更新履歴
 | 更新日時 | リリース | 更新内容 |
 | :--- | :--- | :--- |
+|| **3rd Release** <br> UI改善、2D表示モードを追加 <br> 事前協議・第32条協議機能を追加 <br> 開発許可申請機能を追加|開発許可申請管理システム v3.0 |
 |2024/3/29 | **2nd Release** <br> 前面道路判定機能を追加<br>コミュニケーション機能を追加 | 開発許可申請管理システム v2.0 |
 |2023/3/27 | **1st Release** <br>①地番図を用いた検索機能<br>②概況診断結果のレポート出力機能<br>③行政担当者への申請機能<br>④行政担当者の申請情報検索及び回答確認機能<br>を実装| 開発許可申請管理システム v1.0 |
 
 ## **1.概要**
 
-本リポジトリでは、2023年度のProject PLATEAUで開発した「開発許可申請管理システム v2」のソースコードを公開しています。  
+本リポジトリでは、2024年度のProject PLATEAUで開発した「開発許可申請管理システム v3」のソースコードを公開しています。  
 「開発許可申請管理システム」は、都市計画法に基づく開発許可手続（市区町村に対する「事前相談」を含む）をオンライン化し、申請の自動判定機能を提供するものです。  
 本システムは3D都市モデルをはじめとする空間情報をPostGISとGeoServerを組み合わせたリレーショナルデータベースで管理し、空間解析機能等のバックエンド機能を備えるウェブシステムとなっています。また、CesiumJS及びTerriaJSをフロントエンドで利用しています。
 
@@ -22,19 +23,23 @@
 
 ## **2．「開発許可申請管理システム v2」について**
 
-市街地等において一定規模以上の開発を行う場合、都市計画法に基づく開発許可が必要となり、令和元年では2万件以上の許可が全国で行われています。  
+市街地等において一定規模以上の開発を行う場合、都市計画法に基づく開発許可が必要となり、令和4年度では19,746件の許可が全国で行われています。  
 開発許可制度は、申請のあった開発行為が対象エリアの土地利用の計画や災害リスク等の状況と適合しているかの審査を行うものですが、審査に必要な、関連資料の収集や関係者との協議等が多岐にわたるため、審査側の行政と申請側の民間の双方で多大な事務負担となっています。  
-このため、「開発許可申請管理システム v2」以下の機能を提供します。  
+このため、「開発許可申請管理システム v3」以下の機能を提供します。  
 
 --v1で実装  
-①地番図を用いた検索機能
-②概況診断結果のレポート出力機能
-③行政担当者への申請機能
-④行政担当者の申請情報検索及び回答確認機能
+①地番図を用いた検索機能  
+②概況診断結果のレポート出力機能  
+③行政担当者への申請機能  
+④行政担当者の申請情報検索及び回答確認機能  
 
 --v2で実装  
-⑤前面道路判定機能
-⑥コミュニケーション機能
+⑤前面道路判定機能  
+⑥コミュニケーション機能  
+
+--v3で実装  
+⑦事前協議・第32条協議機能  
+⑧開発許可申請機能  
 
 詳細につきましては、[技術検証レポート](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0076_ver01.pdf)を参照ください。
 
@@ -47,9 +52,10 @@
     |ソフトウェア|プロジェクトフォルダ|
     | - | - |
     |1.GeoServer|-|
-    |2.API|[/SRC/api](./SRC/api/)|
-    |3.3dviewer|[/SRC/3dview](./SRC/3dview/)|
-    |4.PDF.js|[/SRC/pdfjs](./SRC/pdfjs/)|
+    |2.申請API（Springboot）|[/SRC/api](./SRC/api/)|
+    |3.シミュレータAPI（Springboot）|[/SRC/simulator_api](./SRC/simulator_api/)|
+    |4.申請画面（3DViewer）|[/SRC/3dview](./SRC/3dview/)|
+    |5.PDF.js|[/SRC/pdfjs](./SRC/pdfjs/)|
 
     ※データベースの構築及びミドルウェアのセットアップも合わせて必要となります。
 * 構築時に必要となる環境設定ファイルを下表に示します。
@@ -71,31 +77,31 @@
 
 ## **4.システム概要**
 
-![3Dビューワ](./img/overall_picture.png "3Dビューワ")
-
-空間情報を三次元表示可能なCesiumJS及びTerriaJSをフロントエンドで利用するとともに、PostGIS（空間情報を管理するOSSのデータベース拡張機能）と
-GeoServer（空間情報を共有するOSSのGISサーバ）を組み合わせ、空間解析機能及びリレーショナルデータベースをバックエンドで統合したウェブシステムを開発しました。
-V2では前面道路判定機能、コミュニケーション機能を追加しました。前面道路判定機能により開発許可申請に係る前面道路に関する判定が可能になり、コミュニケーション機能を使い事業者がウェブシステム上で、担当者とコミュニケーションを取ることが可能となりました。<br>
+![3Dビューワ](./img/overall_picture2.png "3Dビューワ")
+空間情報を三次元表示可能なCesiumJS及びTerriaJSをフロントエンドで利用するとともに、PostGIS（空間情報を管理するOSSのデータベース拡張機能）と GeoServer（空間情報を共有するOSSのGISサーバ）を組み合わせ、空間解析機能及びリレーショナルデータベースをバックエンドで統合したウェブシステムを開発しました。V3では事前協議・第32条協議機能、開発許可申請機能を追加しました。事前協議・第32条協議機能により事前相談のオンライン相談内容を引き継ぐ形での申請が可能となり、開発許可申請機能により事前協議結果を引き継ぐ形での申請が可能となりました。<br>
 詳細は技術検証レポートを参照してください。
 
 ## **5.利用技術**
 
 |名称|説明|
 | --- | --- |
-|[Apache HTTP Server](https://httpd.apache.org/)|Webアプリで配信を行うためのWebサーバソフトウェア|
+|[Apache HTTP Server](https://httpd.apache.org/)|Webアプリで配信を行うためのWebサーバ|
+|[React.js](https://ja.react.dev/)|JavaScriptのフレームワーク内で機能するUIを構築するためのライブラリ|
 |[TerriaJS](https://terria.io/)|UIの提供及びUIを介してCesiumJSの描画機能を制御するためのライブラリ|
 |[CesiumJS](https://cesium.com/platform/cesiumjs/)|3Dビューワ上にデータを描画するためのライブラリ|
-|[React.js](https://ja.react.dev/)|JavaScriptのフレームワーク内で機能するUIを構築するためのライブラリ|
+|[Leaflet](https://leafletjs.com/)|2Dビューワ上にデータを描画するためのライブラリ|
 |[marker.js](https://markerjs.com/demos/all-defaults/)|画像データへの図形や文字情報の書き込みをブラウザ上で行うライブラリ|
 |[tiff.js](https://github.com/seikichi/tiff.js)|Tiffファイルをブラウザで閲覧・編集可能なPNG形式に変換するライブラリ|
 |[PDF.js](https://mozilla.github.io/pdf.js/)|PDFファイルをプレビューするライブラリ|
+|[PDFBox](https://pdfbox.apache.org/)|PDF文章を扱うライブラリで、PDFファイルの画像ファイル変換に利用|
 |[Node.js](https://nodejs.org/en)|3Dビューワの実行環境|
+|[Java 1.8](https://openjdk.java.net/)|GeoServer、カスタムアプリを稼働させるためのプラットフォーム|
+|[Apache Tomcat](https://tomcat.apache.org/)|GeoServer、カスタムアプリを実行するためのJava Servletコンテナ|
 |[GeoServer](https://geoserver.org/)|各種データをWMS及びWFSなどで配信するためのGISサーバ|
 |[Apache POI](https://poi.apache.org/)|帳票出力にて、Excel出力を行うライブラリ|
-|[PDFBox](https://pdfbox.apache.org/)|PDF文章を扱うライブラリで、PDFファイルの画像ファイル変換に利用|
-|[Apache Tomcat](https://tomcat.apache.org/)|GeoServer、カスタムアプリを起動するJ2EEのSDK|
 |[Spring Boot](https://spring.io/projects/spring-boot/)|Javaで利用可能なWebアプリのフレームワーク|
-|[PostgreSQL](https://www.postgresql.org/)|各種配信するデータを格納するリレーショナルデータベース|
+|[Selenium WebDriver](https://www.selenium.dev/ja/)|仮想ブラウザでの操作をシミュレートするためのライブラリ|
+|[PostgreSQL](https://www.postgresql.org/)|各種配信するデータを格納するデータベース|
 |[PostGIS](https://postgis.net/)|PostgreSQLで位置情報を扱うことを可能とする拡張機能|
 
 
@@ -129,14 +135,16 @@ V2では前面道路判定機能、コミュニケーション機能を追加し
 └─SRC
     ├─3dview
     ├─api
+    ├─simulator_api
     └─pdfjs
 ```
 |対象フォルダ|説明|
 | --- | --- |
 |[/Settings/environment_settings/](./Settings/environment_settings/)|環境設定ファイル一式|
 |[/SampleData/](./SampleData/)|サンプルデータ一式|
-|[/SRC/3dview](./SRC/3dview/)|フロント側のソースコード一式|
-|[/SRC/api](./SRC/api/)|API側のソースコード一式|
+|[/SRC/3dview](./SRC/3dview/)|申請画面（3DViewer）のソースコード一式|
+|[/SRC/api](./SRC/api/)|申請API（Springboot）のソースコード一式|
+|[/SRC/simulator_api](./SRC/simulator_api/)|シミュレータAPI（Springboot）のソースコード一式|
 |[/SRC/pdfjs/](./SRC/pdfjs/)|PDFビューワ（PDF.js）スタイルシート|
 
 ## **8.ライセンス**

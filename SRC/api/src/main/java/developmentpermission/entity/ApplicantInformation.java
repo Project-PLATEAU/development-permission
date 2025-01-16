@@ -88,5 +88,9 @@ public class ApplicantInformation implements Serializable {
 	/** パスワード */
 	@Column(name = "password")
 	private String password;
+	
+	/** 連絡先フラグ */
+	@Column(name = "contact_address_flag", columnDefinition = "char(1)")
+	private Boolean contactAddressFlag;
 
 }

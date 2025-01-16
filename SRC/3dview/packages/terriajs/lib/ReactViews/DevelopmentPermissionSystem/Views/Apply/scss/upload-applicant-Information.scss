@@ -6,7 +6,7 @@
     padding-left: 5px;
     padding-right: 5px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
 }
 
 .custom_frame {
@@ -65,6 +65,7 @@
 .selection_table {
     width: 100%;
     font-size: 0.9em;
+    table-layout: fixed;
 }
 
 .selection_table thead th {
@@ -73,6 +74,7 @@
     top: 0;
     background-color: $view-main-color;
     line-height: 2.5em;
+    z-index: 10;
 }
 .selection_table thead tr {
     line-height: 2em;
@@ -94,7 +96,7 @@
 }
 
 .selection_table tr:nth-child(2n) {
-    background: #d3d3d3 !important;
+    background: #d3d3d3;
 }
 
 .circle_button {
@@ -256,4 +258,40 @@
     margin: 5px;
     border: 0.5px solid;
     border-color: #E3E3E3;
+}
+
+.highlight{
+    background: $view-main-pale-color !important;
+}
+
+.customloaderParent {
+    background: rgba(0, 0, 0, .3);
+    width: 100%;
+    height: calc(100% - 50px);
+    position: absolute;
+    z-index: 2;
+}
+.customloader{
+    margin: 100px auto;
+    font-size: 25px;
+    width: 2.5em;
+    height: 2.5em;
+    display: block;
+    border-radius: 50%;
+    position: relative;
+    text-indent: -9999em;
+}
+
+.department_btn{
+    font-size:.8em;
+    border-radius:6px;
+    padding:2px 5px;
+}
+
+.department_btn:disabled {
+    opacity: .9;
+}
+
+.revise_content:disabled {
+    opacity: .5;
 }

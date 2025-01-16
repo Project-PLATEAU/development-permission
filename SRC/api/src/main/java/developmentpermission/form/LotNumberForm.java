@@ -87,4 +87,8 @@ public class LotNumberForm implements Serializable {
 	/** ステータス文字列 */
 	@ApiModelProperty(value = "ステータス", example = "申請中")
 	private String statusText;
+
+	/** 全筆フラグ */
+	@ApiModelProperty(value = "全筆フラグ", example = "1")
+	private String fullFlag;
 }

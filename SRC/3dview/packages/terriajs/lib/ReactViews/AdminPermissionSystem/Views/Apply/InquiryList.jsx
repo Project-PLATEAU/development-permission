@@ -18,7 +18,8 @@ class InquiryStatusList extends React.Component {
         theme: PropTypes.object,
         t: PropTypes.func.isRequired,
         referrer: PropTypes.string,
-        inquiries: PropTypes.array.isRequired
+        inquiries: PropTypes.array.isRequired,
+        callback:PropTypes.func
     }
 
     constructor(props){
@@ -42,6 +43,21 @@ class InquiryStatusList extends React.Component {
     }
 
     /**
+     * 一覧の行をクリックする
+     * @param {*} resultData 
+     */
+    showLotNumberLayers(event, resultData){
+        const applicationId = resultData.applicationId;
+        const LotNumbers = resultData.lotNumbers;
+
+        if(applicationId!==undefined && applicationId !== null && Number(applicationId) > 0){
+            if(LotNumbers){
+                this.props.callback(applicationId, LotNumbers);
+            }
+        }
+    }
+
+    /**
      * ステータスに対するラベルを取得
      * @param {Number} status ステータスコード
      */
@@ -59,12 +75,12 @@ class InquiryStatusList extends React.Component {
                         <tr>
                             <th style={{width: "40%"}}>ステータス</th>
                             <th style={{width: "40%"}}>申請ID</th>
-                            <th style={{width: "20%"}}></th>
+                            <th className="no-sort" style={{width: "20%"}}></th>
                         </tr>
                     </thead>
                     <tbody>
                         {inquiries && Object.keys(inquiries).map(key => ( 
-                            <tr key={`inquiries-${key}`}>
+                            <tr key={`inquiries-${key}`}  onClick={event => {this.showLotNumberLayers(event, inquiries[key])}}>
                                 <td>{this.getStatusLabel(inquiries[key]["status"])}</td>
                                 <td>{inquiries[key]["applicationId"]}</td>
                                 <td><Button primary fullWidth onClick={e=>{this.showChat(inquiries[key])}}>詳細</Button></td>

@@ -47,4 +47,39 @@ public class LabelService extends AbstractService {
 		return form;
 	}
 
+	/**
+	 * ラベル一覧取得
+	 * 
+	 * @param viewCode  画面コード
+	 * @param applicationStepId 申請段階ID
+	 * @param labelType 種別
+	 * @return ラベル一覧
+	 */
+	public LabelForm getLabelByApplicationStepId(String viewCode, String applicationStepId, String labelType) {
+		LabelForm form = new LabelForm();
+
+		if (isNotEmpty(viewCode) && isNotEmpty(applicationStepId) && isNotEmpty(labelType )) {
+			List<Label> labelList = labelRepository.getLabelForApplicationStepId(viewCode, applicationStepId, labelType);
+
+			Map<String, Object> labels = new HashMap<String, Object>();
+			for (Label label : labelList) {
+				labels.put(label.getLabelKey(), label.getLabelText());
+			}
+			form.setLabels(labels);
+		}
+
+		return form;
+	}
+	
+	/**
+	 * 空ではないかチェック
+	 * @param str
+	 * @return　結果
+	 */
+	private boolean isNotEmpty(String str) {
+		if (str != null && !EMPTY.equals(str)) {
+			return true;
+		}
+		return false;
+	}
 }

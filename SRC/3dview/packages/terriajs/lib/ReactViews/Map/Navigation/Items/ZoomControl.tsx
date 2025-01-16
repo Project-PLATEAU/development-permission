@@ -34,6 +34,8 @@ class ZoomControl extends React.Component<PropTypes> {
 
   constructor(props: PropTypes) {
     super(props);
+    this.props.terria.setCameraReset(() => this.customZoomReset());
+
   }
 
   flyToPosition(
@@ -180,6 +182,47 @@ class ZoomControl extends React.Component<PropTypes> {
       this.props.terria.mainViewer.homeCamera,
       1.5
     );
+  }
+
+  //2D,3D切り替え時のPLATEAU VIEW既バグ考慮
+  //フォーカス補正をトリガーとして正しくレンダリングさせる
+  customZoomReset() {
+    const cartesian3Scratch = new Cartesian3();
+    //3D
+    if (isDefined(this.props.terria.cesium)) {
+      const scene = this.props.terria.cesium.scene;
+      const camera = scene.camera;
+      const cartographicPosition = Ellipsoid.WGS84.cartesianToCartographic(camera.position);
+      const heightAboveEllipsoid = cartographicPosition.height;
+      // カメラの地表からの高さを取得
+      const cameraHeight = heightAboveEllipsoid;
+      // 高さが4000m以上の場合は補正不要とする
+      if(cameraHeight > 4000) return;
+
+      const focus = this.getCameraFocus(scene);
+      const direction = Cartesian3.subtract(
+        focus,
+        camera.position,
+        cartesian3Scratch
+      );
+      const movementVector = Cartesian3.multiplyByScalar(
+        direction,
+        -2.0,
+        cartesian3Scratch
+      );
+      const endPosition = Cartesian3.add(
+        camera.position,
+        movementVector,
+        cartesian3Scratch
+      );
+      this.flyToPosition(scene, endPosition);
+    }
+    //2D
+    if (isDefined(this.props.terria.leaflet)) {
+      this.props.terria.leaflet.map.zoomIn(2);
+    }
+    
+    this.props.terria.currentViewer.notifyRepaintRequired();
   }
 
   render() {
