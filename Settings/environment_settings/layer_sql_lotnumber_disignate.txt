@@ -1,5 +1,0 @@
---地番指定表示SQL
---GeoServerのSQLビューに以下を貼り付けてください。
-
-SELECT t1.geom, t1.application_id, t1.lot_numbers AS 地番 FROM f_application_lot_number AS t1
-WHERE t1.application_id = any (CAST(regexp_split_to_array('%application_id%', '_') AS integer[]))

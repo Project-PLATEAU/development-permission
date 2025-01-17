@@ -1,2 +1,0 @@
-SELECT ST_Centroid(geom) AS geom, road_width, roadway_width, label_text FROM f_split_line 
-WHERE object_id = any (CAST(regexp_split_to_array('%object_id%', '_') AS integer[]))

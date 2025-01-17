@@ -1,7 +1,0 @@
-# ビルド関連のフォルダやファイル
-target/
-
-# IDE関連のフォルダやファイル
-.settings/
-.classpath
-.project

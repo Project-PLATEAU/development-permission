@@ -1,1 +1,0 @@
-SELECT youto, ogc_fid, wkb_geometry FROM use_distrit WHERE ogc_fid=%ogc_fid%
