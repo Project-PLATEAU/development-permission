@@ -1319,10 +1319,10 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <tr class="odd">
 <td>G</td>
 <td>judgement_type</td>
-<td>概況診断タイプ</td>
+<td>申請種類</td>
 <td>○</td>
-<td><p>申請区分選択画面で概況診断タイプ選択後に表示する申請区分の切替フラグ。</p>
-<p>カンマ区切りで表示対象の概況診断タイプのコードを格納する。</p></td>
+<td><p>申請区分選択画面で申請種類選択後に表示する申請区分の切替フラグ。</p>
+<p>カンマ区切りで表示対象の申請種類のコードを格納する。</p></td>
 </tr>
 </tbody>
 </table>
@@ -1558,8 +1558,8 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>answer_authority_flag</td>
 <td>回答権限フラグ</td>
 <td>○</td>
-<td><p>回答通知を行う権限の有無</p>
-<p>1=権限あり,0=権限なし のいずれかで設定</p></td>
+<td><p>該当部署が統括部署であるかを設定すること</p>
+<p>1=統括部署,0=統括部署以外 のいずれかで設定</p></td>
 </tr>
 </tbody>
 </table>
@@ -1610,94 +1610,6 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 </tr>
 <tr class="even">
 <td>B</td>
-<td>department_id</td>
-<td>廃止_担当部署ID</td>
-<td>○</td>
-<td><p>判定項目に回答を実施する担当部署の部署ID</p>
-<p><a href="#sec704">7-4. M_部署</a>で設定したIDを使用すること</p></td>
-</tr>
-<tr class="odd">
-<td>C</td>
-<td>category_1</td>
-<td>廃止_区分1</td>
-<td>○</td>
-<td><p>画面ID=1001と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="even">
-<td>D</td>
-<td>category_2</td>
-<td>廃止_区分2</td>
-<td>○</td>
-<td><p>画面ID=1002と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="odd">
-<td>E</td>
-<td>category_3</td>
-<td>廃止_区分3</td>
-<td>○</td>
-<td><p>画面ID=1003と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="even">
-<td>F</td>
-<td>category_4</td>
-<td>廃止_区分4</td>
-<td>○</td>
-<td><p>画面ID=1004と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="odd">
-<td>G</td>
-<td>category_5</td>
-<td>廃止_区分5</td>
-<td>○</td>
-<td><p>画面ID=1005と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="even">
-<td>H</td>
-<td>category_6</td>
-<td>廃止_区分6</td>
-<td>○</td>
-<td><p>画面ID=1006と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="odd">
-<td>I</td>
-<td>category_7</td>
-<td>廃止_区分7</td>
-<td>○</td>
-<td><p>画面ID=1007と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="even">
-<td>J</td>
-<td>category_8</td>
-<td>廃止_区分8</td>
-<td>○</td>
-<td><p>画面ID=1008と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="odd">
-<td>K</td>
-<td>category_9</td>
-<td>廃止_区分9</td>
-<td>○</td>
-<td><p>画面ID=1009と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="even">
-<td>L</td>
-<td>category_10</td>
-<td>廃止_区分10</td>
-<td>○</td>
-<td><p>画面ID=1010と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="odd">
-<td>M</td>
 <td>gis_judgement</td>
 <td>GIS判定</td>
 <td>○</td>
@@ -1710,16 +1622,16 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p>5=道路判定</p>
 <p>のいずれかで設定</p></td>
 </tr>
-<tr class="even">
-<td>N</td>
+<tr class="odd">
+<td>C</td>
 <td>buffer</td>
 <td>バッファ</td>
 <td>○</td>
 <td><p>バッファ判定時のバッファ半径(m,小数可)</p>
 <p>バッファ判定を使用しない場合0とすること</p></td>
 </tr>
-<tr class="odd">
-<td>O</td>
+<tr class="even">
+<td>D</td>
 <td>display_attribute_flag</td>
 <td>重なり属性表示フラグ</td>
 <td>○</td>
@@ -1732,8 +1644,8 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p><span style="color: red; ">※属性表示する場合、table_nameとfield_nameを設定すること</span></p>
 <p><span style="color: red; ">※区切り文字はapplication.propertiesで設定。</span></p></td>
 </tr>
-<tr class="even">
-<td>P</td>
+<tr class="odd">
+<td>E</td>
 <td>judgement_layer</td>
 <td>判定対象レイヤ</td>
 <td></td>
@@ -1744,71 +1656,16 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p><span style="color: red; ">※GIS判定では必須、GIS判定以外では不要</span></p>
 <p><span style="color: red; ">※図形重なり属性表示を行う場合複数指定不可</span></p></td>
 </tr>
-<tr class="odd">
-<td>Q</td>
-<td>title</td>
-<td>廃止_タイトル</td>
-<td>○</td>
-<td><p>概況診断結果一覧と回答一覧の「対象」列に表示する内容</p>
-<p>改行可</p></td>
-</tr>
 <tr class="even">
-<td>R</td>
-<td>applicable_summary</td>
-<td>廃止_該当表示概要</td>
-<td>○</td>
-<td><p>該当時に帳票の概要に出力する文字列</p>
-<p>改行可</p></td>
-</tr>
-<tr class="odd">
-<td>S</td>
-<td>applicable_description</td>
-<td>廃止_該当表示文言</td>
-<td>○</td>
-<td><p>該当時に概況診断結果一覧のツールチップと帳票の詳細に表示・出力する文字列</p>
-<p>改行可</p>
-<p>&lt;a&gt;&lt;/a&gt;で囲んだ範囲の文字列をリンクとして表示</p>
-<p>&lt;span&gt;&lt;/span&gt;で囲んだ範囲の文字列はstyle属性でスタイル設定可能</p>
-<p>属性表示したい場合、表示したい箇所に「@1」のように「@」+「フィールド名の順番」を記載</p>
-<p>地番と判定対象レイヤの最短距離を表示したい場合、表示したい箇所に「{distance}」と記載</p>
-<p>道路判定(gis_judgement=5)の場合、判定結果による文言変更箇所に置換文字列を設定する。置換文字列の設定内容については、<a href="#sec7013">7-13. M_道路判定ラベル</a>を参照のこと</p>
-</td>
-</tr>
-<tr class="even">
-<td>T</td>
-<td>non_applicable_display_flag</td>
-<td>廃止_非該当表示有無</td>
-<td>○</td>
-<td><p>非該当時に概況診断結果一覧に表示するか否かを設定</p>
-<p>1=表示, 0=非表示 のいずれかで設定</p></td>
-</tr>
-<tr class="odd">
-<td>U</td>
-<td>non_applicable_summary</td>
-<td>廃止_非該当表示概要</td>
-<td></td>
-<td><p>非該当時に帳票の概要に出力する文字列</p>
-<p>改行可</p></td>
-</tr>
-<tr class="even">
-<td>V</td>
-<td>non_applicable_description</td>
-<td>廃止_非該当表示文言</td>
-<td></td>
-<td><p>非該当時に概況診断結果一覧のツールチップと帳票の詳細に表示・出力する文字列</p>
-<p>改行可</p>
-<p>&lt;a&gt;&lt;/a&gt;で囲んだ範囲の文字列をリンクとして表示</p></td>
-</tr>
-<tr class="odd">
-<td>W</td>
+<td>F</td>
 <td>table_name</td>
 <td>テーブル名</td>
 <td></td>
 <td><p>属性表示するテーブル名</p>
 <p>※judgement_layerで指定した判定レイヤのテーブル名を指定すること</p></td>
 </tr>
-<tr class="even">
-<td>X</td>
+<tr class="odd">
+<td>G</td>
 <td>field_name</td>
 <td>フィールド名</td>
 <td></td>
@@ -1816,8 +1673,8 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p>カンマ区切りで複数設定可能</p>
 <p>※【W】で指定したテーブルのフィールド名(カラム名)を指定すること</p></td>
 </tr>
-<tr class="odd">
-<td>Y</td>
+<tr class="even">
+<td>H</td>
 <td>non_applicable_layer_display_flag</td>
 <td>判定レイヤ非該当時表示有無</td>
 <td>○</td>
@@ -1825,68 +1682,28 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p>※該当時はレイヤを設定している場合必ず表示</p>
 <p>1=表示,0=非表示 のいずれかで設定</p></td>
 </tr>
-<tr class="even">
-<td>Z</td>
+<tr class="odd">
+<td>I</td>
 <td>simultaneous_display_layer</td>
 <td>同時表示レイヤ</td>
 <td></td>
 <td>概況診断結果一覧画面で判定対象レイヤと同時に表示する関連レイヤのID（カンマ区切り）</td>
 </tr>
-<tr class="odd">
-<td>AA</td>
+<tr class="even">
+<td>J</td>
 <td>simultaneous_display_layer_flag</td>
 <td>同時表示レイヤ表示有無</td>
 <td>○</td>
 <td><p>概況診断結果一覧画面で判定対象レイヤと同時に関連レイヤを表示するか否か</p>
 <p>1=表示, 0=非表示 のいずれかで設定</p></td>
 </tr>
-<tr class="even">
-<td>AB</td>
+<tr class="odd">
+<td>K</td>
 <td>disp_order</td>
 <td>表示順</td>
 <td>○</td>
 <td><p>概況診断結果一覧画面および帳票における表示順</p>
 <p>小数で設定する</p></td>
-</tr>
-<tr class="odd">
-<td>AC</td>
-<td>answer_require_flag</td>
-<td>廃止_回答必須フラグ</td>
-<td>○</td>
-<td><p>区分判定に行政による回答が必須か否か</p>
-<p>任意の場合、申請受付時にデフォルト回答を回答として登録・通知する。</p>
-<p>1=必須, 0=任意 のいずれかで設定</p></td>
-</tr>
-<tr class="even">
-<td>AD</td>
-<td>default_answer</td>
-<td>廃止_デフォルト回答</td>
-<td></td>
-<td>申請受付時に自動で設定する回答文言</td>
-</tr>
-<tr class="odd">
-<td>AE</td>
-<td>answer_editable_flag</td>
-<td>廃止_編集可能フラグ</td>
-<td>○</td>
-<td><p>回答の編集を可能とするか否か</p>
-<p>1=編集可能, 0=編集不可</p>
-<p></p>
-<p><span style="color: red; ">※answer_require_flagが1かつanswer_editable_flagが0のケースは指定できません</span></p></td>
-</tr>
-<tr class="even">
-<td>AF</td>
-<td>answer_days</td>
-<td>廃止_回答日数</td>
-<td></td>
-<td>行政担当者が該当の条項に回答する目安日数を設定。事業者にはすべての該当条項の回答日数の最大値+システム設定したバッファ日数が回答日数として通知される。行政担当者には担当の部署の該当条項の回答日数の最大値が回答日数として通知される。</td>
-</tr>
-<tr class="odd">
-<td>AG</td>
-<td>admin_signal_flag</td>
-<td>廃止_管理者通知権限付与フラグ</td>
-<td></td>
-<td>1=管理者が通知可能, 0=不可</td>
 </tr>
 </tbody>
 </table>
@@ -2091,7 +1908,7 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>利用者規約画面同意ボタン</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1000</td>
 <td>4</td>
 <td>利用者規約画面ヘッダタイトル</td>
@@ -2103,10 +1920,16 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>利用者規約画面利用目的選択説明文</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1000</td>
 <td>6</td>
 <td>利用者規約画面アンケート説明文</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>1000</td>
+<td>7</td>
+<td>利用者規約画面TOPボタン</td>
 <td></td>
 </tr>
 <tr class="even">
@@ -2119,72 +1942,78 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>1001</td>
 <td>2</td>
 <td>申請完了画面説明文</td>
-<td></td>
+<td>回答日数を表示したい場合、埋め込み表示する箇所に「${回答日数}」を設定する</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1001</td>
 <td>3</td>
 <td>申請完了画面アンケート説明文</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>1002</td>
 <td>1</td>
 <td>回答完了画面タイトル</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1002</td>
 <td>2</td>
 <td>回答完了画面説明文</td>
-<td>回答日数を表示したい場合、埋め込み表示する箇所に「${回答日数}」を設定する</td>
+<td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>1003</td>
 <td>1</td>
 <td>回答通知完了画面タイトル</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1003</td>
 <td>2</td>
 <td>回答通知完了画面説明文</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>1003</td>
 <td>3</td>
 <td>申請差戻通知完了画面説明文</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1003</td>
 <td>4</td>
 <td>申請受付通知完了画面説明文</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>1003</td>
 <td>5</td>
 <td>回答許可通知完了画面説明文</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1003</td>
 <td>6</td>
 <td>行政確定登録許可通知完了画面説明文</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>1004</td>
 <td>1</td>
 <td>行政ログイン画面ヘッダ</td>
 <td>○○市の部分を使用される自治体名に変更すること</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1004</td>
 <td>2</td>
 <td>行政ログイン画面アンケートリンク文言</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>1004</td>
+<td>3</td>
+<td>行政ログイン画面アンケートリンクのリンク先URL</td>
 <td></td>
 </tr>
 <tr class="even">
@@ -2197,12 +2026,30 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>1006</td>
 <td>1</td>
 <td>申請ファイルアップロード画面 アップロード説明文</td>
-<td>1ファイル当たり容量上限、合計ファイル容量を埋め込み表示する箇所にそれぞれ「${maxFileSize}」、「${maxRequestFileSize}」を設定する</td>
+<td>1ファイル当たり容量上限を埋め込み表示する箇所にそれぞれ「${maxFileSize}」」を設定する</td>
 </tr>
 <tr class="even">
 <td>1006</td>
 <td>2</td>
 <td>申請ファイルアップロード画面 任意ファイル不足時の注意文言</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>1007</td>
+<td>1</td>
+<td>申請者情報入力画面の申請者情報の説明文</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>1007</td>
+<td>2</td>
+<td>申請者情報入力画面の連絡先の説明文</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>2000</td>
+<td>1</td>
+<td>申請地番選択画面の相談ボタン</td>
 <td></td>
 </tr>
 </tbody>
@@ -2441,7 +2288,7 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 </tr>
 <tr class="odd">
 <td>C</td>
-<td>Display_flag</td>
+<td>display_flag</td>
 <td>表示有無</td>
 <td>○</td>
 <td><p>表示を行うか否か</p>
@@ -2799,7 +2646,9 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>最大値</td>
 <td></td>
 <td>
-<p>幅員値の判定結果により案内文言を変更するために使用する。最小値以上最大値未満の時該当レコードの文言を案内する。</p></td>
+<p>幅員値の判定結果により案内文言を変更するために使用する。最小値以上最大値未満の時該当レコードの文言を案内する。</p>
+</td>
+</tr>
 <tr class="odd">
 <td>G</td>
 <td>replace_text</td>
@@ -2810,7 +2659,6 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p>&lt;a&gt;&lt;/a&gt;で囲んだ範囲の文字列をリンクとして表示</p>
 <p>&lt;span&gt;&lt;/span&gt;で囲んだ範囲の文字列はstyle属性でスタイル設定可能</p>
 </td>
-</tr>
 </tr>
 </tbody>
 </table>
@@ -2916,9 +2764,9 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 	</tr>
 	<tr>
 		<td>道路種別による案内文言</td>
-		<td>{display_by_road_type_area}</td>
+		<td>{road_type_result_area}</td>
 		<td>道路種別取得時</td>
-		<td>index_string=[道路種別識別コード]</td>
+		<td>index_text=[道路種別識別コード]</td>
 		<td>道路種別コード値ごとに行を作成する。</td>
 	</tr>
 	<tr>
@@ -3140,28 +2988,6 @@ M_区分判定に対応する判定項目結果を申請種類、申請段階、
 </tr>
 <tr class="even">
 <td>F</td>
-<td>answer_days</td>
-<td>回答日数</td>
-<td>○</td>
-<td>
-<p>
-申請登録日から起算した回答期日までの日数
-</p>
-</td>
-</tr>
-<tr class="odd">
-<td>G</td>
-<td>default_answer</td>
-<td>デフォルト回答</td>
-<td></td>
-<td>
-<p>
-申請受付時に自動で設定する回答文言
-</p>
-</td>
-</tr>
-<tr class="even">
-<td>H</td>
 <td>applicable_summary</td>
 <td>該当表示概要</td>
 <td>○</td>
@@ -3174,7 +3000,7 @@ M_区分判定に対応する判定項目結果を申請種類、申請段階、
 </td>
 </tr>
 <tr class="odd">
-<td>I</td>
+<td>G</td>
 <td>applicable_description</td>
 <td>該当表示文言</td>
 <td>○</td>
@@ -3186,7 +3012,7 @@ M_区分判定に対応する判定項目結果を申請種類、申請段階、
 </td>
 </tr>
 <tr class="odd">
-<td>J</td>
+<td>H</td>
 <td>non_applicable_display_flag</td>
 <td>非該当表示有無</td>
 <td>○</td>
@@ -3199,7 +3025,7 @@ M_区分判定に対応する判定項目結果を申請種類、申請段階、
 </td>
 </tr>
 <tr class="even">
-<td>K</td>
+<td>I</td>
 <td>non_applicable_summary</td>
 <td>非該当表示概要</td>
 <td></td>
@@ -3212,7 +3038,7 @@ M_区分判定に対応する判定項目結果を申請種類、申請段階、
 </td>
 </tr>
 <tr class="odd">
-<td>L</td>
+<td>J</td>
 <td>non_applicable_description</td>
 <td>非該当表示文言</td>
 <td></td>
@@ -3223,7 +3049,7 @@ M_区分判定に対応する判定項目結果を申請種類、申請段階、
 </td>
 </tr>
 <tr class="even">
-<td>M</td>
+<td>K</td>
 <td>answer_require_flag</td>
 <td>回答必須フラグ</td>
 <td>○</td>
@@ -3238,7 +3064,18 @@ M_区分判定に対応する判定項目結果を申請種類、申請段階、
 </td>
 </tr>
 <tr class="odd">
-<td>N</td>
+<td>L</td>
+<td>default_answer</td>
+<td>デフォルト回答</td>
+<td></td>
+<td>
+<p>
+申請受付時に自動で設定する回答文言
+</p>
+</td>
+</tr>
+<tr class="odd">
+<td>M</td>
 <td>answer_editable_flag</td>
 <td>編集可能フラグ </td>
 <td>○</td>
@@ -3247,6 +3084,17 @@ M_区分判定に対応する判定項目結果を申請種類、申請段階、
 <p>1=編集可能, 0=編集不可</p>
 <p></p>
 <p><span style="color: red; ">※answer_require_flagが1かつanswer_editable_flagが0のケースは指定できません</span></p>
+</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td>answer_days</td>
+<td>回答日数</td>
+<td>○</td>
+<td>
+<p>
+申請登録日から起算した回答期日までの日数
+</p>
 </td>
 </tr>
 </tbody>
