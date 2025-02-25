@@ -164,5 +164,19 @@
     "business":true
   },
   "captureRequiredJudgement":[],
-  "notifications":[]
+  "notifications":[],
+  "extension": {
+    "answerFile":"pdf,tiff,jpeg,png,dxf,dwg",
+    "inquiryFile":"pdf,tiff,jpeg,png,cad"
+  },
+  "inputMaxLength":{
+    "answerContent":1000,
+    "applicantInfo":{
+      "text":150,
+      "textarea":1000
+    },
+    "chatMsg":1000,
+    "reviseContent":1000,
+    "notifyComment":1000
+  }
 }

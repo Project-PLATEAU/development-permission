@@ -2383,6 +2383,38 @@ export default class ViewState {
     }
   }
 
+  /**
+   * 申請情報表示地番レイヤーを表示・非表示する
+   */
+  @action
+  showApplicationSearchTargetLayer( isShow : boolean, applicationId:number){
+    if(this.terria.authorityJudgment()){
+      const wmsUrl = Config.config.geoserverUrl;
+      const items = this.terria.workbench.items;
+      for (const aItem of items) {
+          if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget) {
+              this.terria.workbench.remove(aItem);
+          }
+      }
+      if(isShow){
+        const item = new webMapServiceCatalogItem(Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget, this.terria);
+        item.setTrait(CommonStrata.definition, "url", wmsUrl);
+        item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForApplicationSearchTarget);
+        item.setTrait(
+            CommonStrata.user,
+            "layers",
+            Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget);
+        item.setTrait(CommonStrata.user,
+            "parameters",
+            {
+              "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + applicationId,
+            });
+            item.loadMapItems();
+            this.terria.workbench.add(item); 
+      }
+    }
+  }
+
   //------------UI001利用者規約------------
   /**
    * 利用者規約画面を表示
@@ -2892,6 +2924,29 @@ export default class ViewState {
     window.localStorage.setItem('simulateProgressList', JSON.stringify(progressListTemp));
     this.simulateProgressList = progressListTemp;
   }
+
+  /**
+   * simulator進捗管理 更新(認証情報)
+   * @param folderName 一時フォルダ名
+   * @param loginId ログインID
+   * @param password パスワード
+   */
+  @action
+  updateProgressListForCertification(folderName:string,loginId:string,password:string){
+    const progressListStr = window.localStorage.getItem('simulateProgressList');
+    let progressListTemp:any = [];
+    if(progressListStr){
+      progressListTemp = JSON.parse(progressListStr) || [];
+    }
+    const index = progressListTemp.findIndex((progressMap:any)=>progressMap.folderName === folderName);
+    if(index >= 0 && progressListTemp[index]["requestBody"] && progressListTemp[index]["requestBody"]["applicationId"]){
+      progressListTemp[index]["requestBody"]["loginId"] = loginId;
+      progressListTemp[index]["requestBody"]["password"] = password;
+    }
+    window.localStorage.setItem('simulateProgressList', JSON.stringify(progressListTemp));
+    this.simulateProgressList = progressListTemp;
+  }
+  
 
   /**
    * simulator進捗管理 更新

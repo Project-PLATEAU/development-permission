@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import developmentpermission.form.AnswerConfirmLoginForm;
 import developmentpermission.form.ApplicationCategoryForm;
 import developmentpermission.form.ApplicationCategorySelectionLogForm;
 import developmentpermission.form.ApplicationCategorySelectionViewForm;
@@ -35,6 +36,7 @@ import developmentpermission.form.GeneralConditionDiagnosisResultLogForm;
 import developmentpermission.form.LotNumberForm;
 import developmentpermission.form.ResponseEntityForm;
 import developmentpermission.form.UploadForGeneralConditionDiagnosisForm;
+import developmentpermission.service.ApplicationService;
 import developmentpermission.service.JudgementService;
 import developmentpermission.util.AuthUtil;
 import developmentpermission.util.LogUtil;
@@ -58,6 +60,10 @@ public class JudgementApiController extends AbstractApiController {
 	/** 区分判定Serviceインスタンス */
 	@Autowired
 	private JudgementService judgementService;
+	
+	/** 申請Serviceインスタンス */
+	@Autowired
+	private ApplicationService applicationService;
 
 	/** 概況診断結果ログファイルパス */
 	@Value("${app.json.log.rootPath.judgeresult}")
@@ -91,6 +97,11 @@ public class JudgementApiController extends AbstractApiController {
 			@ApiParam(required = true, value = "概況診断結果リクエストフォーム")@RequestBody GeneralConditionDiagnosisRequestForm generalConditionDiagnosisRequestForm, @CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("概況診断実行 開始");
 		try {
+			String role = AuthUtil.getRole(token);
+			if (!AuthUtil.ROLE_BUSINESS.equals(role) && !AuthUtil.ROLE_GOVERMENT.equals(role)) {
+				LOGGER.warn("ロール不適合: " + role);
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
 			// パラメータチェック
 			if (isValidParam(generalConditionDiagnosisRequestForm)) {
 				try {
@@ -143,6 +154,11 @@ public class JudgementApiController extends AbstractApiController {
 			@CookieValue(value = "token", required = false) String token, HttpServletResponse response) {
 		LOGGER.info("概況診断結果レポート生成 開始");
 		try {
+			String role = AuthUtil.getRole(token);
+			if (!AuthUtil.ROLE_BUSINESS.equals(role) && !AuthUtil.ROLE_GOVERMENT.equals(role)) {
+				LOGGER.warn("ロール不適合: " + role);
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
 			// パラメータチェック
 			if (isValidParam(generalConditionDiagnosisReportRequestForm) 
 					&& generalConditionDiagnosisReportRequestForm.getFolderName() != null && !generalConditionDiagnosisReportRequestForm.getFolderName().equals("") 
@@ -212,6 +228,20 @@ public class JudgementApiController extends AbstractApiController {
 		try {
 			// パラメータチェック
 			if (generalConditionDiagnosisReportRequestForm!=null) {
+				String id = generalConditionDiagnosisReportRequestForm.getLoginId();
+				String password = generalConditionDiagnosisReportRequestForm.getPassword();
+				Integer parmApplicationId = generalConditionDiagnosisReportRequestForm.getApplicationId();
+				if (parmApplicationId != null && parmApplicationId > 0) {
+					AnswerConfirmLoginForm answerConfirmLoginForm = new AnswerConfirmLoginForm();
+					answerConfirmLoginForm.setLoginId(id);
+					answerConfirmLoginForm.setPassword(password);
+					// 申請ID
+					Integer applicationId = applicationService.getApplicationIdFromApplicantInfo(answerConfirmLoginForm);
+					if (applicationId == null || !applicationId.equals(parmApplicationId)) {
+						LOGGER.warn("申請情報取得不能");
+						throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+					}
+				}
 				if (!judgementService.exportJudgeReportWorkBook(generalConditionDiagnosisReportRequestForm, response)) {
 					LOGGER.warn("帳票生成失敗");
 					throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);

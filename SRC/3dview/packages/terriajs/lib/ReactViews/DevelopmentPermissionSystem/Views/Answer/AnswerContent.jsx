@@ -480,7 +480,7 @@ class AnswerContent extends React.Component {
     back(){
         const items = this.state.terria.workbench.items;
         for (const aItem of items) {
-            if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplying) {
+            if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget) {
                 this.state.terria.workbench.remove(aItem);
                 aItem.loadMapItems();
             }
@@ -494,8 +494,17 @@ class AnswerContent extends React.Component {
      * 回答レポート出力
      */
     export(){
+        let id = this.props.viewState.answerContent.loginId;
+        let password = this.props.viewState.answerContent.password;
         let applicationId = this.state.applicationId;
-        fetch(Config.config.apiUrl + "/answer/report/" + applicationId + "/" + checkedApplicationStepId)
+        fetch(Config.config.apiUrl + "/answer/report/" + applicationId + "/" + checkedApplicationStepId,{
+            method: 'POST',
+            body: JSON.stringify({
+                loginId: id,
+                password: password
+            }),
+            headers: new Headers({ 'Content-type': 'application/json' }),
+        })
         .then((res) => {
             if(res.status === 401){
                 alert("認証情報が無効です。ページの再読み込みを行います。");

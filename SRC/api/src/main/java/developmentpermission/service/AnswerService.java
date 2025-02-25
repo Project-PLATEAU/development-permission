@@ -1503,12 +1503,12 @@ public class AnswerService extends AbstractJudgementService {
 
 				// 対象取得
 				LOGGER.trace("対象取得 開始");
-				List<CategoryJudgement> categoryList = answerDao.getCategoryJudgementList(answer.getAnswerId());
+				List<CategoryJudgementResult> categoryList = answerDao.getJudgementResultByAnswerId(answer.getAnswerId());
 				if (categoryList.size() == 0) {
 					LOGGER.warn("M_区分判定の値が取得できない 回答ID: " + answer.getAnswerId());
 					continue;
 				}
-				CategoryJudgement category = categoryList.get(0);
+				CategoryJudgementResult category = categoryList.get(0);
 				mailResultItem.setTarget(category.getTitle());
 				LOGGER.trace("対象取得 終了");
 				
@@ -2849,6 +2849,128 @@ public class AnswerService extends AbstractJudgementService {
 	}
 
 	/**
+	 * 回答ファイル（引用）アップロードパラメータ確認
+	 * 
+	 * @param form         パラメータ
+	 * @param departmentId 部署ID
+	 * @return 確認結果
+	 */
+	public boolean validateuploadQuoteFile(QuoteFileForm form, String departmentId) {
+		LOGGER.debug("回答ファイル（引用）アップロードパラメータ確認 開始");
+		try {
+			Integer answerId = form.getAnswerId();
+			String answerFileName = form.getAnswerFileName();
+			Integer applicationId = form.getApplicationId();
+			Integer applicationStepId = form.getApplicationStepId();
+			String answerdDpartmentId = form.getDepartmentId();
+
+			if (
+			answerFileName == null || EMPTY.equals(answerFileName) //
+					|| departmentId == null || EMPTY.equals(departmentId) || applicationStepId == null
+					|| applicationId == null) {
+				// パラメータ不足
+				LOGGER.warn("パラメータ不足");
+				return false;
+			}
+
+			// 回答データ存在チェック
+			if (APPLICATION_STEP_ID_1.equals(applicationStepId)) {
+				if (answerId == null) {
+					// パラメータ不足
+					LOGGER.warn("パラメータ不足：回答ID");
+					return false;
+				}
+				// 回答ID
+				if (answerRepository.findByAnswerId(answerId).size() != 1) {
+					LOGGER.warn("回答データ取得件数不正");
+					return false;
+				}
+			}
+
+			if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+
+				if (answerdDpartmentId == null || EMPTY.equals(answerdDpartmentId)) {
+					// パラメータ不足
+					LOGGER.warn("パラメータ不足:回答ファイルの部署ID");
+					return false;
+				}
+
+				// 部署回答の件数チェック
+				if (departmentAnswerRepository.getDepartmentAnswer(applicationId, answerdDpartmentId).size() != 1) {
+					LOGGER.warn("回答データ取得件数不正");
+					return false;
+				}
+			}
+
+			if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+
+				// 回答の件数チェック
+				if (answerRepository.findByApplicationStepId(applicationId, applicationStepId).size() < 1) {
+					LOGGER.warn("回答データ取得件数不正");
+					return false;
+				}
+			}
+
+			// 回答ファイルID
+			Integer answerFileId = form.getAnswerFileId();
+			if (answerFileId != null) {
+				if (answerFileRepository.findByAnswerFileId(answerFileId).size() != 1) {
+					LOGGER.warn("回答ファイルの件数が不正");
+					return false;
+				}
+			}
+
+			// 部署チェック
+			LOGGER.trace("部署チェック 開始");
+			boolean departmentFlg = false;
+			List<Authority> authorityList = authorityRepository.getAuthorityList(departmentId, applicationStepId);
+			if (authorityList.size() > 0) {
+				String answerAuthorityFlag = authorityList.get(0).getAnswerAuthorityFlag();
+
+				// 他部署も操作可能場合、アクセス権限ある
+				if (AUTH_TYPE_ALL.equals(answerAuthorityFlag)) {
+					departmentFlg = true;
+				}
+
+				// 自身の部署のも操作可能場合、アップロード対象の部署がログインユーザの部署と同じか判断
+				if (AUTH_TYPE_SELF.equals(answerAuthorityFlag)) {
+					if (APPLICATION_STEP_ID_1.equals(applicationStepId)) {
+						AnswerDao dao = new AnswerDao(emf);
+						List<Department> departmentList = dao.getDepartmentList(answerId);
+						for (Department department : departmentList) {
+							if (departmentId.equals(department.getDepartmentId())) {
+								departmentFlg = true;
+								break;
+							}
+						}
+					}
+
+					if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+
+						if (answerdDpartmentId.equals(departmentId)) {
+							departmentFlg = true;
+						}
+					}
+					if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+						departmentFlg = true;
+					}
+				}
+			}
+
+			if (!departmentFlg) {
+				// 回答アクセス権限がない
+				LOGGER.warn("回答アクセス権限がない");
+				return false;
+			}
+			LOGGER.trace("部署チェック 終了");
+
+			return true;
+		} finally {
+			LOGGER.debug("回答ファイル（引用）アップロードパラメータ確認 終了");
+		}
+	}
+
+	/**
 	 * 回答ファイル（引用）アップロード
 	 * 
 	 * @param form   パラメータ
@@ -2917,7 +3039,7 @@ public class AnswerService extends AbstractJudgementService {
 
 			// ファイル複製
 			LOGGER.debug("ファイル出力 開始");
-			// ToDo： 引用した申請ファイルを回答ファイルとして登録
+			// 引用した申請ファイルを回答ファイルとして登録
 			LOGGER.debug(fileRootPath + applicationFilePath);
 			LOGGER.debug(absoluteFilePath);
 
@@ -3887,18 +4009,14 @@ public class AnswerService extends AbstractJudgementService {
 			if(notResponse.equals(1)) {
 				//現在日時より未回答のリマインドを送る回答を取得
 				//回答期日が超過しているものの回答リスト(期間はプロパティファイルから取得)
-				//TODO 事業者回答登録日時未反映(リマインド)
 				answerList = answerRepository.findNotResponseAnswerListStep2(appAnswerBussinesRegisterDays);
 				//もう少しで回答期日が来るもの(期間はプロパティファイルから取得)
-				//TODO 事業者回答登録日時未反映(リマインド)
 				answerListExpire = answerRepository.findNotResponseAnswerExpireListStep2(appAnswerBussinesRegisterDays);
 			}else if(notResponse.equals(2)) {
 				//現在日時より未通知のリマインドを送る回答を取得
 				//回答期日が超過しているものの回答リスト(期間はプロパティファイルから取得)
-				//TODO 事業者回答登録日時未反映(リマインド)
 				answerList = answerRepository.findNotNotifiedAnswerExpireListStep2(appAnswerBussinesRegisterDays,appAnswerBufferDays,appAnswerDeadlineXDaysAgo);
 				//もう少しで回答期日が来るもの(期間はプロパティファイルから取得)
-				//TODO 事業者回答登録日時未反映(リマインド)
 				answerListExpire = answerRepository.findNotNotifiedAnswerListStep2(appAnswerBussinesRegisterDays);
 			}
 			Map<String,List<Integer>> departmentAndAnswerIdMap = new HashMap<>();
@@ -4301,9 +4419,6 @@ public class AnswerService extends AbstractJudgementService {
 	 */
 	public String notNotifiedAnswerStep2Mail(Map<String, Map<Integer, List<Integer>>> notNotifiedAnswerStep2,
 			Map<String, Map<Integer, List<Integer>>> tmpNotNotifiedAnswerStep2, String key, String bodyall) {
-		/////////////////////////////////////////////////////////////////////////////////////////
-		// TODO 文面未確定のため中盤を修正してください
-		/////////////////////////////////////////////////////////////////////////////////////////
 		// メールに記載する内容を入れる要素
 		MailItem baseItem = new MailItem();
 		// 通知内容を取得
@@ -4331,7 +4446,7 @@ public class AnswerService extends AbstractJudgementService {
 			}
 			// 初回時にリマインドのタイトル記載
 			if (notResponseAnswerStep2First) {
-				// TODO 文面未確定のため保留、決まり次第MailMessageUtilに記載の上キーの変更とメールプロパティファイルの変更をお願いします。
+
 				bodyall += getMailPropValue(MailMessageUtil.KEY_ANSWER_ALL_REMIND_NOTIFICATION_REGISTERED_BODY,
 						baseItem);
 				notResponseAnswerStep2First = false;
@@ -4421,7 +4536,6 @@ public class AnswerService extends AbstractJudgementService {
 	 * 回答リマインド通知の内容をメールテンプレートより置換、送信(事業者)
 	 * 
 	 */
-	//TODO DBの取得先が不明のため記載して下さい。(リマインド)
 	public void sendRemindMailAnswerBusiness(Map<String,List<Integer>> notResponseAnswerStep2Business) {
 	if(notResponseAnswerStep2Business.size() != 0){
 		//キーリスト(メルアドリスト)を取得
@@ -4734,9 +4848,6 @@ public class AnswerService extends AbstractJudgementService {
 			}
 		}
 		// 上記処理で見つからなかった部署のみ残っている
-		/////////////////////////////////////////////////////////////////////////////////////////
-		// TODO 文面未確定のため中盤を修正してください
-		/////////////////////////////////////////////////////////////////////////////////////////
 		if (notNotifiedAnswerStep2.size() != 0) {
 			keys = new ArrayList<String>(notNotifiedAnswerStep2.keySet());
 			for (String key : keys) {

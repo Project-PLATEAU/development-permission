@@ -391,12 +391,24 @@ public class ApplicationApiController extends AbstractApiController {
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class),
 			@ApiResponse(code = 409, message = "ステータス不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 503, message = "処理エラー", response = ResponseEntityForm.class) })
 	public ResponseEntityForm completeNotify(
-			@ApiParam(required = true, value = "申請登録結果フォーム") @RequestBody ApplicationRegisterResultForm applicationRegisterResultForm) {
+			@ApiParam(required = true, value = "申請登録結果フォーム") @RequestBody ApplicationRegisterResultForm applicationRegisterResultForm,
+			@CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("再申請完了通知 開始");
 		try {
+			// 権限チェック（事業者か否か）
+			LOGGER.info("権限チェック（事業者か否か） 開始");
+			String role = AuthUtil.getRole(token);
+			if (!AuthUtil.ROLE_BUSINESS.equals(role)) {
+				// 事業者しかアクセス不可
+				LOGGER.warn("ロール不適合:" + role);
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
+			LOGGER.info("権限チェック（事業者か否か） 終了");
+			
 			if (applicationRegisterResultForm != null //
 					&& applicationRegisterResultForm.getApplicationId() != null
 					&& applicationRegisterResultForm.getApplicationStepId() != null) {
@@ -424,6 +436,7 @@ public class ApplicationApiController extends AbstractApiController {
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class),
 			@ApiResponse(code = 409, message = "登録に失敗した場合", response = ResponseEntityForm.class),
 			@ApiResponse(code = 503, message = "処理エラー", response = ResponseEntityForm.class) })
 	public ApplicationRegisterResultForm registerApplication(
@@ -431,6 +444,16 @@ public class ApplicationApiController extends AbstractApiController {
 			@CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("申請登録 開始");
 		try {
+			// 権限チェック（事業者か否か）
+			LOGGER.info("権限チェック（事業者か否か） 開始");
+			String role = AuthUtil.getRole(token);
+			if (!AuthUtil.ROLE_BUSINESS.equals(role)) {
+				// 事業者しかアクセス不可
+				LOGGER.warn("ロール不適合:" + role);
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
+			LOGGER.info("権限チェック（事業者か否か） 終了");
+						
 			// パラメータチェック
 			if (applicationService.validateRegisterApplicationParam(applicationRegisterForm)) {
 				try {
@@ -586,6 +609,11 @@ public class ApplicationApiController extends AbstractApiController {
 			// 部署一覧
 			LOGGER.debug("部署一覧取得 開始");
 			List<DepartmentForm> departmentList = applicationService.getDepartmentList();
+			// セキュリティのために、メールアドレスと管理者メールアドレスをクリアする
+			for (DepartmentForm form : departmentList) {
+				form.setMailAddress("");
+				form.setAdminMailAddress("");
+			}
 			applicationSearchConditionForm.setDepartment(departmentList);
 			LOGGER.debug("部署一覧取得 終了");
 
@@ -814,12 +842,24 @@ public class ApplicationApiController extends AbstractApiController {
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class),
 			@ApiResponse(code = 409, message = "ステータス不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 503, message = "処理エラー", response = ResponseEntityForm.class) })
 	public AnswerConfirmLoginForm notifyCollationInformation(
-			@ApiParam(required = true, value = "申請登録結果フォーム") @RequestBody ApplicationRegisterResultForm applicationRegisterResultForm) {
+			@ApiParam(required = true, value = "申請登録結果フォーム") @RequestBody ApplicationRegisterResultForm applicationRegisterResultForm,
+			@CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("照合情報通知 開始");
 		try {
+			// 権限チェック（事業者か否か）
+			LOGGER.info("権限チェック（事業者か否か） 開始");
+			String role = AuthUtil.getRole(token);
+			if (!AuthUtil.ROLE_BUSINESS.equals(role)) {
+				// 事業者しかアクセス不可
+				LOGGER.warn("ロール不適合:" + role);
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
+			LOGGER.info("権限チェック（事業者か否か） 終了");
+						
 			AnswerConfirmLoginForm form = null;
 			if (applicationRegisterResultForm != null //
 					&& applicationRegisterResultForm.getApplicationId() != null) {
@@ -1030,6 +1070,12 @@ public class ApplicationApiController extends AbstractApiController {
 			}
 			LOGGER.debug("部署一覧取得 終了");
 
+			// セキュリティのために、メールアドレスと管理者メールアドレスをクリアする
+			for(DepartmentForm form:departmentList) {
+				form.setMailAddress("");
+				form.setAdminMailAddress("");
+			}
+			
 			return departmentList;
 		} catch (Exception ex) {
 			LOGGER.error("部署一覧取得時に例外発生", ex);

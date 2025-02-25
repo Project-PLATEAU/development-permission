@@ -102,53 +102,6 @@ public class ChatDao extends AbstractDao {
 	}
 
 	/**
-	 * O_申請検索
-	 * 
-	 * @param chatId チャットID
-	 * @return O_メッセージリスト
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Application> getApplicatioList(Integer chatId) {
-		LOGGER.debug("O_申請検索 開始");
-		EntityManager em = null;
-		try {
-			em = emf.createEntityManager();
-
-			String sql = "" + //
-					"SELECT " + //
-					"  p.application_id AS application_id, " + //
-					"  p.applicant_id AS applicant_id, " + //
-					"  p.status AS status, " + //
-					"  p.register_status AS register_status, " + //
-					"  p.collation_text AS collation_text, " + //
-					"  p.version_information AS version_information, " + //
-					"  p.register_datetime AS register_datetime, " + //
-					"  p.update_datetime AS update_datetime, " + //
-					"  p.application_type_id AS application_type_id " + //
-					"FROM " + //
-					"  o_chat c " + //
-					"INNER JOIN " + //
-					"  o_answer a " + //
-					"ON " + //
-					"  c.answer_id = a.answer_id " + //
-					"INNER JOIN " + //
-					"  o_application p  " + //
-					"ON " + //
-					"  a.application_id = p.application_id " + //
-					"WHERE " + //
-					"  c.chat_id = :chatId  ";
-			Query query = em.createNativeQuery(sql, Application.class);
-			query = query.setParameter("chatId", chatId);
-			return query.getResultList();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-			LOGGER.debug("O_メッセージ検索 終了");
-		}
-	}
-
-	/**
 	 * O_チャット検索
 	 * 
 	 * @param chatId チャットID

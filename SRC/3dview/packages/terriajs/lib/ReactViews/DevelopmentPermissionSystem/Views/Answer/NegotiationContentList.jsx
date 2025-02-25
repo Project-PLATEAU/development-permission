@@ -9,7 +9,7 @@ import CustomStyle from "./scss/content-list.scss";
 import Icon, { StyledIcon } from "../../../../Styled/Icon";
 import _isEqual from 'lodash/isEqual';
 import Config from "../../../../../customconfig.json";
-//import InputChatMessage from "../Views/Chat/InputChatMessage.jsx";
+
 
 /**
  *【R6】事前協議：協議内容一覧コンポーネント

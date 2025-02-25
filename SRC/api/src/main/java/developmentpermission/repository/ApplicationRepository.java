@@ -22,6 +22,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Intege
 	 * 
 	 * @return 申請一覧
 	 */
-	@Query(value = "SELECT application_id, applicant_id, status, register_status, collation_text, register_datetime, update_datetime, version_information, application_type_id FROM o_application WHERE application_id = :applicationId ORDER BY application_id ASC", nativeQuery = true)
+	@Query(value = "SELECT application_id, applicant_id, status, register_status, collation_text, register_datetime, update_datetime, application_type_id FROM o_application WHERE application_id = :applicationId ORDER BY application_id ASC", nativeQuery = true)
 	List<Application> getApplicationList(@Param("applicationId") Integer applicationId);
 }

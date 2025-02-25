@@ -270,6 +270,7 @@ create table o_answer (
   , answer_data_type character(1) not null
   , register_status character(1)
   , delete_unnotified_flag character(1)
+  , delete_flag character(1)
   , deadline_datetime timestamp
   , answer_permission_flag character(1)
   , government_confirm_permission_flag character(1)
@@ -291,7 +292,7 @@ create table m_layer (
   , layer_name character varying(256)
   , table_name character varying(30)
   , layer_code character varying(256)
-  , layer_query character varying(256)
+  , layer_query character varying(256) DEFAULT ''
   , query_require_flag character(1)
   , constraint m_layer_PKC primary key (layer_id)
 ) ;
@@ -330,7 +331,7 @@ create table m_label (
   , label_key character varying(50)
   , label_type char(1)
   , label_text text
-  , application_step text
+  , application_step text not null
   , constraint m_label_PKC primary key (view_code,label_id)
 ) ;
 
@@ -387,7 +388,6 @@ create table o_application (
   , status character varying(3)
   , register_status character(1)
   , collation_text character varying(100)
-  , version_information integer
   , register_datetime timestamp
   , update_datetime timestamp
   , application_type_id integer
@@ -418,38 +418,16 @@ drop table if exists m_category_judgement cascade;
 
 create table m_category_judgement (
   judgement_item_id character varying(10) not null
-  , department_id character varying(10)
-  , category_1 text
-  , category_2 text
-  , category_3 text
-  , category_4 text
-  , category_5 text
-  , category_6 text
-  , category_7 text
-  , category_8 text
-  , category_9 text
-  , category_10 text
   , gis_judgement char(1)
   , buffer double precision
   , display_attribute_flag char(1)
   , judgement_layer character varying(100)
-  , title text
-  , applicable_summary text
-  , applicable_description text
-  , non_applicable_display_flag char(1)
-  , non_applicable_summary text
-  , non_applicable_description text
   , table_name text
   , field_name text
   , non_applicable_layer_display_flag char(1)
   , simultaneous_display_layer text
   , simultaneous_display_layer_flag char(1)
   , disp_order double precision
-  , answer_require_flag char(1)
-  , default_answer text
-  , answer_editable_flag char(1)
-  , answer_days integer
-  , admin_signal_flag char(1)
   , constraint m_category_judgement_PKC primary key (judgement_item_id)
 ) ;
 
@@ -588,6 +566,7 @@ create table o_department_answer (
   , register_status character(1)
   , delete_unnotified_flag character(1)
   , government_confirm_notified_flag character(1)
+  , government_confirm_permission_flag character(1)
   , constraint o_department_answer_PKC primary key (department_answer_id)
 ) ;
 
@@ -616,7 +595,7 @@ create table o_application_version_information (
   , accepting_flag char(1)
   , accept_version_information integer
   , register_datetime timestamp
-  , "update_datetime " timestamp
+  , update_datetime timestamp
   , complete_datetime timestamp
   , register_status character(1)
   , constraint o_application_version_information_PKC primary key (application_id,application_step_id)
@@ -752,21 +731,21 @@ create table m_judgement_result (
   , application_step_id integer not null
   , department_id character varying(10) not null
   , title text
-  , answer_days integer
-  , default_answer text
   , applicable_summary text
-  , applicable_description text
+  , applicable_description text DEFAULT ''
   , non_applicable_display_flag character(1)
   , non_applicable_summary text
   , non_applicable_description text
   , answer_require_flag character(1)
+  , default_answer text
   , answer_editable_flag character(1)
+  , answer_days integer
   , constraint m_judgement_result_PKC primary key (judgement_item_id,application_type_id,application_step_id,department_id)
 ) ;
 
 create unique index idx_m_judgement_result
   on m_judgement_result(judgement_item_id,application_type_id,application_step_id,department_id);
-  
+
 -- F_申請地番
 drop table if exists f_application_lot_number cascade;
 
@@ -870,7 +849,7 @@ comment on column m_government_user.admin_flag is '管理者フラグ:0:一般ユーザ、1:
 
 comment on table m_application_search_result is 'M_申請情報検索結果';
 comment on column m_application_search_result.application_search_result_id is '申請情報検索結果ID';
-comment on column m_application_search_result.reference_type is '参照タイプ:0:申請区分 1:申請者情報';
+comment on column m_application_search_result.reference_type is '参照タイプ:0:申請区分 1:申請者情報 2:その他';
 comment on column m_application_search_result.display_column_name is '表示カラム名:画面表示するカラム名';
 comment on column m_application_search_result.display_order is '表示順';
 comment on column m_application_search_result.table_name is 'テーブル名:参照テーブル名';
@@ -953,6 +932,7 @@ comment on column o_answer.answer_data_type is 'データ種類:0:登録、1:更新、2：追
 5:削除済み、6：引継、7:削除済み（行政）';
 comment on column o_answer.register_status is '登録ステータス:0: 仮申請中 1: 申請済み';
 comment on column o_answer.delete_unnotified_flag is '削除未通知フラグ:1:削除済み・未通知';
+comment on column o_answer.delete_flag is '削除フラグ:1:削除済み';
 comment on column o_answer.deadline_datetime is '回答期限日時';
 comment on column o_answer.answer_permission_flag is '回答通知許可フラグ:1:許可済み 0:未許可';
 comment on column o_answer.government_confirm_permission_flag is '行政確定通知許可フラグ:1:許可済み 0:未許可';
@@ -1009,7 +989,6 @@ comment on column o_application.applicant_id is '申請者情報ID';
 comment on column o_application.status is 'ステータス';
 comment on column o_application.register_status is '登録ステータス:0: 仮申請中 1: 申請済み';
 comment on column o_application.collation_text is '照合文字列:本登録時の照合文字列';
-comment on column o_application.version_information is '廃止_版情報';
 comment on column o_application.register_datetime is '登録日時';
 comment on column o_application.update_datetime is '更新日時';
 comment on column o_application.application_type_id is '申請種類ID';
@@ -1024,58 +1003,16 @@ comment on column m_application_file.application_file_type is '申請ファイル種別:
 
 comment on table m_category_judgement is 'M_区分判定';
 comment on column m_category_judgement.judgement_item_id is '判定項目ID';
-comment on column m_category_judgement.department_id is '廃止_担当部署ID:担当部署IDはカンマ区切りで保持';
-comment on column m_category_judgement.category_1 is '廃止_区分1:画面ID1001と対応.
-対象の申請区分IDをカンマ区切りで格納.
-判定に用いない場合0を格納.';
-comment on column m_category_judgement.category_2 is '廃止_区分2:画面ID1002と対応.
-対象の申請区分IDをカンマ区切りで格納.
-判定に用いない場合0を格納.';
-comment on column m_category_judgement.category_3 is '廃止_区分3:画面ID1003と対応.
-対象の申請区分IDをカンマ区切りで格納.
-判定に用いない場合0を格納.';
-comment on column m_category_judgement.category_4 is '廃止_区分4:画面ID1004と対応.
-対象の申請区分IDをカンマ区切りで格納.
-判定に用いない場合0を格納.';
-comment on column m_category_judgement.category_5 is '廃止_区分5:画面ID1005と対応.
-対象の申請区分IDをカンマ区切りで格納.
-判定に用いない場合0を格納.';
-comment on column m_category_judgement.category_6 is '廃止_区分6:画面ID1006と対応.
-対象の申請区分IDをカンマ区切りで格納.
-判定に用いない場合0を格納.';
-comment on column m_category_judgement.category_7 is '廃止_区分7:画面ID1007と対応.
-対象の申請区分IDをカンマ区切りで格納.
-判定に用いない場合0を格納.';
-comment on column m_category_judgement.category_8 is '廃止_区分8:画面ID1008と対応.
-対象の申請区分IDをカンマ区切りで格納.
-判定に用いない場合0を格納.';
-comment on column m_category_judgement.category_9 is '廃止_区分9:画面ID1009と対応.
-対象の申請区分IDをカンマ区切りで格納.
-判定に用いない場合0を格納.';
-comment on column m_category_judgement.category_10 is '廃止_区分10:画面ID1010と対応.
-対象の申請区分IDをカンマ区切りで格納.
-判定に用いない場合0を格納.';
 comment on column m_category_judgement.gis_judgement is 'GIS判定:0: GIS判定なし 1: 重なり判定 2: 重ならない判定 3: バッファ判定 4: バッファ重ならない判定 5:道路判定';
 comment on column m_category_judgement.buffer is 'バッファ:バッファ判定時のバッファ半径 (m)';
 comment on column m_category_judgement.display_attribute_flag is '重なり属性表示フラグ:0: 属性表示なし 1: 区切り文字で区切って表示 2:改行表示 3:概況診断結果一覧テーブルで行を分けて表示';
 comment on column m_category_judgement.judgement_layer is '判定対象レイヤ:GIS判定で使用するレイヤのレイヤID（カンマ区切り）';
-comment on column m_category_judgement.title is '廃止_タイトル';
-comment on column m_category_judgement.applicable_summary is '廃止_該当表示概要';
-comment on column m_category_judgement.applicable_description is '廃止_該当表示文言';
-comment on column m_category_judgement.non_applicable_display_flag is '廃止_非該当表示有無:1:表示 0:非表示';
-comment on column m_category_judgement.non_applicable_summary is '廃止_非該当表示概要';
-comment on column m_category_judgement.non_applicable_description is '廃止_非該当表示文言';
 comment on column m_category_judgement.table_name is 'テーブル名:文言のラベルとして使用するテーブル名';
 comment on column m_category_judgement.field_name is 'フィールド名:文言のラベルとして使用するフィールド名';
 comment on column m_category_judgement.non_applicable_layer_display_flag is '判定レイヤ非該当時表示有無:1:表示 0:非表示';
 comment on column m_category_judgement.simultaneous_display_layer is '同時表示レイヤ:該当診断結果画面で同時表示する関連レイヤのレイヤID（カンマ区切り）';
 comment on column m_category_judgement.simultaneous_display_layer_flag is '同時表示レイヤ表示有無:1:表示 0: 非表示';
 comment on column m_category_judgement.disp_order is '表示順';
-comment on column m_category_judgement.answer_require_flag is '廃止_回答必須フラグ:1:回答必須 0:回答任意';
-comment on column m_category_judgement.default_answer is '廃止_デフォルト回答:回答任意の項目に登録する初期回答文言';
-comment on column m_category_judgement.answer_editable_flag is '廃止_編集可能フラグ :1:編集可能 0:編集不可';
-comment on column m_category_judgement.answer_days is '廃止_回答日数';
-comment on column m_category_judgement.admin_signal_flag is '廃止_管理者通知権限付与フラグ:1:管理者が通知可能 0:不可';
 
 comment on table m_application_category is 'M_申請区分';
 comment on column m_application_category.category_id is '申請区分ID';
@@ -1182,6 +1119,7 @@ comment on column o_department_answer.update_datetime is '更新日時';
 comment on column o_department_answer.register_status is '登録ステータス:0: 仮申請中 1: 申請済み';
 comment on column o_department_answer.delete_unnotified_flag is '削除未通知フラグ:1:削除済み・未通知';
 comment on column o_department_answer.government_confirm_notified_flag is '行政確定通知フラグ:1:通知済み 0:未通知';
+comment on column o_department_answer.government_confirm_permission_flag is '行政確定通知許可フラグ:1:許可済み 0:未許可';
 
 comment on table m_judgement_authority is 'M_区分判定_権限';
 comment on column m_judgement_authority.judgement_item_id is '判定項目ID';
@@ -1194,7 +1132,7 @@ comment on column o_application_version_information.version_information is '版情
 comment on column o_application_version_information.accepting_flag is '受付フラグ:事前協議受付状態を管理.';
 comment on column o_application_version_information.accept_version_information is '受付版情報:受付された最終の版情報';
 comment on column o_application_version_information.register_datetime is '登録日時';
-comment on column o_application_version_information."update_datetime " is '更新日時';
+comment on column o_application_version_information.update_datetime is '更新日時';
 comment on column o_application_version_information.complete_datetime is '完了日時';
 comment on column o_application_version_information.register_status is '登録ステータス:0: 仮申請中 1: 申請済み';
 

@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
@@ -59,6 +61,7 @@ import developmentpermission.entity.RoadLod2;
 import developmentpermission.entity.SpiltLineExtent;
 import developmentpermission.entity.SplitLine;
 import developmentpermission.entity.SplitRoadCenterLine;
+import developmentpermission.form.AnswerConfirmLoginForm;
 import developmentpermission.form.ApplicationCategoryForm;
 import developmentpermission.form.ApplicationCategorySelectionViewForm;
 import developmentpermission.form.GeneralConditionDiagnosisReportProgressForm;
@@ -1041,8 +1044,14 @@ public class JudgementService extends AbstractJudgementService {
 				LOGGER.error("指定フォルダが存在しない: " + absoluteFolderPath);
 				throw new RuntimeException("指定フォルダが存在しません");
 			}
+			String fileName =  generalConditionDiagnosisReportRequestForm.getFileName();
+			// 申請IDがある場合の生成は末尾に"__申請ID"を強制付与（出力時の認証チェックで使用）
+			if (generalConditionDiagnosisReportRequestForm.getApplicationId() != null
+					&& generalConditionDiagnosisReportRequestForm.getApplicationId().intValue() > 0) {
+				fileName = fileName.replaceAll("\\.(?=[^\\.]+$)", "__"+ generalConditionDiagnosisReportRequestForm.getApplicationId() + ".");
+			}
 			exportWorkBook(wb,
-					absoluteFolderPath + PATH_SPLITTER + generalConditionDiagnosisReportRequestForm.getFileName());
+					absoluteFolderPath + PATH_SPLITTER + fileName);
 			return true;
 		} catch (Exception ex) {
 			LOGGER.error("概況診断結果レポート帳票生成で例外発生", ex);
@@ -1103,6 +1112,25 @@ public class JudgementService extends AbstractJudgementService {
 					LOGGER.error("概況診断レポートが存在しない: " + absoluteFolderPath);
 					throw new RuntimeException("概況診断レポートが存在しません");
 				}
+				String fileName = xlsxFileNames.get(0);
+				// 末尾の"__申請ID." にマッチする正規表現
+				Pattern pattern = Pattern.compile("__([0-9]+)\\.(?=[^\\.]*$)");
+		        Matcher matcher = pattern.matcher(fileName);
+		        // 含まれている場合は申請IDの照合(認証チェック)を強制
+		        if (matcher.find()) {
+		            Integer suffixApplicationId = Integer.parseInt(matcher.group(1));
+		            String id = generalConditionDiagnosisReportRequestForm.getLoginId();
+		            String password = generalConditionDiagnosisReportRequestForm.getPassword();
+		            AnswerConfirmLoginForm answerConfirmLoginForm = new AnswerConfirmLoginForm();
+					answerConfirmLoginForm.setLoginId(id);
+					answerConfirmLoginForm.setPassword(password);
+					// 申請ID
+					Integer applicationId = applicationService.getApplicationIdFromApplicantInfo(answerConfirmLoginForm);
+					if (applicationId == null || !applicationId.equals(suffixApplicationId)) {
+						LOGGER.warn("申請情報取得不能");
+						throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+					}
+		        }
 				String filePath = absoluteFolderPath + PATH_SPLITTER + xlsxFileNames.get(0);
 				Resource resource = new PathResource(filePath);
 				response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);

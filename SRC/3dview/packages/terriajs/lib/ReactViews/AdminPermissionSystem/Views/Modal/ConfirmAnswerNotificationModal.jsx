@@ -1398,7 +1398,15 @@ class ConfirmAnswerNotificationModal extends React.Component {
                                                                 <span>{``}</span>
                                                             </td>
                                                             <td>{answers[key]["answerContent"]}</td>
-                                                            <td>{answers[key]["reApplicationFlag"]?"必要":"不要"}</td>
+                                                            <td>
+                                                                {answers[key]["reApplicationFlag"] == true && (
+                                                                    <span>{`必要`}</span>
+                                                                )}
+                                                                {answers[key]["reApplicationFlag"] == false && (
+                                                                    <span>{`不要`}</span>
+                                                                )}
+                                                                <span>{``}</span>
+                                                            </td>
                                                         </tr>
                                                     ))}
                                                 </tbody>

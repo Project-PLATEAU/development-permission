@@ -46,29 +46,6 @@ public class LedgerApiController extends AbstractApiController {
 	private LedgerService ledgerService;
 	
 	/**
-	 * 指定した画面のラベル一覧取得
-	 * 
-	 * @param viewCode 画面コード
-	 * @return ラベル一覧
-	 */
-	@RequestMapping(value = "/test", method = RequestMethod.GET)
-	@ApiOperation(value = "指定した画面のラベル一覧取得", notes = "指定した画面のラベル一覧をJSON形式で取得する.")
-	@ResponseBody
-	@ApiResponses(value = {
-			@ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
-			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class) })
-	public void getLabel(
-			) {
-		LOGGER.info("ラベル一覧取得 開始");
-		try {
-			ledgerService.exportLedger(84, 3);
-		} catch(Exception e) {
-			
-		} finally {
-			LOGGER.info("ラベル一覧取得 終了");
-		}
-	}
-	/**
 	 * 帳票アップロード
 	 * 
 	 * @param LedgerForm O_帳票ファイルフォーム

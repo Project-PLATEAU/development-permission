@@ -63,9 +63,18 @@ class NotificationFileList extends React.Component {
      * 回答レポート出力
      */
     outputAnswerReport(){
+        let id = this.props.viewState.answerContent.loginId;
+        let password = this.props.viewState.answerContent.password;
         let applicationId = this.props.viewState.answerContent.applicationId;
         let applicationStepId =  this.props.applicationStepId;
-        fetch(Config.config.apiUrl + "/answer/report/" + applicationId + "/" + applicationStepId)
+        fetch(Config.config.apiUrl + "/answer/report/" + applicationId + "/" + applicationStepId,{
+            method: 'POST',
+            body: JSON.stringify({
+                loginId: id,
+                password: password
+            }),
+            headers: new Headers({ 'Content-type': 'application/json' }),
+        })
         .then((res) => {
             if(res.status === 401){
                 alert("認証情報が無効です。ページの再読み込みを行います。");

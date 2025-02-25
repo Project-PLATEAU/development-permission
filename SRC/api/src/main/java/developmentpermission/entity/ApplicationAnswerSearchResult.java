@@ -38,7 +38,6 @@ public class ApplicationAnswerSearchResult implements Serializable {
 	@Column(name = "status")
 	private String status;
 
-	// TODO DB定義変更で廃止となるため、削除予定
 	/** 版情報 */
 	@Column(name = "version_information")
 	private Integer versionInformation;

@@ -282,6 +282,10 @@ class LotNumberSearch extends React.Component {
                 return (<>
                     {Object.keys(searchResult).map(idx => {
                         let flg = this.checkSelected(searchResult[idx]);
+                        // 行政の場合、他の画面から戻る時に、選択している地番に対する選択中地番レイヤを回復
+                        if(flg == true && this.props.terria.authorityJudgment()){
+                            this.changeApplicationPlace(searchResult[idx]?.maxlon,searchResult[idx]?.maxlat,searchResult[idx]?.minlon,searchResult[idx]?.minlat,searchResult[idx]?.lon, searchResult[idx]?.lat);
+                        }
                         return (<tr key={searchResult[idx].chibanId} onClick={
                                         evt => {
                                             if(evt.target.type !== 'checkbox'){

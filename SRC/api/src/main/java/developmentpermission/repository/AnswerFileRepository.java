@@ -142,4 +142,14 @@ public interface AnswerFileRepository extends JpaRepository<AnswerFile, Integer>
 	@Query(value = "SELECT answer_file_id, answer_id, application_id, application_step_id, department_id, answer_file_name, file_path, notified_file_path, delete_unnotified_flag FROM o_answer_file WHERE application_id = :applicationId AND application_step_id = :applicationStepId AND delete_flag = '0' ORDER BY answer_file_id ASC", nativeQuery = true)
 	List<AnswerFile> findByApplicationStepIdUndeleted(@Param("applicationId") Integer applicationId, @Param("applicationStepId") Integer applicationStepId);
 
+	/**
+	 * O_回答ファイル検索（未削除のみ）
+	 * 
+	 * @param filePath ファイルパス
+	 * 
+	 * @return 回答ファイル一覧
+	 */
+	@Query(value = "SELECT answer_file_id, answer_id, application_id, application_step_id, department_id, answer_file_name, file_path, notified_file_path, delete_unnotified_flag FROM o_answer_file WHERE file_path = :filePath AND delete_flag = '0' ORDER BY answer_file_id ASC", nativeQuery = true)
+	List<AnswerFile> findByFilePath(@Param("filePath") String filePath);
+
 }

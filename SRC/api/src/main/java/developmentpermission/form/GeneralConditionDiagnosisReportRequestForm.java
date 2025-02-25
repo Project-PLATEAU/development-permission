@@ -28,6 +28,14 @@ public class GeneralConditionDiagnosisReportRequestForm implements Serializable 
 	@ApiModelProperty(value = "申請ID", example = "1")
 	private Integer applicationId;
 	
+	/** ログインID */
+	@ApiModelProperty(value = "ログインID", example = "00111223344")
+	private String loginId;
+
+	/** パスワード */
+	@ApiModelProperty(value = "パスワード", example = "password")
+	private String password;
+	
 	/** 一時フォルダ名*/
 	@ApiModelProperty(value = "一時フォルダ名", example = "XXXXXXXX")
 	private String folderName;

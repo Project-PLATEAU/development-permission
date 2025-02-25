@@ -411,7 +411,6 @@ public class ApplicationDao extends AbstractDao {
 					"  oa.collation_text AS collation_text, " + //
 					"  oa.register_datetime AS register_datetime, " + //
 					"  oa.update_datetime AS update_datetime, " + //
-					"  (CASE WHEN oavi.register_status = '0'  THEN  oavi.version_information - 1 ELSE oavi.version_information END) AS version_information, " +// o_申請の版情報が廃止になるため、O_申請版情報の版情報を利用
 					"  oa.application_type_id AS application_type_id " + //
 					"FROM " + // O_申請
 					"  o_application AS oa " + //
@@ -1127,120 +1126,6 @@ public class ApplicationDao extends AbstractDao {
 	}
 
 	/**
-	 * M_区分判定検索
-	 * 
-	 * @param applicationId     申請ID
-	 * @param applicationTypeId 申請種類ID
-	 * @param applicationStepId 申請段階ID
-	 * @return M_区分判定リスト
-	 */
-	@SuppressWarnings("unchecked")
-	public List<CategoryJudgement> getCategoryJudgementList(int applicationId) {
-		LOGGER.debug("M_区分判定検索 開始");
-		EntityManager em = null;
-		try {
-			em = emf.createEntityManager();
-
-			String sql = "" + //
-					"SELECT DISTINCT " + //
-					"  b.judgement_item_id AS judgement_item_id, " + //
-					"  b.department_id AS department_id, " + // TODO M_判定結果に移動
-					"  b.category_1 AS category_1, " + //
-					"  b.category_2 AS category_2, " + //
-					"  b.category_3 AS category_3, " + //
-					"  b.category_4 AS category_4, " + //
-					"  b.category_5 AS category_5, " + //
-					"  b.category_6 AS category_6, " + //
-					"  b.category_7 AS category_7, " + //
-					"  b.category_8 AS category_8, " + //
-					"  b.category_9 AS category_9, " + //
-					"  b.category_10 AS category_10, " + //
-					"  b.gis_judgement AS gis_judgement, " + //
-					"  b.buffer AS buffer, " + //
-					"  b.judgement_layer AS judgement_layer, " + //
-					"  b.title AS title, " + // TODO M_判定結果に移動
-					"  b.applicable_summary AS applicable_summary, " + // TODO M_判定結果に移動
-					"  b.applicable_description AS applicable_description, " + // TODO M_判定結果に移動
-					"  b.non_applicable_display_flag AS non_applicable_display_flag, " + //
-					"  b.non_applicable_summary AS non_applicable_summary, " + // TODO M_判定結果に移動
-					"  b.non_applicable_description AS non_applicable_description, " + // TODO M_判定結果に移動
-					"  b.table_name AS table_name, " + //
-					"  b.field_name AS field_name, " + //
-					"  b.non_applicable_layer_display_flag AS non_applicable_layer_display_flag, " + //
-					"  b.simultaneous_display_layer AS simultaneous_display_layer, " + //
-					"  b.simultaneous_display_layer_flag AS simultaneous_display_layer_flag, " + //
-					"  b.display_attribute_flag AS display_attribute_flag, " + //
-					"  b.answer_require_flag AS answer_require_flag, " + // TODO M_判定結果に移動
-					"  b.default_answer AS default_answer, " + // TODO M_判定結果に移動
-					"  b.answer_editable_flag AS answer_editable_flag, " + // TODO M_判定結果に移動
-					"  b.answer_days AS answer_days " + // TODO M_判定結果に移動
-					"FROM " + //
-					"  o_answer AS a " + //
-					"INNER JOIN " + //
-					"  m_category_judgement AS b " + //
-					"ON " + //
-					"  a.judgement_id = b.judgement_item_id " + //
-					"WHERE " + //
-					"  a.application_id = :applicationId " + //
-					"ORDER BY " + //
-					"  b.judgement_item_id ASC";
-			Query query = em.createNativeQuery(sql, CategoryJudgement.class);
-			query = query.setParameter("applicationId", applicationId);
-			return query.getResultList();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-			LOGGER.debug("M_区分判定検索 終了");
-		}
-	}
-
-	/**
-	 * M_部署検索
-	 * 
-	 * @param applicationId 申請ID
-	 * @return M_部署リスト
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Department> getDepartmentList(int applicationId) {
-		LOGGER.debug("M_部署検索 開始");
-		EntityManager em = null;
-		try {
-			em = emf.createEntityManager();
-
-			String sql = "" + //
-					"SELECT DISTINCT " + //
-					"  c.department_id AS department_id, " + //
-					"  c.department_name AS department_name, " + //
-					"  c.answer_authority_flag AS answer_authority_flag, " + //
-					"  c.mail_address AS mail_address, " + //
-					"  c.admin_mail_address AS admin_mail_address " + //
-					"FROM " + //
-					"  o_answer AS a " + //
-					"INNER JOIN " + //
-					"  m_category_judgement AS b " + //
-					"ON " + //
-					"  a.judgement_id = b.judgement_item_id " + //
-					"INNER JOIN " + //
-					"  m_department AS c " + //
-					"ON " + //
-					"  b.department_id = c.department_id " + //
-					"WHERE " + //
-					"  a.application_id = :applicationId " + //
-					"ORDER BY " + //
-					"  department_id ASC";
-			Query query = em.createNativeQuery(sql, Department.class);
-			query = query.setParameter("applicationId", applicationId);
-			return query.getResultList();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-			LOGGER.debug("M_部署検索 終了");
-		}
-	}
-
-	/**
 	 * M_部署検索
 	 * 
 	 * @param applicationId     申請ID
@@ -1474,62 +1359,6 @@ public class ApplicationDao extends AbstractDao {
 	}
 
 	/**
-	 * O_申請
-	 * 
-	 * @param departmentId 担当部署ID
-	 * @return O_申請検索リスト
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Application> getApplicatioList(String departmentId) {
-		LOGGER.debug("O_申請 開始");
-		EntityManager em = null;
-		try {
-			em = emf.createEntityManager();
-
-			String sql = "" + //
-					"SELECT " + //
-					"  application_id AS application_id, " + //
-					"  applicant_id AS applicant_id, " + //
-					"  status AS status, " + //
-					"  register_status AS register_status, " + //
-					"  collation_text AS collation_text, " + //
-					"  version_information AS version_information, " + //
-					"  register_datetime AS register_datetime, " + //
-					"  update_datetime AS update_datetime, " + //
-					"  application_type_id AS application_type_id " + //
-					"FROM " + //
-					"  o_application  " + //
-					"WHERE " + //
-					"  application_id IN ( " + //
-					"    SELECT DISTINCT " + //
-					"      a.application_id AS application_id " + //
-					"    FROM  " + //
-					"      o_answer AS a  " + //
-					"    INNER JOIN " + //
-					"      m_category_judgement AS b  " + //
-					"    ON " + //
-					"      a.judgement_id = b.judgement_item_id  " + //
-					"    WHERE " + //
-					"      b.department_id = :departmentId " + //
-					"    AND " + //
-					"      a.complete_flag = '0' " + //
-					"  ) " + //
-					"AND " + //
-					"  register_status = '1' " + //
-					"ORDER BY " + //
-					"  register_datetime DESC ";
-			Query query = em.createNativeQuery(sql, Application.class);
-			query = query.setParameter("departmentId", departmentId);
-			return query.getResultList();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-			LOGGER.debug("O_申請検索 終了");
-		}
-	}
-
-	/**
 	 * O_申請（事前相談）
 	 * 
 	 * @param departmentId     担当部署ID
@@ -1548,7 +1377,7 @@ public class ApplicationDao extends AbstractDao {
 					"SELECT " + //
 					"  t1.application_id, " + //
 					"  t1.status, " + //
-					"  t1.version_information, " + //
+					"  t4.version_information, " + //
 					"  TO_CHAR(t2.deadline_datetime,'YYYY/MM/DD') deadline_date, " + //
 					"  CASE WHEN (CAST(t2.deadline_datetime AS DATE) - current_date) > :deadlineXDaysAgo THEN FALSE " + //
 					"       ELSE TRUE END warning " + //
@@ -1560,7 +1389,7 @@ public class ApplicationDao extends AbstractDao {
 					"      ,MAX(a.deadline_datetime) AS deadline_datetime " + //
 					"    FROM " + //
 					"      o_answer AS a  " + //
-					"      INNER JOIN m_category_judgement AS b " + //
+					"      INNER JOIN m_judgement_authority AS b " + //
 					"        ON a.judgement_id = b.judgement_item_id " + // 判断項目ID
 					"    WHERE " + //
 					"          a.application_step_id = 1 " + // 申請段階ID 1:事前相談
@@ -1582,6 +1411,9 @@ public class ApplicationDao extends AbstractDao {
 					"  ) t3 " + //
 					"  ON t1.application_id = t3.application_id " + // 
 					"  AND t3.application_step_id = 1 " + // 
+					"  INNER JOIN o_application_version_information AS t4" + // 最大の申請段階に対する版情報を取得（事前相談）
+					"  ON t4.application_id = t1.application_id " + //
+					"  AND t4.application_step_id = t3.application_step_id " + //
 					"WHERE " + //
 					"  t1.register_status = '1' " + // O_申請.登録ステータス1:登録済み
 					"ORDER BY " + //
@@ -1617,7 +1449,7 @@ public class ApplicationDao extends AbstractDao {
 					"SELECT " + //
 					"  t1.application_id, " + //
 					"  t1.status, " + //
-					"  t1.version_information, " + //
+					"  t4.version_information, " + //
 					"  TO_CHAR(t2.deadline_datetime,'YYYY/MM/DD') deadline_date, " + //
 					"  CASE WHEN (CAST(t2.deadline_datetime AS DATE) - current_date) > :deadlineXDaysAgo THEN FALSE " + //
 					"       ELSE TRUE END warning " + //
@@ -1634,7 +1466,7 @@ public class ApplicationDao extends AbstractDao {
 					"    WHERE " + //
 					"          a.application_step_id = 2 " + // 申請段階ID 2:事前協議
 					"      AND a.answer_status IN ('0','3','4') " + // O_回答.ステータス IN (0:未回答,3:否認済み,4:承認済み)
-					"      AND b.department_id = :departmentId " + // ログインユーザ所属部署ID
+					"      AND a.department_id = :departmentId " + // ログインユーザ所属部署ID
 					"      AND a.register_status = '1' " + // O_回答.登録ステータス 1:登録済み
 					"    GROUP BY " + //
 					"      a.application_id " + //
@@ -1651,6 +1483,9 @@ public class ApplicationDao extends AbstractDao {
 					"  ) t3 " + //
 					"  ON t1.application_id = t3.application_id " + // 
 					"  AND t3.application_step_id = 2 " + // 
+					"  INNER JOIN o_application_version_information AS t4" + // 最大の申請段階に対する版情報を取得（事前相談）
+					"  ON t4.application_id = t1.application_id " + //
+					"  AND t4.application_step_id = t3.application_step_id " + //
 					"WHERE " + //
 					"  t1.register_status = '1' " + // O_申請.登録ステータス1:登録済み
 					"ORDER BY " + //
@@ -1686,7 +1521,7 @@ public class ApplicationDao extends AbstractDao {
 					"SELECT " + //
 					"  t1.application_id, " + //
 					"  t1.status, " + //
-					"  t1.version_information, " + //
+					"  t4.version_information, " + //
 					"  TO_CHAR(t2.deadline_datetime,'YYYY/MM/DD') deadline_date, " + //
 					"  CASE WHEN (CAST(t2.deadline_datetime AS DATE) - current_date) > :deadlineXDaysAgo THEN FALSE " + //
 					"       ELSE TRUE END warning " + //
@@ -1698,7 +1533,7 @@ public class ApplicationDao extends AbstractDao {
 					"      ,MAX(a.deadline_datetime) AS deadline_datetime " + //
 					"    FROM " + //
 					"      o_answer AS a  " + //
-					"      INNER JOIN m_category_judgement AS b " + //
+					"      INNER JOIN m_judgement_authority AS b " + //
 					"        ON a.judgement_id = b.judgement_item_id " + // 判断項目ID
 					"    WHERE " + //
 					"          a.application_step_id = 3 " + // 申請段階ID 3:許可判定
@@ -1720,6 +1555,9 @@ public class ApplicationDao extends AbstractDao {
 					"  ) t3 " + //
 					"  ON t1.application_id = t3.application_id " + // 
 					"  AND t3.application_step_id = 3 " + // 
+					"  INNER JOIN o_application_version_information AS t4" + //
+					"  ON t4.application_id = t1.application_id " + //
+					"  AND t4.application_step_id = t3.application_step_id " + //
 					"WHERE " + //
 					"  t1.register_status = '1' " + // O_申請.登録ステータス1:登録済み
 					"ORDER BY " + //

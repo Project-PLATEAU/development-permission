@@ -74,7 +74,7 @@ class AnswerStatusList extends React.Component {
                                 <td style={{color: answers[key]["warning"]? "red":""}}>{answers[key]["status"]}</td>
                                 <td style={{color: answers[key]["warning"]? "red":""}}>{answers[key]["applicationId"]}</td>
                                 <td style={{color: answers[key]["warning"]? "red":""}}>{answers[key]["deadlineDate"]?answers[key]["deadlineDate"]:""}</td>
-                                <td><Button primary fullWidth onClick={e=>{this.showApplyDdetail(answers[key]["applicationId"])}}> 詳細 </Button></td>
+                                <td><Button primary fullWidth onClick={e=>{e.stopPropagation(); this.showApplyDdetail(answers[key]["applicationId"])}}> 詳細 </Button></td>
                             </tr>
                         ))}
                     </tbody>

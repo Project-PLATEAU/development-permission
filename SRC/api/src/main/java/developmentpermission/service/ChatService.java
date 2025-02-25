@@ -1118,7 +1118,7 @@ public class ChatService extends AbstractJudgementService {
 				String title = "";
 				if (applcationStepId.equals(APPLICATION_STEP_ID_1)) {
 					// 事前相談: 回答IDより回答対象、担当課を取得
-					List<CategoryJudgement> categoryJudgements = answerDao.getCategoryJudgementList(chat.getAnswerId());
+					List<CategoryJudgementResult> categoryJudgements = answerDao.getJudgementResultByAnswerId(chat.getAnswerId());
 
 					if (categoryJudgements.size() == 0) {
 						LOGGER.warn("M_区分判定の値が取得できない 回答ID: " + chat.getAnswerId());
@@ -2062,7 +2062,7 @@ public class ChatService extends AbstractJudgementService {
 
 		String answerTarget = "";
 		AnswerDao answerDao = new AnswerDao(emf);
-		List<CategoryJudgement> categoryJudgements = answerDao.getCategoryJudgementList(answerId);
+		List<CategoryJudgementResult> categoryJudgements = answerDao.getJudgementResultByAnswerId(answerId);
 		if (categoryJudgements.size() != 1) {
 			LOGGER.error("区分判定データの件数が不正");
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);

@@ -144,11 +144,9 @@ class ConfirmApplicationDetails extends React.Component {
                                 //概況診断レポート一覧画面表示
                                 this.props.viewState.setGeneralConditionDiagnosisrReportShow(true);
                             }else{
-                                //TODO:エラー時は再実行?
                                 alert('帳票生成呼び出し処理に失敗しました');
                             }
                         }).catch(error => {
-                            //TODO:エラー時は再実行?
                             console.error('処理に失敗しました', error);
                             alert('帳票生成呼び出し処理に失敗しました');
                         });
@@ -189,7 +187,6 @@ class ConfirmApplicationDetails extends React.Component {
                                     }
                                     applicationFile[key]["uploadFileFormList"][fileKey]["status"] = res.status;
                                     if(res.status !== 201){
-                                        // alert('アップロードに失敗しました');
                                         // 仮申請状態のデータを消去
                                         rollbackCount = rollbackCount + 1;
                                         this.execRollBack(1, resApplicationId, rollbackCount);
@@ -208,9 +205,7 @@ class ConfirmApplicationDetails extends React.Component {
                                         this.notify(resApplicationId,notifyCount,answerExpectDays, checkedApplicationStepId);               
                                     }
                                 }).catch(error => {
-                                    // document.getElementById("customloader").style.display = "none";
-                                    console.error('処理に失敗しました', error);
-                                    // alert('処理に失敗しました');
+                                    console.error('処理に失敗しました', error);     
                                     // 仮申請状態のデータの消去
                                     rollbackCount = rollbackCount + 1;
                                     this.execRollBack(1, resApplicationId, rollbackCount);
@@ -524,11 +519,9 @@ class ConfirmApplicationDetails extends React.Component {
                     //概況診断レポート一覧画面表示
                     this.props.viewState.setGeneralConditionDiagnosisrReportShow(true);
                 }else{
-                    //TODO:エラー時は再実行?
                     alert('帳票生成呼び出し処理に失敗しました');
                 }
             }).catch(error => {
-                //TODO:エラー時は再実行?
                 console.error('処理に失敗しました', error);
                 alert('帳票生成呼び出し処理に失敗しました');
             });
@@ -635,6 +628,9 @@ class ConfirmApplicationDetails extends React.Component {
                     this.props.viewState.setCustomMessage(res[0]?.labels?.title,res[0]?.labels?.content + '<BR>' + res[0]?.labels?.questionaryContent)
                 }else{
                     this.props.viewState.setCustomMessage(res[0]?.labels?.title,res[0]?.labels?.content)
+                }
+                if(this.props.viewState.folderName){
+                    this.props.viewState.updateProgressListForCertification(this.props.viewState.folderName,loginId,password);
                 }
                 document.getElementById("customloader").style.display = "none";
                 this.props.viewState.showApplicationCompletedView(loginId,password,answerExpectDays);

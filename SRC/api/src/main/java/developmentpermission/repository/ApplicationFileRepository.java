@@ -115,4 +115,14 @@ public interface ApplicationFileRepository extends JpaRepository<ApplicationFile
 	@Query(value = "SELECT file_id, application_id, application_step_id, application_file_id, upload_file_name, file_path,version_information, extension, upload_datetime, direction_department, revise_content FROM o_application_file WHERE application_id = :applicationId AND application_step_id = :applicationStepId  AND application_file_id = :applicationFileId ORDER BY version_information desc, upload_datetime desc", nativeQuery = true)
 	List<ApplicationFile> getAnswerRepotFileList(@Param("applicationFileId") String applicationFileId, @Param("applicationId") Integer applicationId, @Param("applicationStepId") Integer applicationStepId);
 
+	/**
+	 * 申請ファイル一覧取得
+	 * 
+	 * @param filePath ファイルパス
+	 * 
+	 * @return 申請ファイル一覧
+	 */
+	@Query(value = "SELECT file_id, application_id, application_step_id, application_file_id, upload_file_name, file_path,version_information, extension, upload_datetime, direction_department, revise_content FROM o_application_file WHERE file_path = :filePath AND delete_flag = '0' ORDER BY file_id desc", nativeQuery = true)
+	List<ApplicationFile> findByFilePath(@Param("filePath") String filePath);
+
 }

@@ -1384,7 +1384,7 @@ public class ApplicationService extends AbstractJudgementService {
 		}
 
 		// 通知ファイル一覧
-		// TODO 事業者向けの場合、通知フラグ=trueのもののみ取得 ⇒ 済
+		// 事業者向けの場合、通知フラグ=trueのもののみ取得
 		List<Ledger> ledgerList;
 		if (isGoverment) {
 			// 行政向けの場合
@@ -1395,7 +1395,7 @@ public class ApplicationService extends AbstractJudgementService {
 		}
 		List<LedgerForm> LedgerFormList = new ArrayList<LedgerForm>();
 		for (Ledger ledger : ledgerList) {
-			// TODO Formセット処理修正 ⇒ 済
+			// Formセット
 			LedgerFormList.add(getLedgerFormFromEntity(isGoverment, ledger));
 		}
 		applyAnswerDetailForm.setLedgerFiles(LedgerFormList);
@@ -1917,6 +1917,7 @@ public class ApplicationService extends AbstractJudgementService {
 		LOGGER.debug("申請ファイルアップロード 開始");
 		try {
 			// ファイルパスは「/application/<申請ID>/<申請ファイルID>/<ファイルID>/<申請段階ID>/<版情報>/<アップロードファイル名>」
+			// ※ファイルパスの構造を変わると、ファイル自体削除へ影響がある
 
 			// O_申請ファイル登録
 			LOGGER.trace("O_申請ファイル登録 開始");
@@ -2566,7 +2567,7 @@ public class ApplicationService extends AbstractJudgementService {
 				String columnName = applicationSearchResult.getTableColumnName();
 
 				List<Object> valueList = new ArrayList<Object>();
-				// TODO 取得する必要のないカラムがある場合はコメントアウトを・・・
+
 				if (typeCategory.equals(refType)) {
 					// 申請区分
 					if (tableNameApplicationCategory.equals(tableName)) {
@@ -2720,9 +2721,9 @@ public class ApplicationService extends AbstractJudgementService {
 						if (columnNameStatus.equals(columnName)) {
 							// ステータス
 							try {
-								final String statusText = (application.getVersionInformation() != null)
+								final String statusText = (maxApplicationVersionInformation != null)
 										? versionInformationText.replace(versionInformationReplaceText,
-												application.getVersionInformation().toString())
+												maxApplicationVersionInformation.toString())
 												+ getStatusMap().get(application.getStatus())
 										: getStatusMap().get(application.getStatus());
 								valueList.add(statusText);
@@ -3008,9 +3009,23 @@ public class ApplicationService extends AbstractJudgementService {
 				// 事前協議の場合、
 				if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
 
+					// 通知フラグ
+					boolean notifiedFlag = false;
+					if (entity.getNotifiedFlag() == null) {
+						// 事業者向けの場合、回答履歴がない場合（自動回答の条項）、回答から、通知フラグを再取得
+						List<Answer> answerList = answerRepository.findByAnswerId(entity.getAnswerId());
+						if (answerList.size() == 0) {
+							notifiedFlag = false;
+						} else {
+							notifiedFlag = answerList.get(0).getNotifiedFlag() == null ? false
+									: answerList.get(0).getNotifiedFlag();
+						}
+					} else {
+						notifiedFlag = entity.getNotifiedFlag();
+					}
+					
 					// 事業者へ通知済み後、事業者回答未登録の場合、
-					if ((businessPassStatus == null || EMPTY.equals(businessPassStatus))
-							&& entity.getNotifiedFlag() != null && entity.getNotifiedFlag()) {
+					if ((businessPassStatus == null || EMPTY.equals(businessPassStatus)) && notifiedFlag) {
 						// 回答内容を上書き更新して、事業者へ再通知しない場合、事業者合意内容が入力不可になる
 						if (entity.getAnswerUpdateFlag() != null && entity.getAnswerUpdateFlag()) {
 							// 編集不可とする
@@ -6095,7 +6110,6 @@ public class ApplicationService extends AbstractJudgementService {
 	 * @return 帳票フォーム
 	 */
 	private LedgerForm getLedgerFormFromEntity(boolean isGoverment, Ledger entity) {
-		// TODO アップロード可否, 通知可否をセット ⇒ 済
 		// アップロード可否
 		// 事業者の場合: 一律false
 		// 行政担当者の場合:
@@ -6573,10 +6587,26 @@ public class ApplicationService extends AbstractJudgementService {
 	private void deleteApplicationFile(ApplicationFile applicationFile) {
 		LOGGER.debug("申請ファイル削除処理　開始　ファイルID: " + applicationFile.getFileId());
 
+		// ファイル自体の削除フラグ
+		boolean isDelete = false;
+
+		if (applicationFile.getFilePath() != null) {
+			// ファイルパスからファイルIDを抽出
+			// ファイルパスは「/application/<申請ID>/<申請ファイルID>/<ファイルID>/<申請段階ID>/<版情報>/<アップロードファイル名>」
+			String[] filePaths = applicationFile.getFilePath().split(PATH_SPLITTER);
+			String fileId = filePaths[4];
+
+			// ファイルパス中のファイルIDがレコードのファイルIDと同じの場合、追加登録のファイルとして、実体が削除可能
+			// 異なる場合、前版、または、前段階から引継のファイルとして、ファイル削除不可
+			if (fileId != null && fileId.equals(applicationFile.getFileId().toString())) {
+				isDelete = true;
+			}
+		}
+
 		// 削除したい申請ファイル
-		if(applicationFile.getFilePath() != null) {			
+		if (isDelete) {
 			File tmpFile = new File(fileRootPath + applicationFile.getFilePath());
-			LOGGER.debug("申請ファイル実体削除開始: " + tmpFile.getAbsolutePath());
+			LOGGER.trace("申請ファイル実体削除開始: " + tmpFile.getAbsolutePath());
 			if (tmpFile.exists()) {
 				if (!FileSystemUtils.deleteRecursively(tmpFile)) {
 					LOGGER.error("申請ファイル実体削除に失敗: " + tmpFile.getAbsolutePath());
@@ -6585,16 +6615,18 @@ public class ApplicationService extends AbstractJudgementService {
 			} else {
 				LOGGER.warn("削除する申請ファイルが存在しない");
 			}
-			LOGGER.debug("申請ファイル実体削除 完了");
+			LOGGER.trace("申請ファイル実体削除 完了");
+		} else {
+			LOGGER.trace("申請ファイルが前版、または、前段階から引継ぎなので、ファイル実体削除をスキップ");
 		}
 
 		// O_申請ファイル
-		LOGGER.debug("申請ファイルDB削除開始 ファイルID: " + applicationFile.getFileId());
+		LOGGER.trace("申請ファイルDB削除開始 ファイルID: " + applicationFile.getFileId());
 		if (applicationFileJdbc.deleteApplicationFile(applicationFile.getFileId()) != 1) {
 			LOGGER.error("申請ファイルデータの削除件数が不正");
 			throw new RuntimeException("申請ファイルデータの削除件数が不正");
 		}
-		LOGGER.debug("申請ファイルDB削除 完了");
+		LOGGER.trace("申請ファイルDB削除 完了");
 	}
 
 	/**

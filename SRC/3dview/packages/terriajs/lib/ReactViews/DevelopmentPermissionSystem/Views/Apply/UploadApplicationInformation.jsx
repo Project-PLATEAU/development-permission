@@ -460,7 +460,7 @@ class UploadApplicationInformation extends React.Component {
         return (
             <>
                 <div className={CustomStyle.div_area}>
-                    <Box id="UploadApplicationInformation" css={`display:block`} >
+                    <Box id="UploadApplicationInformation" css={`display:block`} style={{height: 'calc(100vh - 230px)'}}>
                         <nav className={CustomStyle.custom_nuv} id="UploadApplicationInformationDrag">
                             申請フォーム
                         </nav>

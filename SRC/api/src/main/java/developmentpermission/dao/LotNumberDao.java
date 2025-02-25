@@ -66,100 +66,42 @@ public class LotNumberDao extends AbstractDao {
 			}
 
 			String sql;
-			if (isGoverment) {
-				// 行政向け
-				sql = "" + //
-						"SELECT " + //
-						"  a.chiban_id AS chiban_id, " + //
-						"  a.district_id AS district_id, " + //
-						"  a.chiban AS chiban, " + //
-						"  a.result_column1 AS result_column1, " + //
-						"  a.result_column2 AS result_column2, " + //
-						"  a.result_column3 AS result_column3, " + //
-						"  a.result_column4 AS result_column4, " + //
-						"  a.result_column5 AS result_column5, " + //
-						"  ST_X(ST_Centroid(ST_Envelope(ST_Transform(a.geom, " + lonlatEpsg + ")))) AS lon, " + //
-						"  ST_Y(ST_Centroid(ST_Envelope(ST_Transform(a.geom, " + lonlatEpsg + ")))) AS lat, " + //
-						"  ST_XMin(ST_Transform(a.geom, " + lonlatEpsg + ")) AS minlon, " + //
-						"  ST_YMin(ST_Transform(a.geom, " + lonlatEpsg + ")) AS minlat, " + //
-						"  ST_XMax(ST_Transform(a.geom, " + lonlatEpsg + ")) AS maxlon, " + //
-						"  ST_YMax(ST_Transform(a.geom, " + lonlatEpsg + ")) AS maxlat, " + //
-						"  b.district_name AS ooaza_district_name, " + //
-						"  b.district_kana AS ooaza_district_kana, " + //
-						"  b.result_column1 AS ooaza_result_column1, " + //
-						"  b.result_column2 AS ooaza_result_column2, " + //
-						"  b.result_column3 AS ooaza_result_column3, " + //
-						"  b.result_column4 AS ooaza_result_column4, " + //
-						"  b.result_column5 AS ooaza_result_column5, " + //
-						"  e.status AS status, " + //
-						"  e.application_id AS application_id, " + //
-						"  e.full_flag AS full_flag " + //
-						"FROM " + //
-						"  f_lot_number AS a " + //
-						"LEFT OUTER JOIN " + //
-						"  f_district AS b " + //
-						"ON " + //
-						"  a.district_id = b.district_id " + //
-						"LEFT JOIN LATERAL ( " + //
-						"  SELECT " + //
-						"    d.application_id, " + //
-						"    d.status, " + //
-						"    c.full_flag " + //
-						"  FROM  " + //
-						"    o_application_lot_number AS c " + //
-						"  LEFT OUTER JOIN " + //
-						"    o_application AS d " + //
-						"  ON " + //
-						"    c.application_id = d.application_id " + //
-						"  WHERE " + //
-						"    a.chiban_id = c.lot_number_id " + //
-						"  ORDER BY " + //
-						"    d.update_datetime DESC NULLS LAST " + //
-						"  LIMIT 1 " + // update_datetimeで降順ソートして最新の1件のみを取得
-						") AS e ON true " + //
-						where + //
-						"ORDER BY " + //
-						"  b.disp_order ASC, " + //
-						"  a.chiban ASC " + "LIMIT 5001";
-			} else {
-				// 事業者向け
-				sql = "" + //
-						"SELECT " + //
-						"  a.chiban_id AS chiban_id, " + //
-						"  a.district_id AS district_id, " + //
-						"  a.chiban AS chiban, " + //
-						"  a.result_column1 AS result_column1, " + //
-						"  a.result_column2 AS result_column2, " + //
-						"  a.result_column3 AS result_column3, " + //
-						"  a.result_column4 AS result_column4, " + //
-						"  a.result_column5 AS result_column5, " + //
-						"  ST_X(ST_Centroid(ST_Envelope(ST_Transform(a.geom, " + lonlatEpsg + ")))) AS lon, " + //
-						"  ST_Y(ST_Centroid(ST_Envelope(ST_Transform(a.geom, " + lonlatEpsg + ")))) AS lat, " + //
-						"  ST_XMin(ST_Transform(a.geom, " + lonlatEpsg + ")) AS minlon, " + //
-						"  ST_YMin(ST_Transform(a.geom, " + lonlatEpsg + ")) AS minlat, " + //
-						"  ST_XMax(ST_Transform(a.geom, " + lonlatEpsg + ")) AS maxlon, " + //
-						"  ST_YMax(ST_Transform(a.geom, " + lonlatEpsg + ")) AS maxlat, " + //
-						"  b.district_name AS ooaza_district_name, " + //
-						"  b.district_kana AS ooaza_district_kana, " + //
-						"  b.result_column1 AS ooaza_result_column1, " + //
-						"  b.result_column2 AS ooaza_result_column2, " + //
-						"  b.result_column3 AS ooaza_result_column3, " + //
-						"  b.result_column4 AS ooaza_result_column4, " + //
-						"  b.result_column5 AS ooaza_result_column5, " + //
-						"  null AS status, " + // null固定
-						"  null AS application_id, " + // null固定
-						"  '0' AS full_flag " + //
-						"FROM " + //
-						"  f_lot_number AS a " + //
-						"LEFT OUTER JOIN " + //
-						"  f_district AS b " + //
-						"ON " + //
-						"  a.district_id = b.district_id " + //
-						where + //
-						"ORDER BY " + //
-						"  b.disp_order ASC, " + //
-						"  a.chiban ASC " + "LIMIT 5001";
-			}
+			sql = "" + //
+					"SELECT " + //
+					"  a.chiban_id AS chiban_id, " + //
+					"  a.district_id AS district_id, " + //
+					"  a.chiban AS chiban, " + //
+					"  a.result_column1 AS result_column1, " + //
+					"  a.result_column2 AS result_column2, " + //
+					"  a.result_column3 AS result_column3, " + //
+					"  a.result_column4 AS result_column4, " + //
+					"  a.result_column5 AS result_column5, " + //
+					"  ST_X(ST_Centroid(ST_Envelope(ST_Transform(a.geom, " + lonlatEpsg + ")))) AS lon, " + //
+					"  ST_Y(ST_Centroid(ST_Envelope(ST_Transform(a.geom, " + lonlatEpsg + ")))) AS lat, " + //
+					"  ST_XMin(ST_Transform(a.geom, " + lonlatEpsg + ")) AS minlon, " + //
+					"  ST_YMin(ST_Transform(a.geom, " + lonlatEpsg + ")) AS minlat, " + //
+					"  ST_XMax(ST_Transform(a.geom, " + lonlatEpsg + ")) AS maxlon, " + //
+					"  ST_YMax(ST_Transform(a.geom, " + lonlatEpsg + ")) AS maxlat, " + //
+					"  b.district_name AS ooaza_district_name, " + //
+					"  b.district_kana AS ooaza_district_kana, " + //
+					"  b.result_column1 AS ooaza_result_column1, " + //
+					"  b.result_column2 AS ooaza_result_column2, " + //
+					"  b.result_column3 AS ooaza_result_column3, " + //
+					"  b.result_column4 AS ooaza_result_column4, " + //
+					"  b.result_column5 AS ooaza_result_column5, " + //
+					"  null AS status, " + // null固定
+					"  null AS application_id, " + // null固定
+					"  '0' AS full_flag " + //
+					"FROM " + //
+					"  f_lot_number AS a " + //
+					"LEFT OUTER JOIN " + //
+					"  f_district AS b " + //
+					"ON " + //
+					"  a.district_id = b.district_id " + //
+					where + //
+					"ORDER BY " + //
+					"  b.disp_order ASC, " + //
+					"  a.chiban ASC " + "LIMIT 5001";
 
 			Query query = em.createNativeQuery(sql, LotNumberAndDistrict.class);
 			if (districtId != null) {
@@ -218,6 +160,7 @@ public class LotNumberDao extends AbstractDao {
 					"WHERE " + //
 					"  ST_Intersects(a.geom, ST_Transform(ST_SetSRID(ST_Point(:longitude, :latitude), " + lonlatEpsg
 					+ "), " + epsg + ")) " + //
+					"  AND b.register_status = '1' " + //
 					"ORDER BY " + //
 					"  a.application_id ASC";
 			Query query = em.createNativeQuery(sql, ApplyLotNumber.class);

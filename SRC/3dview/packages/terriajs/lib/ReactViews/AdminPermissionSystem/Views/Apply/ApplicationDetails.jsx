@@ -420,6 +420,18 @@ class ApplicationDetails extends React.Component {
             const items = this.state.terria.workbench.items;
             let layerFlg = false;
             for (const aItem of items) {
+
+                // 表示可能な関係ないレイヤをクリアする
+                // 地番検索結果（事業者）→申請地番の仕様変更（f503d321）より、行政側の地番検索機能は事業者側と同じようになる
+                // 選択中地番
+                // 申請中地番→対象申請以外の地番も含むため、一緒にクリアする
+                if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForBusiness ||
+                    aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForSelected ||
+                    aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplying ) {
+                    this.state.terria.workbench.remove(aItem);
+                    aItem.loadMapItems();
+                }
+
                 if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget) {
                     aItem.setTrait(CommonStrata.user,
                         "parameters",
@@ -499,6 +511,11 @@ class ApplicationDetails extends React.Component {
             }
         }
         this.props.viewState.setIsSidePanelFullScreen(false);
+
+        // 申請中地番レイヤを表示
+        this.props.viewState.showApplicationAreaLayer();
+        // 申請情報表示地番レイヤをクリア
+        this.props.viewState.showApplicationSearchTargetLayer(false, null);
     }
 
      /**

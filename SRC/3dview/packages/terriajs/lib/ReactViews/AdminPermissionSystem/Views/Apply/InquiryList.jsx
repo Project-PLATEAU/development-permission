@@ -83,7 +83,7 @@ class InquiryStatusList extends React.Component {
                             <tr key={`inquiries-${key}`}  onClick={event => {this.showLotNumberLayers(event, inquiries[key])}}>
                                 <td>{this.getStatusLabel(inquiries[key]["status"])}</td>
                                 <td>{inquiries[key]["applicationId"]}</td>
-                                <td><Button primary fullWidth onClick={e=>{this.showChat(inquiries[key])}}>詳細</Button></td>
+                                <td><Button primary fullWidth onClick={e=>{e.stopPropagation(); this.showChat(inquiries[key])}}>詳細</Button></td>
                             </tr>
                         ))}
                     </tbody>

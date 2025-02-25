@@ -62,29 +62,4 @@ public class ApplyAnswerForm implements Serializable {
 	/** 申請情報が初回受付確認中かどうか（事前協議のみ） */
 	@ApiModelProperty(value = "申請情報が初回受付確認中かどうか（事前協議のみ）", example = "true")
 	private Boolean firstAccepting;
-
-//	TODO:　データ構造を変わる伴い、以下の項目が削除予定
-	/** 申請区分 */
-	@ApiModelProperty(value = "申請区分選択一覧")
-	private List<ApplicationCategorySelectionViewForm> applicationCategories;
-
-	/** 回答一覧（申請情報詳細取得時のみ） */
-	@ApiModelProperty(value = "回答一覧")
-	private List<AnswerForm> answers;
-
-	/** 申請ファイル一覧 */
-	@ApiModelProperty(value = "申請ファイル一覧")
-	private List<ApplicationFileForm> applicationFiles;
-
-	/** 申請ファイル版情報一覧 */
-	@ApiModelProperty(value = "申請ファイル版情報一覧")
-	private List<ApplicationFileVersionForm> applicationFileVersions;
-	
-	/** 回答履歴一覧 */
-	@ApiModelProperty(value = "回答履歴一覧")
-	private List<AnswerHistoryForm> answerHistorys;
-	
-	/** 回答ファイル更新履歴 */
-	@ApiModelProperty(value = "回答ファイル更新履歴一覧")
-	private List<AnswerFileHistoryForm> answerFileHistorys;
 }

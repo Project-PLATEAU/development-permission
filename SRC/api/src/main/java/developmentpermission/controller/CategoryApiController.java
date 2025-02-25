@@ -81,32 +81,4 @@ public class CategoryApiController extends AbstractApiController {
 			LOGGER.info("申請区分画面一覧取得 終了");
 		}
 	}
-	
-	/**
-	 * 概況診断タイプ一覧取得
-	 * 
-	 * @return 概況診断タイプ一覧取得
-	 */
-	@RequestMapping(value = "/judgementTypes", method = RequestMethod.GET)
-	@ApiOperation(value = "概況診断タイプ一覧取得", notes = "概況診断タイプ一覧を取得する.")
-	@ResponseBody
-	@ApiResponses(value = { @ApiResponse(code = 503, message = "処理エラー", response = ResponseEntityForm.class)})
-	public List<JudgementTypeForm> getJudgementTypes() {
-		LOGGER.info("概況診断タイプ一覧取得 開始");
-		try {
-			List<JudgementTypeForm> formList = new ArrayList<JudgementTypeForm>();
- 
-			// 申請区分選択画面の概況診断タイプリスト取得
-			LOGGER.debug("概況診断タイプ一覧取得 開始");
-			formList = authenticationService.getJudgementTypeList();
-			LOGGER.debug("概況診断タイプ一覧取得 終了");
- 
-			return formList;
-		} catch (Exception ex) {
-			LOGGER.error("概況診断タイプ一覧取得に例外発生", ex);
-			throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);
-		} finally {
-			LOGGER.info("概況診断タイプ一覧取得 終了");
-		}
-	}
 }

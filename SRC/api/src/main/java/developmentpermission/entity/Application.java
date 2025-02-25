@@ -50,11 +50,6 @@ public class Application implements Serializable {
 	@Column(name = "collation_text")
 	private String collationText;
 
-	// TODO DB定義変更で廃止となるため、削除予定
-	/** 版情報 */
-	@Column(name = "version_information")
-	private Integer versionInformation;
-
 	/** 登録日時 */
 	@Column(name = "register_datetime")
 	private LocalDateTime registerDatetime;

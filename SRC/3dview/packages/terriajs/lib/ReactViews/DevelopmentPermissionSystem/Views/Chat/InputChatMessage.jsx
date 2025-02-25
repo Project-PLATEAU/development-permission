@@ -369,6 +369,18 @@ class InputChatMessage extends React.Component {
                                     const items = this.props.terria.workbench.items;
                                     let layerFlg = false;
                                     for (const aItem of items) {
+
+                                        // 表示可能な関係ないレイヤをクリアする
+                                        // 地番検索結果（事業者）→申請地番の仕様変更（f503d321）より、行政側の地番検索機能は事業者側と同じようになる
+                                        // 選択中地番
+                                        // 申請中地番→対象申請以外の地番も含むため、一緒にクリアする
+                                        if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForBusiness ||
+                                            aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForSelected ||
+                                            aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplying ) {
+                                            this.state.terria.workbench.remove(aItem);
+                                            aItem.loadMapItems();
+                                        }
+                                        this.props.viewState.showApplicationSearchTargetLayer(true , this.state.applicationId);
                                         if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget) {
                                             aItem.setTrait(CommonStrata.user,
                                                 "parameters",
@@ -690,7 +702,7 @@ class InputChatMessage extends React.Component {
                 window.location.reload();
                 return null;
             }
-            //TODO:投稿前後のメッセージ件数を比較して、投稿に成功するか判断する？
+
             if (res.chatId || res.length > 0) {
                 this.getChatRelatedInfo(true);
                 // 登録されたメッセージをクリアする
@@ -734,6 +746,12 @@ class InputChatMessage extends React.Component {
             let backToPage = this.props.viewState.backToPage;
             this.props.viewState.changeAdminTabActive(backToPage.tab);
             this.props.viewState.changeApplyPageActive(backToPage.page? backToPage.page:"applyList");
+
+            // 申請中地番レイヤを表示
+            this.props.viewState.showApplicationAreaLayer();
+            // 申請情報表示地番をクリア
+            this.props.viewState.showApplicationSearchTargetLayer(false, null);
+
         }else{
             // 回答確認画面へ戻る
             this.props.viewState.backFromChatView();
@@ -1097,6 +1115,11 @@ class InputChatMessage extends React.Component {
     uploadFile(inquiryFiles,messageId){
         Object.keys(inquiryFiles).map(key => {
             // パラメータ編集
+            inquiryFiles[key]["applicationId"] = this.state.applicationId;
+            if(!this.props.terria.authorityJudgment()){
+                inquiryFiles[key]["loginId"] = this.props.viewState.answerContent.loginId;
+                inquiryFiles[key]["password"] = this.props.viewState.answerContent.password;
+            }
             inquiryFiles[key]["messageId"] = messageId;
             const formData  = new FormData();
             for(const name in inquiryFiles[key]) {

@@ -119,7 +119,7 @@ class EnterApplicantInformation extends React.Component {
         let explanation = this.state.explanation;
 
         //サーバからlabelを取得
-        fetch(Config.config.apiUrl + "/label/1007")
+        fetch(Config.config.apiUrl + "/label/1007/1")
         .then(res => res.json())
         .then(res => {
             if(res.status === 401){
@@ -128,11 +128,9 @@ class EnterApplicantInformation extends React.Component {
                 return null;
             }
             if (Object.keys(res).length > 0) {
-                let label1 = res[0]?.labels?.title1;
                 let label2 = res[0]?.labels?.content1;
-                let label3 = res[0]?.labels?.title2;
                 let label4 = res[0]?.labels?.content2;
-                explanation = { title1: label1, content1: label2, title2: label3, content2: label4};
+                explanation = { content1: label2, content2: label4};
                 this.setState({ explanation: explanation });
             }else{
                 alert("labelの取得に失敗しました。");
@@ -261,9 +259,9 @@ class EnterApplicantInformation extends React.Component {
     }
 
     render() {
-        const title1 = this.state.explanation.title1;
+        const title1 = "1. 申請者情報";
         const explanation1 = this.state.explanation.content1;
-        const title2 = this.state.explanation.title2;
+        const title2 = "2. 連絡先";
         const explanation2 = this.state.explanation.content2;
         
         const applicantInformation = this.state.applicantInformation;

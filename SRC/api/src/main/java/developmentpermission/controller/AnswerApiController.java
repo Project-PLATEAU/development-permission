@@ -352,12 +352,18 @@ public class AnswerApiController extends AbstractApiController {
 		LOGGER.info("回答ファイル（引用）アップロード 開始");
 		try {
 			String departmentId = AuthUtil.getDepartmentId(token);
-			// ToDo:バリエーションチェック
-			final String userId = AuthUtil.getUserId(token);
-			answerService.uploadQuoteFile(quoteFileForm, userId);
-			ResponseEntityForm responseEntityForm = new ResponseEntityForm(HttpStatus.CREATED.value(),
-					"Answer File registration successful.");
-			return responseEntityForm;
+			// バリエーションチェック
+			if (answerService.validateuploadQuoteFile(quoteFileForm, departmentId)) {
+				final String userId = AuthUtil.getUserId(token);
+				answerService.uploadQuoteFile(quoteFileForm, userId);
+				ResponseEntityForm responseEntityForm = new ResponseEntityForm(HttpStatus.CREATED.value(),
+						"Answer File registration successful.");
+				return responseEntityForm;
+			} else {
+				// パラメータ不正
+				LOGGER.warn("パラメータ不正");
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			}
 		} finally {
 			LOGGER.info("回答ファイル（引用）アップロード 終了");
 		}
@@ -453,7 +459,7 @@ public class AnswerApiController extends AbstractApiController {
 	 * @param applicationId 申請ID
 	 * @return 応答Entity
 	 */
-	@RequestMapping(value = "/report/{application_id}/{application_step_id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/report/{application_id}/{application_step_id}", method = RequestMethod.POST)
 	@ApiOperation(value = "回答レポート出力(事業者)", notes = "回答レポートを出力する.")
 	@ResponseBody
 	@ApiResponses(value = {
@@ -463,13 +469,26 @@ public class AnswerApiController extends AbstractApiController {
 	public void exportAnswerReport(
 			@ApiParam(required = true, value = "申請ID") @PathVariable(value = "application_id") Integer applicationId , 
 			@ApiParam(required = true, value = "申請段階ID") @PathVariable(value = "application_step_id") Integer applicationStepId,
+			@ApiParam(required = true, value = "申請者ログインパラメータフォーム") @RequestBody AnswerConfirmLoginForm answerConfirmLoginForm,
 			@CookieValue(value = "token", required = false) String token, HttpServletResponse response) {
 	
 		LOGGER.info("回答レポート出力 開始");
 		try {
+			String id = answerConfirmLoginForm.getLoginId();
+			String password = answerConfirmLoginForm.getPassword();
+			
             // パラメータチェック
-			if (applicationId != null &&applicationStepId != null) {
-				if (!answerService.exportAnswerReportWorkBook(applicationId, applicationStepId,response)) {
+			if (applicationId != null && applicationStepId != null && id != null && password != null) {
+				// 申請ID
+				Integer baseApplicationId = applicationService
+						.getApplicationIdFromApplicantInfo(answerConfirmLoginForm);
+				if (baseApplicationId == null || !baseApplicationId.equals(applicationId)) {
+					// 照合IDとパスワードによる認証失敗
+					LOGGER.warn("回答レポート出力での照合IDとパスワードによる認証失敗");
+					throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+				}
+
+				if (!answerService.exportAnswerReportWorkBook(applicationId, applicationStepId, response)) {
 					LOGGER.warn("帳票生成失敗");
 					throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);
 				}
@@ -493,21 +512,32 @@ public class AnswerApiController extends AbstractApiController {
 	@ResponseBody
 	@ApiResponses(value = {
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class),
 			@ApiResponse(code = 503, message = "処理エラー", response = ResponseEntityForm.class) })
 	public List<LedgerMasterForm> getLedgerList(
 			@ApiParam(required = true, value = "申請段階ID") @PathVariable(value = "applicationStep_id") Integer applicationStepId,
 			@CookieValue(value = "token", required = false) String token, HttpServletResponse response) {
 		LOGGER.info("協議対象一覧取得(行政) 開始");
 		try {
-			List<LedgerMasterForm> formList = new ArrayList<LedgerMasterForm>();
-			// 画面に入力必要な協議対象リスト取得
-			LOGGER.debug("協議対象一覧取得 開始");
-			formList = applicationService.getLedgerList(applicationStepId);
-			LOGGER.debug("協議対象一覧取得 終了");
-			return formList;
-		} catch (Exception ex) {
-			LOGGER.error("協議対象一覧取得に例外発生", ex);
-			throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);
+			// 権限チェック（ロールチェック）
+			LOGGER.info("権限チェック（ロールチェック） 開始");
+			String role = AuthUtil.getRole(token);
+			if (!AuthUtil.ROLE_GOVERMENT.equals(role) && !AuthUtil.ROLE_BUSINESS.equals(role)) {
+				LOGGER.warn("ロール不適合:" + role);
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
+			LOGGER.info("権限チェック（ロールチェック） 終了");
+			try {
+				List<LedgerMasterForm> formList = new ArrayList<LedgerMasterForm>();
+				// 画面に入力必要な協議対象リスト取得
+				LOGGER.debug("協議対象一覧取得 開始");
+				formList = applicationService.getLedgerList(applicationStepId);
+				LOGGER.debug("協議対象一覧取得 終了");
+				return formList;
+			} catch (Exception ex) {
+				LOGGER.error("協議対象一覧取得に例外発生", ex);
+				throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);
+			}
 		} finally {
 			LOGGER.info("協議対象一覧取得(行政) 終了");
 		}

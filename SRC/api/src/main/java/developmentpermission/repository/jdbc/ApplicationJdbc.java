@@ -107,26 +107,6 @@ public class ApplicationJdbc extends AbstractJdbc {
 	}
 	
 	/**
-	 * 申請情報の版情報更新
-	 * 
-	 * @param applicationId 申請ID
-	 * @return 更新件数
-	 */
-	public int updateVersionInformation(int applicationId) {
-		LOGGER.debug("申請情報の版情報更新 開始");
-		try {
-			String sql = "" + //
-					"UPDATE o_application " + //
-					"SET version_information = COALESCE(version_information, 1) + 1 " + //
-					"WHERE application_id=?";
-			return jdbcTemplate.update(sql, //
-					applicationId);
-		} finally {
-			LOGGER.debug("申請情報の版情報更新 終了");
-		}
-	}
-	
-	/**
 	 * 申請削除
 	 * 
 	 * @param applicationId 申請ID

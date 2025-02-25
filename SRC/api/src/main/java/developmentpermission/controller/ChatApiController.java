@@ -627,6 +627,11 @@ public class ChatApiController extends AbstractApiController {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 			}
 			LOGGER.info("必須チェック 終了");
+
+			// 照合IDとパスワードの認証チェック
+			loginInfoAuthCheck(token, chatRequestForm.getLoginId(), chatRequestForm.getPassword(),
+					chatRequestForm.getApplicationId());
+
 			// チャット情報取得
 			List<Chat> chatList = new ArrayList<Chat>();
 			// パラメータのチャットIDが空(null)かどうか
@@ -668,12 +673,28 @@ public class ChatApiController extends AbstractApiController {
 	@ApiOperation(value = "問合せファイルアップロード", notes = "問合せファイルをアップロードする.")
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
-			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class) })
+			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class)})
 	public ResponseEntityForm uploadInquiryrFile(
 			@ApiParam(required = true, value = "問合せファイルフォーム[multipart/form-data]") @ModelAttribute InquiryFileForm inquiryFileForm,
 			@CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("問合せファイルアップロード 開始");
 		try {
+			// ロールチェック
+			// 権限チェック（事業者か否か）
+			LOGGER.info("権限チェック（事業者か否か） 開始");
+			String role = AuthUtil.getRole(token);
+			if (!AuthUtil.ROLE_BUSINESS.equals(role)) {
+				// 事業者しかアクセス不可
+				LOGGER.warn("ロール不適合:" + role);
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
+			LOGGER.info("権限チェック（事業者か否か） 終了");
+
+			// 照合IDとパスワードの認証チェック
+			loginInfoAuthCheck(token, inquiryFileForm.getLoginId(), inquiryFileForm.getPassword(),
+					inquiryFileForm.getApplicationId());
+
 			if (chatService.validateInquiryFileForm(inquiryFileForm)) {
 				chatService.uploadInquiryFile(inquiryFileForm);
 				ResponseEntityForm responseEntityForm = new ResponseEntityForm(HttpStatus.CREATED.value(),
@@ -714,6 +735,10 @@ public class ChatApiController extends AbstractApiController {
 				LOGGER.warn("不正なroleによる認証：" + role);
 				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 			}
+
+			// 照合IDとパスワードの認証チェック(行政の場合、チェックをスキップ)
+			loginInfoAuthCheck(token, inquiryFileForm.getLoginId(), inquiryFileForm.getPassword(),
+					inquiryFileForm.getApplicationId());
 
 			if (chatService.validateDownloadInquiryFile(inquiryFileForm)) {
 				return chatService.downloadInquiryFile(inquiryFileForm);
@@ -859,6 +884,49 @@ public class ChatApiController extends AbstractApiController {
 			}
 		} finally {
 			LOGGER.warn("権限チェック 終了");
+		}
+	}
+	
+	/**
+	 * ロールが事業者の場合、照合IDとパスワードの認証チェックを行う
+	 * @param token             トーケン
+	 * @param collationId       照合ID
+	 * @param password          パスワード
+	 * @param applicationIdParm 申請ID
+	 */
+	private void loginInfoAuthCheck(String token, String collationId, String password, Integer applicationIdParm) {
+		try {
+			LOGGER.info("照合IDとパスワードの認証チェック 開始");
+
+			// 権限チェック（事業者か否か）
+			String role = AuthUtil.getRole(token);
+			if (AuthUtil.ROLE_BUSINESS.equals(role)) {
+
+				if (collationId != null && !"".equals(collationId) //
+						&& password != null && !"".equals(password)) {
+
+					AnswerConfirmLoginForm answerConfirmLoginForm = new AnswerConfirmLoginForm(collationId, password,
+							false);
+					// 申請ID
+					Integer applicationId = applicationService
+							.getApplicationIdFromApplicantInfo(answerConfirmLoginForm);
+					if (applicationId == null) {
+						// 照合IDとパスワードによる認証失敗
+						LOGGER.warn("照合IDとパスワードによる認証失敗");
+						throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+					} else if (applicationIdParm != null && !applicationId.equals(applicationIdParm)) {
+						// 申請IDとパラメータの申請IDが一緒かどうか
+						LOGGER.warn("照合IDとパスワードによる認証失敗");
+						throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+					}
+				} else {
+					// パラメータ不正
+					LOGGER.warn("パラメータ不正");
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+				}
+			}
+		} finally {
+			LOGGER.info("照合IDとパスワードの認証チェック 終了");
 		}
 	}
 }

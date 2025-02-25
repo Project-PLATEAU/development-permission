@@ -336,11 +336,9 @@ class GeneralConditionDiagnosis extends React.Component {
                         //概況診断レポート一覧画面表示
                         this.props.viewState.setGeneralConditionDiagnosisrReportShow(true);
                     }else{
-                        //TODO:エラー時は再実行?
                         this.errorHandler(null);
                     }
                 }).catch(error => {
-                    //TODO:エラー時は再実行?
                     this.errorHandler(error);
                 });
             }else{
@@ -836,16 +834,17 @@ class GeneralConditionDiagnosis extends React.Component {
 
         //シミュレート実行の場合は帳票出力は行わない
         if(!isSimulateExecution){
+            const requestBody = {
+                folderName: this.props.viewState.folderName,
+                lotNumbers: applicationPlace,
+                applicationCategories: checkedApplicationCategory,
+                generalConditionDiagnosisResults: generalConditionDiagnosisResult,
+                applicationTypeId: applicationTypeId,
+                applicationStepId: applicationStepId
+            };
             fetch(Config.config.apiUrl + "/judgement/report", {
                 method: 'POST',
-                body: JSON.stringify({
-                    folderName: this.props.viewState.folderName,
-                    lotNumbers: applicationPlace,
-                    applicationCategories: checkedApplicationCategory,
-                    generalConditionDiagnosisResults: generalConditionDiagnosisResult,
-                    applicationTypeId: applicationTypeId,
-                    applicationStepId: applicationStepId
-                }),
+                body: JSON.stringify(requestBody),
                 headers: new Headers({ 'Content-type': 'application/json' }),
             })
             .then((res) => {

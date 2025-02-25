@@ -99,11 +99,9 @@ class IssuanceFileUploadModal extends React.Component {
             return false;
         }
 
-        //TODO: アップロード処理
         issuanceLedgerForm.uploadFile = file;
         issuanceLedgerForm.uploadFileName = file.name;
 
-        //TODO: 以下削除予定（nullの場合400となる為）
         if(!issuanceLedgerForm.notifiable){
             issuanceLedgerForm.notifiable = false;
         }

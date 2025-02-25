@@ -38,8 +38,7 @@ class GeneralConditionDiagnosisrReport extends React.Component {
         };
         //進捗状況の取得間隔：ミリ秒
         this.intervalTime=15000;
-        //再試行判定間隔：(intervalTime＊20)ミリ秒
-        //TODO:要調整箇所
+        //再試行判定間隔：(intervalTime＊retryCheckInterval)ミリ秒
         this.retryCheckInterval=12;
     }
 
@@ -176,6 +175,11 @@ class GeneralConditionDiagnosisrReport extends React.Component {
                         currentRequestBody["applicationStepId"] = generalConditionDiagnosisResult["applicationStepId"];
                     }
                 }
+                if(requestBody["applicationId"]){
+                    currentRequestBody["applicationId"] = requestBody["applicationId"];
+                    currentRequestBody["loginId"] = requestBody["loginId"];
+                    currentRequestBody["password"] = requestBody["password"];
+                }
             }
             fetch(Config.config.apiUrl + "/judgement/report", {
                 method: 'POST',
@@ -264,11 +268,9 @@ class GeneralConditionDiagnosisrReport extends React.Component {
                         this.props.viewState.setProgressList(newSimulateProgressMap["requestBody"]);
                         this.setState({checkRetryCounter:0,simulateProgressListTemp:JSON.parse(JSON.stringify(this.props.viewState.simulateProgressList))});
                     }else{
-                        //TODO:エラー時は再実行?
                         alert("帳票生成の再実行に失敗しました");
                     }
                 }).catch(error => {
-                    //TODO:エラー時は再実行?
                     console.error(error);
                     alert("帳票生成の再実行に失敗しました");
                 });
@@ -282,7 +284,6 @@ class GeneralConditionDiagnosisrReport extends React.Component {
     }
 
     render() {
-        //モック用にコメントアウト
         const simulateProgressList = this.props.viewState.simulateProgressList;
         return (
             <div className={CustomStyle.popup_content}>
@@ -330,7 +331,6 @@ class GeneralConditionDiagnosisrReport extends React.Component {
                                     </Box>
                                     <Box col2>
                                         <button onClick={()=>{
-                                                //モック用にコメントアウト
                                                 this.download(simulateProgressMap["folderName"],simulateProgressMap["fileName"],simulateProgressMap["requestBody"],false)
                                             }} 
                                             className={CustomStyle.icon} title="ダウンロード">
@@ -348,7 +348,6 @@ class GeneralConditionDiagnosisrReport extends React.Component {
                                     </Box>
                                     <Box col2>
                                         <button onClick={()=>{
-                                                //モック用にコメントアウト
                                                 this.download(simulateProgressMap["folderName"],simulateProgressMap["fileName"],simulateProgressMap["requestBody"],true)
                                             }} 
                                                 className={CustomStyle.icon} title="削除">
@@ -370,7 +369,6 @@ class GeneralConditionDiagnosisrReport extends React.Component {
                         {!simulateProgressMap["completeDateTime"]&&simulateProgressMap["retry"]&&(
                             <div className={CustomStyle.retry_container}>
                                 <button className={CustomStyle.retry_button} onClick={()=>{
-                                                //モック用にコメントアウト
                                                 this.retry(simulateProgressMap);
                                             }}>
                                     <span className={CustomStyle.dli_redo}></span>再試行

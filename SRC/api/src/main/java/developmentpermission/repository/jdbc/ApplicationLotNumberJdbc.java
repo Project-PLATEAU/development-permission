@@ -23,31 +23,6 @@ public class ApplicationLotNumberJdbc extends AbstractJdbc {
 	/** LOGGER */
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationLotNumberJdbc.class);
 
-	/**
-	 * O_申請地番登録: 廃止
-	 * 
-	 * @param form          申請地番情報
-	 * @param applicationId 申請ID
-	 * @return 更新件数
-	 */
-	public int insert(LotNumberForm form, int applicationId) {
-		LOGGER.debug("申請地番登録 開始");
-		try {
-			String sql = "" + //
-					"INSERT INTO o_application_lot_number ( " + //
-					"  lot_number_id, " + //
-					"  application_id, " + //
-					"  regeister_datetime, " + //
-					"  full_flag " + //
-					") VALUES (?, ?, CURRENT_TIMESTAMP, ?)";
-			return jdbcTemplate.update(sql, //
-					form.getChibanId(), //
-					applicationId, //
-					form.getFullFlag());
-		} finally {
-			LOGGER.debug("申請地番登録 終了");
-		}
-	}
 
 	/**
 	 * F_申請地番登録
@@ -73,7 +48,6 @@ public class ApplicationLotNumberJdbc extends AbstractJdbc {
 			LOGGER.debug("申請地番登録 終了");
 		}
 	}
-	
 
 	/**
 	 * F_申請地番削除
