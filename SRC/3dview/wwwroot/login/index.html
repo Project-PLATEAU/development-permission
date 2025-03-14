@@ -176,23 +176,14 @@
 	            headers: new Headers({ 'Content-type': 'application/json' }),
 	        })
 	        .then(res => {
-	            console.log(res);
 	            if(res.status === 201){
-                    // 行政アンケート画面を開く
-                    /*
-                    let url = "https://path.to.questinnaire/for/government";
-                    let target = "admin_quessionaire";
-                    //window.open(url, target);
-
                     window.location.href = "../";
-                    */
-                if(res.status === 401){
+                }else if(res.status === 401){
                     // 401認証エラーの場合の処理を追加
                     alert('認証情報が無効です。ページの再読み込みを行います。');
                     window.location.href = "./login/";
                     return null;
-                }
-	            }else{
+                }else{
 	            	document.getElementById("error").innerText = "ログインに失敗しました";
 	            }
 	        }).catch(error => {
