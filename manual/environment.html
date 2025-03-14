@@ -269,7 +269,7 @@ table td {
 </li>
 <li><p>Apache Tomcat Version 9.0.65</p>
 </li>
-<li><p>GeoServer Version 2.20.4</p>
+<li><p>GeoServer Version 2.21.5</p>
 </li>
 </ul>
 </li>
@@ -525,10 +525,10 @@ sudo firewall-cmd --reload
 </li>
 </ol>
 <p><a id="sec504"></a></p>
-<h2 id="5-4geoserver2204のインストール">5-4.GeoServer2.20.4のインストール</h2>
+<h2 id="5-4geoserver2215のインストール">5-4.GeoServer2.21.5のインストール</h2>
 <ol>
 <li><p>SOURCE FORGEで配信されているため、</p>
-<p>ブラウザから「https://geoserver.org/release/2.20.4/」にアクセス後、Web Archiveからwarのダウンロード及び解凍を行います。</p>
+<p>ブラウザから「https://geoserver.org/release/2.21.5/」にアクセス後、Web Archiveからwarのダウンロード及び解凍を行います。</p>
 </li>
 <li><p>解凍したwarをtomcatに配備します。</p>
 <pre><code class="lang-Text">cd &quot;warが置いてある場所&quot;
@@ -930,67 +930,67 @@ psql -h localhost -p 5432 -U devps -d devps_db
 <tr class="even">
 <td><p>M_カレンダー</p>
 <p>m_calendar</p></td>
-<td></td>
+<td>営業日一覧</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td><p>M_権限</p>
 <p>m_authority</p></td>
-<td></td>
+<td>各部署の回答、通知権限一覧</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><p>M_判定結果</p>
 <p>m_judgement_result</p></td>
-<td></td>
+<td>各判定項目の判定結果一覧</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td><p>M_申請区分_区分判定</p>
 <p>m_application_category_judgement</p></td>
-<td></td>
+<td>M_申請区分とM_区分判定の紐付け一覧</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><p>M_申請情報項目選択肢</p>
 <p>m_applicant_information_item_option</p></td>
-<td></td>
+<td>項目型が単一選択または複数選択の各申請者情報項目の選択肢</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td><p>M_申請種類</p>
 <p>m_application_type</p></td>
-<td></td>
+<td>申請種類一覧</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><p>M_申請段階</p>
 <p>m_application_step</p></td>
-<td></td>
+<td>申請段階一覧</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td><p>M_帳票ラベル</p>
 <p>m_ledger_label</p></td>
-<td></td>
+<td>各帳票中に、置換必要な文字列の設定一覧</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><p>M_帳票</p>
 <p>m_ledger</p></td>
-<td></td>
+<td>帳票一覧</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td><p>M_開発登録簿</p>
 <p>m_development_document</p></td>
-<td></td>
+<td>開発登録簿一覧</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><p>M_区分判定_権限</p>
 <p>m_judgement_authority</p></td>
-<td></td>
+<td>各判定項目の担当部署一覧</td>
 <td></td>
 </tr>
 </tbody>
@@ -1050,7 +1050,6 @@ psql -h localhost -p 5432 -U devps -d devps_db
 <h2 id="7-1-m_申請区分選択画面m_application_category_selection_view">7-1. M_申請区分選択画面（m_application_category_selection_view）</h2>
 <p>create_master_data_sheet.xlsxで作成するカラムは以下の通りです。</p>
 <span style="color: red; ">
-<p>※view_idは「1001」～「1010」まで固定で必ず設定してください。</p>
 <p>※表示に使用しない画面（申請区分）はview_flagを0に設定してください。</p>
 </span>
 <p>独自にデータをカスタマイズする場合、シート上のサンプルデータは削除してください。</p>
@@ -1077,7 +1076,7 @@ psql -h localhost -p 5432 -U devps -d devps_db
 <td>view_id</td>
 <td>画面ID</td>
 <td>○</td>
-<td>「1001」～「1010」まで固定で設定すること</td>
+<td></td>
 </tr>
 <tr class="even">
 <td>B</td>
@@ -2471,7 +2470,7 @@ public static void main(String\[\] args) {
 	</tr>
 	<tr>
 		<td>道路種別による案内文言</td>
-		<td>{display_by_road_type_area}</td>
+		<td>{road_type_result_area}</td>
 		<td>道路種別取得時</td>
 		<td>index_text=[道路種別識別コード]</td>
 		<td>道路種別コード値ごとに行を作成する。</td>
@@ -2770,7 +2769,7 @@ public static void main(String\[\] args) {
 </td>
 </tr>
 <tr class="even">
-<td>FN</td>
+<td>N</td>
 <td>answer_days</td>
 <td>回答日数</td>
 <td>○</td>
@@ -4684,7 +4683,7 @@ chmod -c -R 755 ./application
 <td>概況診断結果表示</td>
 <td>申請対象の地番を表示.</td>
 <td>layer_style_lotnumber_application_target.sld</td>
-<td>layer_sql_lotnumber_disignate.txt</td>
+<td>layer_sql_lotnumber_search_establishment.txt</td>
 <td><img src="../resources/environment/image120.png" style="width:0.21878in;height:0.17711in"></td>
 </tr>
 <tr class="even">
@@ -4704,21 +4703,20 @@ chmod -c -R 755 ./application
 <td><img src="../resources/environment/image122.png" style="width:0.23962in;height:0.2292in"></td>
 </tr>
 <tr class="even">
-<td>廃止_地番検索結果（行政）</td>
-<td>廃止_地番検索（行政）</td>
-<td><p>地番検索の結果に該当する地番を表示.</p>
-<p>申請中地番を着色表示.</p></td>
-<td>layer_style_lotnumber_result_government.sld</td>
-<td>llayer_sql_lotnumber_search_government.txt</td>
-<td><img src="../resources/environment/image123.png" style="width:0.32296in;height:0.85429in"></td>
-</tr>
-<tr class="odd">
 <td>申請情報表示地番</td>
 <td>申請情報表示地番</td>
 <td>行政側の申請情報検索結果の行クリック時にクリック業の申請地番を着色表示.</td>
 <td>layer_style_lotnumber_application_info.sld</td>
 <td>layer_sql_lotnumber_disignate.txt</td>
 <td><img src="../resources/environment/image124.png" style="width:0.28129in;height:0.20836in"></td>
+</tr>
+<tr class="odd">
+<td>全筆かからない筆選択地番</td>
+<td>地番検索</td>
+<td>一部しか含まれない筆がある地番を表示.</td>
+<td>layer_style_lotnumber_part_selected.sld</td>
+<td>layer_sql_lotnumber_part_selected.txt</td>
+<td><img src="../resources/environment/image199.png" style="width:0.28129in;height:0.20836in"></td>
 </tr>
 </tbody>
 </table>
@@ -5312,6 +5310,14 @@ sudo mv 開発行為許可申請書.xlsx /mnt/s3/application/ledger/template/
  sudo mv 行政用マニュアル.pdf /mnt/s3/application/manual/
 </code></pre>
 </li>
+<li><p>許可判定で使用する開発登録の出力先を作成します。</p>
+<p>application.propertiesで設定している出力先（app.file.developmentRegister.rootPath）を作成します。</p>
+<pre><code class="lang-Text"> sudo mkdir -p [app.file.developmentRegister.rootPathで設定したパス]
+</code></pre>
+<p>下記はデフォルトの設定場所の場合の手順になります。</p>
+<pre><code class="lang-Text"> sudo mkdir -p /mnt/s3/application/development_register
+</code></pre>
+</li>
 <li><p>パーミッションの確認及び変更を行います。</p>
 <p>ディレクトリの所有権及びパーミッションを変更してください。</p>
 <p>下記はデフォルトの設定場所の場合の手順になります。</p>
@@ -5860,6 +5866,15 @@ ProxyPassReverse /api http://localhost:8080/developmentpermissionapi
 <td>〇</td>
 <td>概況診断タイプリストのデフォルト選択値</td>
 <td>0</td>
+</tr>
+<tr>
+<td>app.applicationtype.inapplicable</td>
+<td>　</td>
+<td>　</td>
+<td><p>申請不可の申請種類</p>
+<p><span style="color: red; ">※申請区分選択画面で、申請不可の申請種類が選択したら、概況診断結果表示画面で、申請ボタンが非活性になる。設定したコード値は、<a href="#sec7019">7-19. M_申請種類</a>を参考して設定してください。
+</span></p></td>
+<td>初期値では何も設定されていません。</td>
 </tr>
 <tr>
 <td>app.application.answer.buffer.days</td>
@@ -8560,8 +8575,6 @@ sudo restorecon -Rv /var/www/html
 <td>行政向けアンケート画面のURL</td>
 <td>
 <p>https://path.to.questinnaire/for/government</p>
-<p style="color: red;">/SRC/3dview/wwwroot/login/index.htmlの175行目のリンク（以下）もそろえて修正してください。</p>
-<p>let url = "https://path.to.questinnaire/for/government";</p>
 </td>
 </tr>
 <tr>
@@ -8837,6 +8850,54 @@ sudo restorecon -Rv /var/www/html
 <p>}</p>
 
 </td>
+</tr>
+<tr>
+<td rowspan="2">extension</td>
+<td>answerFile</td>
+<td>アップロード可能な回答ファイルの拡張子</td>
+<td><p>pdf,tiff,jpeg,png,dxf,dwg</p><p>※拡張子チェックに、大文字・小文字を区別する</p></td>
+</tr>
+<tr>
+<td>inquiryFile</td>
+<td>添付可能の問合せファイルの拡張</td>
+<td><p>pdf,tiff,jpeg,png,cad</p><p>※拡張子チェックに、大文字・小文字を区別する</p></td>
+</tr>
+<tr>
+<td rowspan="5">inputMaxLength</td>
+<td>answerContent</td>
+<td>回答内容に入力できる文字数上限</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>applicantInfo</td>
+<td>
+<p>申請者情報と申請追加情報にできる文字数上限</p>
+<p>text:一行のみ入力可能のテキスト</p>
+<p>textarea:複数行入力可能のテキストエリア</p></td>
+<td>
+<p>
+初期値は以下で設定されています。
+<p>{</p>
+<pre><code>&quot;text&quot;:150,
+
+&quot;textarea&quot;:1000,
+</code></pre>
+<p>}</p>
+
+</td>
+</tr>
+<tr>
+<td>chatMsg</td>
+<td>問合せメッセージに入力できる文字数上限</td>
+<td>1000</td>
+</tr><tr>
+<td>reviseContent</td>
+<td>再申請の申請ファイルアップロード画面の修正内容に入力できる文字数上限</td>
+<td>1000</td>
+</tr><tr>
+<td>notifyComment</td>
+<td>事前協議の申請を受付する際に、受付・差戻通知コメントに入力できる文字数上限</td>
+<td>1000</td>
 </tr>
 </tbody>
 </table>

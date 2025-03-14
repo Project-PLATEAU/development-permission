@@ -201,7 +201,7 @@ Web/APサーバとSMTPサーバ/DBサーバ/ファイルサーバは同一のサ
 
 	-   Apache Tomcat Version 9.0.65
 
-	-   GeoServer Version 2.20.4
+	-   GeoServer Version 2.21.5
 
 【DBサーバ環境】
 
@@ -553,11 +553,11 @@ CentOS Stream 9
 
 <a id="sec504"></a>
 
-## 5-4.GeoServer2.20.4のインストール
+## 5-4.GeoServer2.21.5のインストール
 
 1.  SOURCE FORGEで配信されているため、
 
-	ブラウザから「https://geoserver.org/release/2.20.4/」にアクセス後、Web Archiveからwarのダウンロード及び解凍を行います。
+	ブラウザから「https://geoserver.org/release/2.21.5/」にアクセス後、Web Archiveからwarのダウンロード及び解凍を行います。
 
 2.  解凍したwarをtomcatに配備します。
 
@@ -1092,67 +1092,67 @@ CentOS Stream 9
 <tr class="even">
 <td><p>M_カレンダー</p>
 <p>m_calendar</p></td>
-<td></td>
+<td>営業日一覧</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td><p>M_権限</p>
 <p>m_authority</p></td>
-<td></td>
+<td>各部署の回答、通知権限一覧</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><p>M_判定結果</p>
 <p>m_judgement_result</p></td>
-<td></td>
+<td>各判定項目の判定結果一覧</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td><p>M_申請区分_区分判定</p>
 <p>m_application_category_judgement</p></td>
-<td></td>
+<td>M_申請区分とM_区分判定の紐付け一覧</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><p>M_申請情報項目選択肢</p>
 <p>m_applicant_information_item_option</p></td>
-<td></td>
+<td>項目型が単一選択または複数選択の各申請者情報項目の選択肢</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td><p>M_申請種類</p>
 <p>m_application_type</p></td>
-<td></td>
+<td>申請種類一覧</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><p>M_申請段階</p>
 <p>m_application_step</p></td>
-<td></td>
+<td>申請段階一覧</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td><p>M_帳票ラベル</p>
 <p>m_ledger_label</p></td>
-<td></td>
+<td>各帳票中に、置換必要な文字列の設定一覧</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><p>M_帳票</p>
 <p>m_ledger</p></td>
-<td></td>
+<td>帳票一覧</td>
 <td></td>
 </tr>
 <tr class="odd">
 <td><p>M_開発登録簿</p>
 <p>m_development_document</p></td>
-<td></td>
+<td>開発登録簿一覧</td>
 <td></td>
 </tr>
 <tr class="even">
 <td><p>M_区分判定_権限</p>
 <p>m_judgement_authority</p></td>
-<td></td>
+<td>各判定項目の担当部署一覧</td>
 <td></td>
 </tr>
 </tbody>
@@ -1246,8 +1246,6 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 
 <span style="color: red; ">
 
-※view\_idは「1001」～「1010」まで固定で必ず設定してください。
-
 ※表示に使用しない画面（申請区分）はview\_flagを0に設定してください。
 
 </span>
@@ -1277,7 +1275,7 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>view_id</td>
 <td>画面ID</td>
 <td>○</td>
-<td>「1001」～「1010」まで固定で設定すること</td>
+<td></td>
 </tr>
 <tr class="even">
 <td>B</td>
@@ -5405,7 +5403,7 @@ Python3.xの実行環境を準備します。
 <td>概況診断結果表示</td>
 <td>申請対象の地番を表示.</td>
 <td>layer_style_lotnumber_application_target.sld</td>
-<td>layer_sql_lotnumber_disignate.txt</td>
+<td>layer_sql_lotnumber_search_establishment.txt</td>
 <td><img src="../resources/environment/image120.png" style="width:0.21878in;height:0.17711in" /></td>
 </tr>
 <tr class="even">
@@ -5424,22 +5422,22 @@ Python3.xの実行環境を準備します。
 <td>layer_sql_lotnumber_search_establishment.txt</td>
 <td><img src="../resources/environment/image122.png" style="width:0.23962in;height:0.2292in" /></td>
 </tr>
+
 <tr class="even">
-<td>廃止_地番検索結果（行政）</td>
-<td>廃止_地番検索（行政）</td>
-<td><p>地番検索の結果に該当する地番を表示.</p>
-<p>申請中地番を着色表示.</p></td>
-<td>layer_style_lotnumber_result_government.sld</td>
-<td>llayer_sql_lotnumber_search_government.txt</td>
-<td><img src="../resources/environment/image123.png" style="width:0.32296in;height:0.85429in" /></td>
-</tr>
-<tr class="odd">
 <td>申請情報表示地番</td>
 <td>申請情報表示地番</td>
 <td>行政側の申請情報検索結果の行クリック時にクリック業の申請地番を着色表示.</td>
 <td>layer_style_lotnumber_application_info.sld</td>
 <td>layer_sql_lotnumber_disignate.txt</td>
 <td><img src="../resources/environment/image124.png" style="width:0.28129in;height:0.20836in" /></td>
+</tr>
+<tr class="odd">
+<td>全筆かからない筆選択地番</td>
+<td>地番検索</td>
+<td>一部しか含まれない筆がある地番を表示.</td>
+<td>layer_style_lotnumber_part_selected.sld</td>
+<td>layer_sql_lotnumber_part_selected.txt</td>
+<td><img src="../resources/environment/image199.png" style="width:0.28129in;height:0.20836in" /></td>
 </tr>
 </tbody>
 </table>
@@ -6189,8 +6187,19 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 	
 	sudo mv 行政用マニュアル.pdf /mnt/s3/application/manual/
 	```
+6. 許可判定で使用する開発登録の出力先を作成します。
 
-5.  パーミッションの確認及び変更を行います。
+	application.propertiesで設定している出力先（app.file.developmentRegister.rootPath）を作成します。
+	```Text
+	sudo mkdir -p [app.file.developmentRegister.rootPathで設定したパス]
+	```
+
+	下記はデフォルトの設定場所の場合の手順になります。
+	```Text
+	sudo mkdir -p /mnt/s3/application/development_register
+	```
+
+7.  パーミッションの確認及び変更を行います。
 
 	ディレクトリの所有権及びパーミッションを変更してください。
 
@@ -6205,7 +6214,7 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 	sudo chmod -c -R 755 /opt/apache-tomcat/properties
 	```
 
-6.	設定を反映する為、tomcatの再起動を行います。
+8.	設定を反映する為、tomcatの再起動を行います。
 
 	```Text 
 	sudo systemctl restart tomcat
@@ -6762,6 +6771,15 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 <td>〇</td>
 <td>概況診断タイプリストのデフォルト選択値</td>
 <td>0</td>
+</tr>
+<tr>
+<td>app.applicationtype.inapplicable</td>
+<td>　</td>
+<td>　</td>
+<td><p>申請不可の申請種類</p>
+<p><span style="color: red; ">※申請区分選択画面で、申請不可の申請種類が選択したら、概況診断結果表示画面で、申請ボタンが非活性になる。設定したコード値は、<a href="#sec7019">7-19. M_申請種類</a>を参考して設定してください。
+</p></td>
+<td>初期値では何も設定されていません。</td>
 </tr>
 <tr>
 <td>app.application.answer.buffer.days</td>
@@ -9575,9 +9593,6 @@ application.propertiesのapp.ledger.propertiesで指定可能なプロパティ�
 <td>行政向けアンケート画面のURL</td>
 <td>
 <p>https://path.to.questinnaire/for/government</p>
-
-<p style="color: red;">/SRC/3dview/wwwroot/login/index.htmlの175行目のリンク（以下）もそろえて修正してください。</p>
-<p>let url = "https://path.to.questinnaire/for/government";</p>
 </td>
 </tr>
 
@@ -9867,6 +9882,58 @@ application.propertiesのapp.ledger.propertiesで指定可能なプロパティ�
 }
 </p>
 </td>
+</tr>
+
+<tr>
+<td rowspan="2">extension</td>
+<td>answerFile</td>
+<td>アップロード可能な回答ファイルの拡張子</td>
+<td><p>pdf,tiff,jpeg,png,dxf,dwg</p><p>※拡張子チェックに、大文字・小文字を区別する</p></td>
+</tr>
+<tr>
+<td>inquiryFile</td>
+<td>添付可能の問合せファイルの拡張</td>
+<td><p>pdf,tiff,jpeg,png,cad</p><p>※拡張子チェックに、大文字・小文字を区別する</p></td>
+</tr>
+
+<tr>
+<td rowspan="5">inputMaxLength</td>
+<td>answerContent</td>
+<td>回答内容に入力できる文字数上限</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>applicantInfo</td>
+<td>
+<p>申請者情報と申請追加情報にできる文字数上限</p>
+<p>text:一行のみ入力可能のテキスト</p>
+<p>textarea:複数行入力可能のテキストエリア</p></td>
+<td>
+<p>
+初期値は以下で設定されています。
+
+{
+
+	"text":150,
+	
+	"textarea":1000,
+
+}
+</p>
+</td>
+</tr>
+<tr>
+<td>chatMsg</td>
+<td>問合せメッセージに入力できる文字数上限</td>
+<td>1000</td>
+<tr>
+<td>reviseContent</td>
+<td>再申請の申請ファイルアップロード画面の修正内容に入力できる文字数上限</td>
+<td>1000</td>
+<tr>
+<td>notifyComment</td>
+<td>事前協議の申請を受付する際に、受付・差戻通知コメントに入力できる文字数上限</td>
+<td>1000</td>
 </tr>
 
 </tbody>

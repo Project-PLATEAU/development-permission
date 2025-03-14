@@ -1095,6 +1095,16 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/environment/image199.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/environment/image199.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/environment/image2.png",
       "output": {
         "resource": {
