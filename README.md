@@ -22,76 +22,64 @@
 ## 2．「開発許可申請管理システム」について
 「開発許可申請管理システム」では、開発許可制度上の関連資料の収集や、関係者との協議を支援し、審査側の行政と申請側の民間の、双方の事務負担を軽減することを目的としています。本システムは、事前相談の結果を継承し、公共施設管理者との事前協議・同意（都市計画法第32条）、開発許可申請と許可（都市計画法第29条）に対する申請・コミュニケーション・様式作成などの機能を実装しています。  
 本システムは、空間情報を三次元表示可能なCesiumJS及びTerriaJSをフロントエンドで利用するとともに、PostGIS（空間情報を管理するOSSのデータベース拡張機能）と GeoServer（空間情報を共有するOSSのGISサーバ）を組み合わせ、空間解析機能及びリレーショナルデータベースをバックエンドで統合したウェブシステムです。
-本システムの詳細については、[技術検証レポート](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0076_ver01.pdf)を参照してください。
+本システムの詳細については、[技術検証レポート](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0106_ver01.pdf)を参照してください。
 
 ## 3.利用手順
 本システムの構築手順及び利用手順については[利用チュートリアル](https://project-plateau.github.io/development-permission/manual/environment.html)を参照してください。
 
-## 4.システム概要 <!-- OSS化対象のシステムが有する機能を記載ください。 -->
-![3Dビューワ](./img/overall_picture2.png "3Dビューワ")
-### 開発許可申請管理システム v1.0
+## 4.システム概要 
 #### ①地番図を用いた検索機能
-<!-- FN002 -->
 - 対象の地番位置（筆界）を検索します。
 - 検索結果筆界をクリックすると、対象の位置に地図表示箇所を移動します。
 
 #### ②概況診断結果のレポート出力機能 
-<!-- FN009 -->
 - 概況把握・診断の表示結果を帳票様式でExcel出力します。
 - 対象範囲周辺の地図画像を帳票に引用します。
 
 #### ③行政担当者への申請機能  
-<!-- FN010-014 -->
 - 申請が完了した旨、申請者及び行政担当者へメールで通知します。
 - 概況把握・診断結果のExcel帳票データを申請時IDに関連付けします。
 
 #### ④行政担当者の申請情報検索及び回答確認機能
-<!-- FN016,FN021 -->
 - 事業者申請時の入力情報、ステータスを検索条件とし、申請情報を検索します。
 - 申請内容に対する行政担当者からの回答内容を確認します。
 
-### 開発許可申請管理システム v2.0
 #### ⑤前面道路判定機能
-<!-- FN110 -->
 - 「申請範囲選択で選択した申請範囲」に隣接する道路を判定します。
 
 #### ⑥コミュニケーション機能
-<!-- FN019,FN026,FN048,FN052 -->
 - 申請・回答内容についてチャット形式で事業者と行政担当者がコミュニケーションをとることができます。
 
-### 開発許可申請管理システム v3.0
 #### ⑦事前協議・第32条協議機能
-<!-- R6技術検証レポートp19 -->
 - 開発行為の事前協議、そして都市計画法第32条（公共施設の管理者の同意など）として、事前相談の内容を引き継いて申請することができます。
 
 #### ⑧開発許可申請機能
-<!-- R6技術検証レポートp19 -->
 - 都市計画法第29条（開発行為の許可）として、事前協議結果を引き継いで事業者から申請することができます。
 
 ## 5.利用技術
 
 |種別|名称|バージョン|内容|
 | ---- | ---- | ---- | ---- |
-|ライブラリ|[TerriaJS](https://terria.io/)|8.1.22|UIの提供及びUIを介してCesiumJSの描画機能を制御するためのライブラリ|
-||[CesiumJS](https://cesium.com/platform/cesiumjs/)|1.81|3Dビューワ上にデータを描画するためのライブラリ|
-||[Apache POI](https://poi.apache.org/)|4.1.2|帳票出力にて、Excel出力を行うライブラリ|
-||[React.js](https://ja.react.dev/)|16.3.2|JavaScriptのフレームワーク内で機能するUIを構築するためのライブラリ|
-||[marker.js](https://markerjs.com/demos/all-defaults/)|2.29.4|画像データへの図形や文字情報の書き込みをブラウザ上で行うライブラリ|
-||[tiff.js](https://github.com/seikichi/tiff.js)|1.0.0|Tiffファイルをブラウザで閲覧・編集可能なPNG形式に変換するライブラリ|
-||[PDF.js](https://mozilla.github.io/pdf.js/)|3.10.111|PDFファイルをプレビューするライブラリ|
-||[PDFBox](https://pdfbox.apache.org/)|2.0.28|PDF文章を扱うライブラリで、PDFファイルの画像ファイル変換に利用|
-||[Leaflet](https://leafletjs.com/)|1.4.3|2Dビューワ上にデータを描画するためのライブラリ|
-||[Selenium WebDriver](https://www.selenium.dev/ja/)|4.15.0|仮想ブラウザでの操作をシミュレートするためのライブラリ|
+|ライブラリ|[TerriaJS](https://terria.io/)||UIの提供及びUIを介してCesiumJSの描画機能を制御するためのライブラリ|
+||[CesiumJS](https://cesium.com/platform/cesiumjs/)||3Dビューワ上にデータを描画するためのライブラリ|
+||[Apache POI](https://poi.apache.org/)||帳票出力にて、Excel出力を行うライブラリ|
+||[React.js](https://ja.react.dev/)||JavaScriptのフレームワーク内で機能するUIを構築するためのライブラリ|
+||[marker.js](https://markerjs.com/demos/all-defaults/)||画像データへの図形や文字情報の書き込みをブラウザ上で行うライブラリ|
+||[tiff.js](https://github.com/seikichi/tiff.js)||Tiffファイルをブラウザで閲覧・編集可能なPNG形式に変換するライブラリ|
+||[PDF.js](https://mozilla.github.io/pdf.js/)||PDFファイルをプレビューするライブラリ|
+||[PDFBox](https://pdfbox.apache.org/)||PDF文章を扱うライブラリで、PDFファイルの画像ファイル変換に利用|
+||[Leaflet](https://leafletjs.com/)||2Dビューワ上にデータを描画するためのライブラリ|
+||[Selenium WebDriver](https://www.selenium.dev/ja/)||仮想ブラウザでの操作をシミュレートするためのライブラリ|
 |ミドルウェア|[Apache HTTP Server](https://httpd.apache.org/)|2.4|Webアプリで配信を行うためのWebサーバ|
 ||[Apache Tomcat](https://tomcat.apache.org/)|9.0.65|GeoServer、カスタムアプリを実行するためのJava Servletコンテナ|
-||[GeoServer](https://geoserver.org/)|2.21.5|各種データをWMS及びWFSなどで配信するためのGISサーバ|
+||[GeoServer](https://geoserver.org/)|2.20.4|各種データをWMS及びWFSなどで配信するためのGISサーバ|
 ||[PostgreSQL](https://www.postgresql.org/)|14.3|各種配信するデータを格納するデータベース|
 ||[PostGIS](https://postgis.net/)|3.1|PostgreSQLで位置情報を扱うことを可能とする拡張機能|
-||[Java](https://openjdk.java.net/)|1.8 , 17|GeoServer、カスタムアプリを稼働させるためのプラットフォーム. GeoServer,申請APIは1.8を使用. シミュレータAPIは17を使用.|
-|ソフトウェア|[FME Form](https://fme.safe.com/platform/)|任意|CityGML形式のデータをアプリケーションで利用可能な形式に変換するソフトウェア|
-||[QGIS](https://www.qgis.org/ja/site/)|任意|各種GISデータをアプリケーションで利用可能な形式に変換するオープンソースGISソフトウェア|
-|ランタイム環境|[Node.js](https://nodejs.org/en)|16.16.0|3Dビューワの実行環境|
-|フレームワーク|[Spring Boot](https://spring.io/projects/spring-boot/)|2.7.0|Javaで利用可能なWebアプリのフレームワーク|
+||[Java](https://openjdk.java.net/)|1.8.0_392|GeoServer、カスタムアプリを稼働させるためのプラットフォーム|
+|ソフトウェア|[FME Form](https://fme.safe.com/platform/)||CityGML形式のデータをアプリケーションで利用可能な形式に変換するソフトウェア|
+||[QGIS](https://www.qgis.org/ja/site/)||各種GISデータをアプリケーションで利用可能な形式に変換するオープンソースGISソフトウェア|
+|ランタイム環境|[Node.js](https://nodejs.org/en)||3Dビューワの実行環境|
+|フレームワーク|[Spring Boot](https://spring.io/projects/spring-boot/)||Javaで利用可能なWebアプリのフレームワーク|
 
 ## 6.動作環境
 
@@ -144,7 +132,7 @@
 
 ## 8.ライセンス
 * ソースコードおよび関連ドキュメントの著作権は国土交通省に帰属します。
-* 本ドキュメントは[Project PLATEAUのサイトポリシー](https://www.mlit.go.jp/plateau/site-policy/)（CCBY4.0および政府標準利用規約2.0）に従い提供されています。
+* 本ドキュメントは[Project PLATEAUのサイトポリシー](https://www.mlit.go.jp/plateau/site-policy/)（CCBY4.0および公共データ利用規約第1.0版）に従い提供されています。
 
 ## 9.注意事項
 
@@ -153,7 +141,7 @@
 * 本レポジトリの利用により生じた損失及び損害等について、国土交通省はいかなる責任も負わないものとします。
 
 ## 10.参考資料
-* 開発許可のDXv3 技術検証レポート：https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0076_ver01.pdf
+* 開発許可のDXv3 技術検証レポート：https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0106_ver01.pdf
 * 開発許可のDXv2 技術検証レポート：https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0076_ver01.pdf
 * 開発許可のDXv1 技術検証レポート：https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0024_ver01.pdf
 * PLATEAU Webサイト Use caseページ「開発許可のDX v2.0」: https://www.mlit.go.jp/plateau/use-case/uc23-06/
