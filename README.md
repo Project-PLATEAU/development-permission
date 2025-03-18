@@ -60,26 +60,26 @@
 
 |種別|名称|バージョン|内容|
 | ---- | ---- | ---- | ---- |
-|ライブラリ|[TerriaJS](https://terria.io/)||UIの提供及びUIを介してCesiumJSの描画機能を制御するためのライブラリ|
-||[CesiumJS](https://cesium.com/platform/cesiumjs/)||3Dビューワ上にデータを描画するためのライブラリ|
-||[Apache POI](https://poi.apache.org/)||帳票出力にて、Excel出力を行うライブラリ|
-||[React.js](https://ja.react.dev/)||JavaScriptのフレームワーク内で機能するUIを構築するためのライブラリ|
-||[marker.js](https://markerjs.com/demos/all-defaults/)||画像データへの図形や文字情報の書き込みをブラウザ上で行うライブラリ|
-||[tiff.js](https://github.com/seikichi/tiff.js)||Tiffファイルをブラウザで閲覧・編集可能なPNG形式に変換するライブラリ|
-||[PDF.js](https://mozilla.github.io/pdf.js/)||PDFファイルをプレビューするライブラリ|
-||[PDFBox](https://pdfbox.apache.org/)||PDF文章を扱うライブラリで、PDFファイルの画像ファイル変換に利用|
-||[Leaflet](https://leafletjs.com/)||2Dビューワ上にデータを描画するためのライブラリ|
-||[Selenium WebDriver](https://www.selenium.dev/ja/)||仮想ブラウザでの操作をシミュレートするためのライブラリ|
+|ライブラリ|[TerriaJS](https://terria.io/)|8.1.22|UIの提供及びUIを介してCesiumJSの描画機能を制御するためのライブラリ|
+||[CesiumJS](https://cesium.com/platform/cesiumjs/)|1.81|3Dビューワ上にデータを描画するためのライブラリ|
+||[Apache POI](https://poi.apache.org/)|4.1.2|帳票出力にて、Excel出力を行うライブラリ|
+||[React.js](https://ja.react.dev/)|16.3.2|JavaScriptのフレームワーク内で機能するUIを構築するためのライブラリ|
+||[marker.js](https://markerjs.com/demos/all-defaults/)|2.29.4|画像データへの図形や文字情報の書き込みをブラウザ上で行うライブラリ|
+||[tiff.js](https://github.com/seikichi/tiff.js)|1.0.0|Tiffファイルをブラウザで閲覧・編集可能なPNG形式に変換するライブラリ|
+||[PDF.js](https://mozilla.github.io/pdf.js/)|3.10.111|PDFファイルをプレビューするライブラリ|
+||[PDFBox](https://pdfbox.apache.org/)|2.0.28|PDF文章を扱うライブラリで、PDFファイルの画像ファイル変換に利用|
+||[Leaflet](https://leafletjs.com/)|1.4.3|2Dビューワ上にデータを描画するためのライブラリ|
+||[Selenium WebDriver](https://www.selenium.dev/ja/)|4.15.0|仮想ブラウザでの操作をシミュレートするためのライブラリ|
 |ミドルウェア|[Apache HTTP Server](https://httpd.apache.org/)|2.4|Webアプリで配信を行うためのWebサーバ|
 ||[Apache Tomcat](https://tomcat.apache.org/)|9.0.65|GeoServer、カスタムアプリを実行するためのJava Servletコンテナ|
-||[GeoServer](https://geoserver.org/)|2.20.4|各種データをWMS及びWFSなどで配信するためのGISサーバ|
+||[GeoServer](https://geoserver.org/)|2.21.5|各種データをWMS及びWFSなどで配信するためのGISサーバ|
 ||[PostgreSQL](https://www.postgresql.org/)|14.3|各種配信するデータを格納するデータベース|
 ||[PostGIS](https://postgis.net/)|3.1|PostgreSQLで位置情報を扱うことを可能とする拡張機能|
-||[Java](https://openjdk.java.net/)|1.8.0_392|GeoServer、カスタムアプリを稼働させるためのプラットフォーム|
-|ソフトウェア|[FME Form](https://fme.safe.com/platform/)||CityGML形式のデータをアプリケーションで利用可能な形式に変換するソフトウェア|
-||[QGIS](https://www.qgis.org/ja/site/)||各種GISデータをアプリケーションで利用可能な形式に変換するオープンソースGISソフトウェア|
-|ランタイム環境|[Node.js](https://nodejs.org/en)||3Dビューワの実行環境|
-|フレームワーク|[Spring Boot](https://spring.io/projects/spring-boot/)||Javaで利用可能なWebアプリのフレームワーク|
+||[Java](https://openjdk.java.net/)|1.8 , 17|GeoServer、カスタムアプリを稼働させるためのプラットフォーム. GeoServer,申請APIは1.8を使用. シミュレータAPIは17を使用.|
+|ソフトウェア|[FME Form](https://fme.safe.com/platform/)|任意|CityGML形式のデータをアプリケーションで利用可能な形式に変換するソフトウェア|
+||[QGIS](https://www.qgis.org/ja/site/)|任意|各種GISデータをアプリケーションで利用可能な形式に変換するオープンソースGISソフトウェア|
+|ランタイム環境|[Node.js](https://nodejs.org/en)|16.16.0|3Dビューワの実行環境|
+|フレームワーク|[Spring Boot](https://spring.io/projects/spring-boot/)|2.7.0|Javaで利用可能なWebアプリのフレームワーク|
 
 ## 6.動作環境
 
