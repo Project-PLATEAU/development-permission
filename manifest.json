@@ -1,5 +1,5 @@
 {
-  "source_base_path": "C:/work/chino_2023oss/aas_git_repository/PLATEAU-UC22-012-development-permission-gh-pages/markdown",
+  "source_base_path": "C:/Users/P006861/Documents/adp_oss/development-oss/development-permission-gh-pages/markdown",
   "xrefmap": "xrefmap.yml",
   "files": [
     {
@@ -1075,10 +1075,30 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "resources/environment/image188.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/environment/image188.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "resources/environment/image19.png",
       "output": {
         "resource": {
           "relative_path": "resources/environment/image19.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/environment/image199.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/environment/image199.png"
         }
       },
       "version": ""
@@ -2035,590 +2055,1530 @@
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig1_1_overview.png",
+      "source_relative_path": "resources/manual/image101-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig1_1_overview.png"
+          "relative_path": "resources/manual/image101-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig1_2_systemlaunch.png",
+      "source_relative_path": "resources/manual/image102-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig1_2_systemlaunch.png"
+          "relative_path": "resources/manual/image102-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig1_3_menubuttons.png",
+      "source_relative_path": "resources/manual/image102-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig1_3_menubuttons.png"
+          "relative_path": "resources/manual/image102-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig1_4_layerdisplay.png",
+      "source_relative_path": "resources/manual/image102-3.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig1_4_layerdisplay.png"
+          "relative_path": "resources/manual/image102-3.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig2_1_2_search_select.PNG",
+      "source_relative_path": "resources/manual/image102-4.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig2_1_2_search_select.PNG"
+          "relative_path": "resources/manual/image102-4.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig2_1_activity.png",
+      "source_relative_path": "resources/manual/image102-5.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig2_1_activity.png"
+          "relative_path": "resources/manual/image102-5.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig2_2_classificationsingle.png",
+      "source_relative_path": "resources/manual/image102-6.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig2_2_classificationsingle.png"
+          "relative_path": "resources/manual/image102-6.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig2_3_classificationmulti.png",
+      "source_relative_path": "resources/manual/image11-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig2_3_classificationmulti.png"
+          "relative_path": "resources/manual/image11-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig2_4_areabyname.png",
+      "source_relative_path": "resources/manual/image111-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig2_4_areabyname.png"
+          "relative_path": "resources/manual/image111-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig2_5_areabymap.png",
+      "source_relative_path": "resources/manual/image112-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig2_5_areabymap.png"
+          "relative_path": "resources/manual/image112-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig2_6_run.png",
+      "source_relative_path": "resources/manual/image112-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig2_6_run.png"
+          "relative_path": "resources/manual/image112-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig2_7_showdetails.png",
+      "source_relative_path": "resources/manual/image112-3.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig2_7_showdetails.png"
+          "relative_path": "resources/manual/image112-3.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig2_8_roadjudgment.png",
+      "source_relative_path": "resources/manual/image112-4.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig2_8_roadjudgment.png"
+          "relative_path": "resources/manual/image112-4.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig2_8_roadregistermap.png",
+      "source_relative_path": "resources/manual/image112-5.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig2_8_roadregistermap.png"
+          "relative_path": "resources/manual/image112-5.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig2_9_outputreports.png",
+      "source_relative_path": "resources/manual/image112-6.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig2_9_outputreports.png"
+          "relative_path": "resources/manual/image112-6.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig3_1_activity.png",
+      "source_relative_path": "resources/manual/image112-7.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig3_1_activity.png"
+          "relative_path": "resources/manual/image112-7.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig3_2_applicantinfo.png",
+      "source_relative_path": "resources/manual/image12-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig3_2_applicantinfo.png"
+          "relative_path": "resources/manual/image12-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig3_3_upload.png",
+      "source_relative_path": "resources/manual/image121-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig3_3_upload.png"
+          "relative_path": "resources/manual/image121-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig3_4_confirmation.png",
+      "source_relative_path": "resources/manual/image122-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig3_4_confirmation.png"
+          "relative_path": "resources/manual/image122-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig3_5_reportgeneration.png",
+      "source_relative_path": "resources/manual/image122-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig3_5_reportgeneration.png"
+          "relative_path": "resources/manual/image122-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig3_6_appcompleted.png",
+      "source_relative_path": "resources/manual/image123-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig3_6_appcompleted.png"
+          "relative_path": "resources/manual/image123-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig3_7_emailnotification.png",
+      "source_relative_path": "resources/manual/image123-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig3_7_emailnotification.png"
+          "relative_path": "resources/manual/image123-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig4_1_activity.png",
+      "source_relative_path": "resources/manual/image123-3.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig4_1_activity.png"
+          "relative_path": "resources/manual/image123-3.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig4_2_login.png",
+      "source_relative_path": "resources/manual/image13-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig4_2_login.png"
+          "relative_path": "resources/manual/image13-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig4_3_menubuttons.png",
+      "source_relative_path": "resources/manual/image13-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig4_3_menubuttons.png"
+          "relative_path": "resources/manual/image13-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig4_4_contentoverview.png",
+      "source_relative_path": "resources/manual/image131-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig4_4_contentoverview.png"
+          "relative_path": "resources/manual/image131-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig4_5_appsearch.png",
+      "source_relative_path": "resources/manual/image132-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig4_5_appsearch.png"
+          "relative_path": "resources/manual/image132-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig4_6_searchresult.png",
+      "source_relative_path": "resources/manual/image132-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig4_6_searchresult.png"
+          "relative_path": "resources/manual/image132-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig4_7_appdetail.png",
+      "source_relative_path": "resources/manual/image132-3.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig4_7_appdetail.png"
+          "relative_path": "resources/manual/image132-3.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig5_1_activity.png",
+      "source_relative_path": "resources/manual/image133-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig5_1_activity.png"
+          "relative_path": "resources/manual/image133-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig5_2_startanswer.png",
+      "source_relative_path": "resources/manual/image133-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig5_2_startanswer.png"
+          "relative_path": "resources/manual/image133-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig5_3_inputanswer.png",
+      "source_relative_path": "resources/manual/image133-3.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig5_3_inputanswer.png"
+          "relative_path": "resources/manual/image133-3.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig5_4_uploaddocs.png",
+      "source_relative_path": "resources/manual/image133-4.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig5_4_uploaddocs.png"
+          "relative_path": "resources/manual/image133-4.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig5_5_registeranswer.png",
+      "source_relative_path": "resources/manual/image133-5.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig5_5_registeranswer.png"
+          "relative_path": "resources/manual/image133-5.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig5_6.PNG",
+      "source_relative_path": "resources/manual/image133-6.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig5_6.PNG"
+          "relative_path": "resources/manual/image133-6.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig5_6_answercomplete.png",
+      "source_relative_path": "resources/manual/image141-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig5_6_answercomplete.png"
+          "relative_path": "resources/manual/image141-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig5_8.PNG",
+      "source_relative_path": "resources/manual/image142-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig5_8.PNG"
+          "relative_path": "resources/manual/image142-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig6_1_activity.png",
+      "source_relative_path": "resources/manual/image142-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig6_1_activity.png"
+          "relative_path": "resources/manual/image142-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig6_2_searchreadyapp.png",
+      "source_relative_path": "resources/manual/image142-3.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig6_2_searchreadyapp.png"
+          "relative_path": "resources/manual/image142-3.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig6_3_notification.png",
+      "source_relative_path": "resources/manual/image151-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig6_3_notification.png"
+          "relative_path": "resources/manual/image151-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig6_4_notificationcomplete.png",
+      "source_relative_path": "resources/manual/image152-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig6_4_notificationcomplete.png"
+          "relative_path": "resources/manual/image152-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig6_5_notificationdetail.png",
+      "source_relative_path": "resources/manual/image152-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig6_5_notificationdetail.png"
+          "relative_path": "resources/manual/image152-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_1_activity.png",
+      "source_relative_path": "resources/manual/image152-3.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_1_activity.png"
+          "relative_path": "resources/manual/image152-3.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_2_login.png",
+      "source_relative_path": "resources/manual/image161-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_2_login.png"
+          "relative_path": "resources/manual/image161-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_3_responsecomfirmation.png",
+      "source_relative_path": "resources/manual/image162-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_3_responsecomfirmation.png"
+          "relative_path": "resources/manual/image162-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_4_response_report.png",
+      "source_relative_path": "resources/manual/image162-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_4_response_report.png"
+          "relative_path": "resources/manual/image162-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_4_responsedownload.png",
+      "source_relative_path": "resources/manual/image163-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_4_responsedownload.png"
+          "relative_path": "resources/manual/image163-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_5_1.png",
+      "source_relative_path": "resources/manual/image163-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_5_1.png"
+          "relative_path": "resources/manual/image163-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_5_2.png",
+      "source_relative_path": "resources/manual/image171-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_5_2.png"
+          "relative_path": "resources/manual/image171-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_6_1.png",
+      "source_relative_path": "resources/manual/image172-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_6_1.png"
+          "relative_path": "resources/manual/image172-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_6_2.png",
+      "source_relative_path": "resources/manual/image173-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_6_2.png"
+          "relative_path": "resources/manual/image173-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_7_1.png",
+      "source_relative_path": "resources/manual/image173-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_7_1.png"
+          "relative_path": "resources/manual/image173-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_7_2.png",
+      "source_relative_path": "resources/manual/image173-3.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_7_2.png"
+          "relative_path": "resources/manual/image173-3.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_7_3.png",
+      "source_relative_path": "resources/manual/image181-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_7_3.png"
+          "relative_path": "resources/manual/image181-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_8_1.png",
+      "source_relative_path": "resources/manual/image182-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_8_1.png"
+          "relative_path": "resources/manual/image182-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_8_2.png",
+      "source_relative_path": "resources/manual/image183-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_8_2.png"
+          "relative_path": "resources/manual/image183-1.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_8_3.png",
+      "source_relative_path": "resources/manual/image183-2.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_8_3.png"
+          "relative_path": "resources/manual/image183-2.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_8_4.png",
+      "source_relative_path": "resources/manual/image183-3.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_8_4.png"
+          "relative_path": "resources/manual/image183-3.png"
         }
       },
       "version": ""
     },
     {
       "type": "Resource",
-      "source_relative_path": "resources/manual/fig7_8_5.png",
+      "source_relative_path": "resources/manual/image184-1.png",
       "output": {
         "resource": {
-          "relative_path": "resources/manual/fig7_8_5.png"
+          "relative_path": "resources/manual/image184-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image184-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image184-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image191-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image191-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image192-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image192-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image193-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image193-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image193-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image193-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image193-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image193-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image201-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image201-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image202-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image202-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image202-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image202-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image202-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image202-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image202-4.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image202-4.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image203-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image203-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image203-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image203-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image21-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image21-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image211-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image211-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image212-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image212-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image212-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image212-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image22-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image22-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image22-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image22-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image22-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image22-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image22-4.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image22-4.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image221-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image221-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image222-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image222-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image222-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image222-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image222-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image222-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image222-4.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image222-4.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image222-5.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image222-5.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image23-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image23-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image23-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image23-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image231-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image231-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image232-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image232-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image233-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image233-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image233-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image233-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image233-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image233-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image233-4.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image233-4.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image24-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image24-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image24-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image24-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image24-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image24-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image241-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image241-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image242-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image242-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image243-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image243-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image243-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image243-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image243-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image243-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image251-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image251-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image252-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image252-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image252-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image252-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image252-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image252-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image252-4.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image252-4.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image253-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image253-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image253-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image253-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image254-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image254-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image261-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image261-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image262-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image262-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image31-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image31-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image32-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image32-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image32-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image32-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image33-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image33-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image34-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image34-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image35-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image35-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image35-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image35-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image41-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image41-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image42-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image42-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image43-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image43-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image44-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image44-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image44-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image44-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image44-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image44-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image44-4.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image44-4.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image44-5.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image44-5.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image51-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image51-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image52-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image52-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image52-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image52-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image52-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image52-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image52-4.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image52-4.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image52-5.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image52-5.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image52-6.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image52-6.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image53-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image53-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image61-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image61-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image62-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image62-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image63-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image63-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image63-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image63-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image63-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image63-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image71-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image71-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image72-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image72-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image72-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image72-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image73-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image73-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image73-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image73-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image81-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image81-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image82-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image82-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image82-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image82-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image91-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image91-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image92-1.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image92-1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image92-2.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image92-2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image92-3.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image92-3.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "resources/manual/image92-4.png",
+      "output": {
+        "resource": {
+          "relative_path": "resources/manual/image92-4.png"
         }
       },
       "version": ""

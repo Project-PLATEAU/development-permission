@@ -1,352 +1,656 @@
-# 1. システム全体像
-本システムは、事業者からの開発許可にかかわる事前相談申請、申請に対して行政担当者からの回答を行うシステムであり、Webブラウザにて操作します。
-![fig1_1_overview.png](../resources/manual/fig1_1_overview.png)
-
-# 2. システム起動
-1. 起動URLは　*http://[servername]/plateau/*　で接続します。*[servername]* はシステム構築時に割り当てたURLです。
-2. 起動後、利用者規約の同意ボタンをクリックします。
-3. 行政担当者の回答を確認したい場合は、ID、パスワードを入力し、回答内容を確認するボタンをクリックします。
-![fig1_2_systemlaunch.png](../resources/manual/fig1_2_systemlaunch.png)
-
-# 3. 地図画面説明
-## 機能ボタン
-事業者向け地図画面の機能ボタンは以下の通りです。
-![fig1_3_menubuttons.png](../resources/manual/fig1_3_menubuttons.png)
-
-## レイヤ表示
-以下の操作で開発許可事務で使用するデータを3D地図上に表示し、確認できます。
-1. 「項目名」の▼ボタンをクリックすると各種データリストが展開されます。データ右の「□」ボタンをクリックすると、データが地図に表示されます。
-![fig1_4_layerdisplay.png](../resources/manual/fig1_4_layerdisplay.png)
-
-
-# 4. 事業者による申請条件入力と概況把握
-事業者がシステムを操作し、対話的に対象地と申請区分を指定します。申請区分は設定により複数の区分を指定できます。一例としては以下の流れとなります。なお、申請区分には一つだけ指定する単一項目選択と、複数を指定する複数項目選択があります。
-対象地を指定し、申請区分の設定後、概況診断を行います。結果は画面上で確認できるほか、Excel形式のレポートとしてダウンロードすることができます。
-1. 申請対象地の選択
-2. 申請区分選択
-3. 概況診断実行
-4. 診断結果の表示
-5. 概況診断レポート出力
-
-対象地と申請区分を指定後、概況診断を行います。
-
-![fig2_1_activity.png](../resources/manual/fig2_1_activity.png)
-
-##  申請範囲選択
-対象地を指定する方法として、地番から検索する方法と地図上から選択する方法があります。それぞれについて説明します。
-![fig2_1_2_search_select.png](../resources/manual/fig2_1_2_search_select.png)
-## 申請範囲選択（地番文字情報から選択）
-1. 「地図検索（地番）」をクリックします。
-2. 町丁名をクリックすると、リストが表示されるので、対象の町名を選択します。リスト下部に「かな検索」ボタンがあり、クリックすると「かな」の仮想キーボードを表示されます。町名の先頭読みを入力すると、リストが絞り込まれます。
-3. 町名を指定後、地番の指定があれば可能な範囲で入力し、「検索」ボタンをクリックします。
-4. 町名と地番の先頭から一致する対象が、リストに表示されます。
-5. リストのレコードをクリックすると、3D地図画面に該当地点を表示します。
-6. 申請対象地のチェックボックスをチェックすると、申請地選択結果に追加されます。ここで、必要な地番をすべて追加します。追加した地番は、地図上でハイライト（黄色）表示されます。
-7. 間違った地番を追加したら、申請地選択画面の該当地番右にある「ごみ箱」ボタンをクリックします。
-![fig2_4_areabyname.png](../resources/manual/fig2_4_areabyname.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 申請範囲選択（地図から選択）
-1. 申請地番画面の「地図選択」をクリックします。検索画面がグレーになります。
-2. 地図画面上で以下の操作により、該当する地番が申請地番画面に追加されます。
-	- 選択されていない地番をクリックすると、申請地番リストに追加し、ハイライト（黄色）表示します。選択されている地番をクリックすると、申請地番リストから削除します。
-	- キーボードの「Alt」キーを押したまま地図上でドラッグ操作を行うと、囲んだ範囲を一括して選択し、申請地番リストに追加します。
-3. 申請地番画面の「地図検索（地番）」ボタンをクリックすると、町名から指定する検索操作に戻ります。
-![fig2_5_areabymap.png](../resources/manual/fig2_5_areabymap.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-##  申請区分選択
-申請区分を設定する際の単一選択時、複数選択時の操作について説明します。
-## 申請区分（単一項目）選択
-申請区分（単一項目）選択では、ドロップダウンから該当する項目を選択して、画面下の「次へ」ボタンをクリックします。
-![fig2_2_classificationsingle.png](../resources/manual/fig2_2_classificationsingle.png)
-
-## 申請区分（複数項目）選択
-申請区分（複数項目）選択では、左側の選択肢から該当する項目にチェックを入れます。誤って選択した場合は、チェックボックスを再度クリックしてチェックを外します。
-![fig2_3_classificationmulti.png](../resources/manual/fig2_3_classificationmulti.png)
-
-## 概況診断実行
-申請地番画面の「概況診断」ボタンをクリックすると、設定した条件で診断が行われます。
-![fig2_6_run.png](../resources/manual/fig2_6_run.png)
-
-## 診断結果表示
-概況診断を実行後、概況診断結果が概況診断結果画面に表示されます。
-
-## 各条項の詳細表示
-概況診断結果画面には、以下の情報を表示します。
-|表示項目|内容|
-|---|---|
-|対象|判定した規制情報を表示|
-|判定結果|事前相談の要否、担当部署を表示|
-|距離|対象地と規制情報の位置関係を表示|
-各行にマウスを重ねると、詳細な説明文をポップアップ表示します。また、行をクリックすると判定に用いたGISデータを3D地図画面の表示します。
-![fig2_7_showdetails.png](../resources/manual/fig2_7_showdetails.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 道路判定結果の表示
-1. 概況診断結果画面で、「周辺道路の幅院について」の表示がある項目をクリックすると、道路判定結果が表示されます。
-![fig2_8_roadjudgment.png](../resources/manual/fig2_8_roadjudgment.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 帳票出力
-1. 概況診断結果画面で、「出力」ボタンをクリックします。
-2. 画面上部に「現在マップで表示されている領域に申請地が全て含まれるようにしてください。このままレポートの出力を開始しますか？」と確認が表示されます。
-3. 画面表示位置を確認し、「はい」を選択します。
-4. 出力処理中、画面には次のメッセージとともに進捗率を表示します。「処理中です。暫く画面はこのままでお待ちください。」
-![fig2_9_outputreports.png](../resources/manual/fig2_9_outputreports.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-
-# 5. 事業者による申請
-事業者は概況診断を実行後、概況診断結果画面の「申請」ボタンをクリックすることで、申請手続きへ進みます。
-1. 申請者情報の入力
-2. 申請ファイルのアップロード
-3. 申請内容の確認
-4. 申請時の概況診断帳票生成
-5. 申請完了とメール通知
-
-![fig3_1_activity.png](../resources/manual/fig3_1_activity.png)
-
-## 申請者情報の入力
-以下の情報を入力し、画面下の「次へ」ボタンをクリックします。
-- 氏名
-- メールアドレス
-- 電話番号（任意）
-- 住所（任意）
-
-※必須項目、任意項目については、システム導入時の設定による。
-
-![fig3_2_applicantinfo.png](../resources/manual/fig3_2_applicantinfo.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 申請ファイルのアップロード
-判定により必要な資料の項目が表示されます。事業者は、各項目の「登録」ボタンにて該当する資料のファイルを指定してください。複数ファイルを指定することもできます。すべて指定したら、画面下の「次へ」ボタンをクリックします。
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-![fig3_3_upload.png](../resources/manual/fig3_3_upload.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 申請内容の確認
-申請区分、申請地、申請者情報、添付ファイルについて、表示します。確認して修正がある場合は「戻る」ボタン、申請する場合は「申請」ボタンをクリックします。
-![fig3_4_confirmation.png](../resources/manual/fig3_4_confirmation.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 申請時の概況診断レポート生成
-1. 申請にあたり、概況診断レポートを作成します。これは、概況診断時にレポート出力するものと同様ですが、出力していても再度実行します。
-2. レポート作成時に「申請に必要なレポートの生成を行います。現在マップで表示されている領域に申請地がすべて含まれるようにしてください。このまま申請を開始しますか？」とメッセージが表示されます。
-3. 画面表示位置を確認し、「はい」を選択します。
-4. 出力処理中、画面には次のメッセージとともに進捗率を表示します。「処理中です。暫く画面はこのままでお待ちください。」
-![fig3_5_reportgeneration.png](../resources/manual/fig3_5_reportgeneration.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 申請完了とメール通知
-申請処理が完了すると、画面に「申請完了」とともに、回答を確認する際に必要となる「ログインID」「パスワード」を表示します。この画面のテキストは、選択してコピー可能です。
-![fig3_6_appcompleted.png](../resources/manual/fig3_6_appcompleted.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-ログイン情報は、申請者（事業者）へメールでも通知します。また、行政の関係課へも申請があった旨、メールで通知されます。
-![fig3_7_emailnotification.png](../resources/manual/fig3_7_emailnotification.png)
-
-# 6. 行政担当者による申請情報検索・参照
-事業者の申請を受け、行政担当者は申請情報を確認します。行政担当者は担当課ごとのアカウントを用いてログインする必要があります。
-1. 行政担当者ログイン
-2. 申請情報検索
-3. 検索結果表示
-
-![fig4_1_activity.png](../resources/manual/fig4_1_activity.png)
-
-## 行政担当者ログイン
-## ログイン
-行政担当者は、以下の認証画面から担当課ごとに設定されているアカウント情報（IDとパスワード）を用いてログインすることで、行政担当者向け機能を利用できます。
-![fig4_2_login.png](../resources/manual/fig4_2_login.png)
-
-## 地図画面
-行政担当者向け地図画面の機能ボタンは以下の通りです。
-![fig4_3_menubuttons.png](../resources/manual/fig4_3_menubuttons.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 申請参照
-3D地図上には、これまでに申請された区域がハイライト（赤色）表示されます。この区域をクリックすると、該当する申請情報を参照することができます。この申請情報詳細画面は、「検索結果表示」で説明します。
-![fig4_4_contentoverview.png](../resources/manual/fig4_4_contentoverview.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 申請情報検索
-地図画面の「申請情報検索」ボタンから申請情報検索画面を表示します。検索条件として、以下を指定できます。そして「検索」ボタンで設定条件で申請を検索すると、画面下部に結果をリスト表示されます。なお、「クリア」ボタンでは設定している検索条件をすべて消去します。
-|分類|検索項目|備考|
-|---|---|---|
-|申請者情報|氏名|入力した文字を含む申請を検索する。|
-||メールアドレス|入力した文字を含む申請を検索する。|
-||電話番号|入力した文字を含む申請を検索する。|
-||住所|入力した文字を含む申請を検索する。|
-|ステータス|ステータス|申請中、回答中（未回答課あり）、回答完了、通知済み、通知済み（要再申請）から選択|
-|担当課|担当課|リストから一つ選択|
-|申請区分|条件1|申請区分で設定した項目から選択する。|
-||条件2|申請区分で設定した項目から選択する。|
-||条件3|申請区分で設定した項目から選択する。|
-
-![fig4_5_appsearch.png](../resources/manual/fig4_5_appsearch.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 検索結果表示
-1. 申請情報検索画面の検索結果リスト各行をクリックすると3D地図画面が申請対象地へ移動します。また、検索結果リスト各行の「詳細」ボタンをクリックすると、申請情報詳細画面が表示されます。
-![fig4_6_searchresult.png](../resources/manual/fig4_6_searchresult.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-2. 申請情報詳細画面では、申請情報の詳細、添付ファイルの一覧を表示します。添付ファイル左の「ダウンロード」ボタンをクリックすると、申請時にアップロードされたファイルおよび概況診断結果レポートをダウンロードすることができます。
-![fig4_7_appdetail.png](../resources/manual/fig4_7_appdetail.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-
-# 7. 行政担当者による回答入力
-行政担当者は、回答対象の申請に対して内容を確認し、回答を入力します。
-1. 回答入力
-2. 全部署の回答が完了
-
-![fig5_1_activity.png](../resources/manual/fig5_1_activity.png)
-
-## 回答入力
-1. 申請情報詳細画面の「回答登録」ボタンをクリックします。回答入力画面が表示されます。
-![fig5_2_startanswer.png](../resources/manual/fig5_2_startanswer.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-2. 回答入力画面では、対象と判定結果が表示され、ログインしたアカウントにより回答可能な対象について、回答を入力できます。回答内容については、回答テンプレートより定型文を選択することが出来ます。
-![fig5_3_inputanswer.png](../resources/manual/fig5_3_inputanswer.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-3. 回答入力画面下部の「添付ファイル一覧」にある「追加」ボタンをクリックし、回答に関連する資料を指定します。
-![fig5_4_uploaddocs.png](../resources/manual/fig5_4_uploaddocs.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-4. 「ファイル選択」ボタンをクリックし、添付する資料を指定します。申請ファイルを引用する場合は、申請ファイルの一覧の右側にある「引用」ボタンをクリックします。PDFファイル選択時のみ、編集ページ選択画面へ遷移します。
-![fig5_4_uploaddocs.png](../resources/manual/fig5_4_uploaddocs.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-5. PDFファイルを引用した場合、編集ページ選択画面が開きます。上部にある「表示ページを編集」ボタンをクリックすると、編集画面が開きます。
-![fig5_7.png](../resources/manual/fig5_7.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-6. JPG・PNGファイル等を引用する場合は編集ページが開きます。各ボタンの説明は以下となります。
-![fig5_8.png](../resources/manual/fig5_8.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-7. 回答の入力及び資料ファイルを指定したら、「回答登録」ボタンをクリックします。回答完了画面が表示されます。
-![fig5_5_registeranswer.png](../resources/manual/fig5_5_registeranswer.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 全部署の回答が完了
-すべての部署が回答を登録すると、システムは管理者へメールを送信します。
-![fig5_6_answercomplete.png](../resources/manual/fig5_6_answercomplete.png)
-
-
-# 8. 行政担当者（管理者）による通知
-管理者は、すべての回答が揃っている申請に対して、事業者へ回答完了している旨を通知します。
-1. すべての課が回答完了している申請の検索
-2. 事業者への通知
-
-![fig6_1_activity.png](../resources/manual/fig6_1_activity.png)
-
-## すべての課が回答完了している申請の検索
-すべての回答が完了している申請は、申請情報検索画面で「ステータス」に回答完了を指定することで検索できます。事業者へ回答完了したことを通知するには、まず、検索結果の該当する申請に対して「詳細」ボタンをクリックします。申請情報詳細画面が表示されます。
-なお、事業者への通知は、すべての回答が完了していなくても、通知は可能です。
-![fig6_2_searchreadyapp.png](../resources/manual/fig6_2_searchreadyapp.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-## 事業者への通知
-1. 申請情報詳細画面の「回答通知」ボタンをクリックします。この操作は、権限を持つアカウントでのみ可能です。
-2. 回答通知メールを送信した旨、表示されます。
-![fig6_3_notification.png](../resources/manual/fig6_3_notification.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-2. 事業者に届くメール通知内容は以下のとおりです。
-![fig6_5_notificationdetail.png](../resources/manual/fig6_5_notificationdetail.png)
-
-
-# 9. 事業者による申請内容への回答確認
-行政担当者（管理者）から回答完了のメールを受信した事業者は、システムにログインして内容を確認します。
-1. 申請時のID/パスワード認証
-2. 回答確認
-
-![fig7_1_activity.png](../resources/manual/fig7_1_activity.png)
-
-## 申請時のID/パスワード認証
-1. 地図画面の「回答確認」ボタンをクリックします。申請・回答内容確認画面が表示されます。
-2. 申請・回答内容確認画面に、申請時に画面表示及びメール送付されたID・パスワードを入力する回答内容画面が表示されます。
-![fig7_2_login.png](../resources/manual/fig7_2_login.png)
-
-## 回答確認
-1. 事業者は、回答内容画面から対象ごとの回答内容を確認します。
-2. 対象ごとに回答に添付された資料ファイルを確認できます。左の「ダウンロード」ボタンからダウンロードします。
-![fig7_3_responsecomfirmation.png](../resources/manual/fig7_3_responsecomfirmation.png)
-
-3. 「回答レポート出力」ボタンをクリックすると、行政回答レポートが印字された概況診断結果が出力されます。
-![fig7_4_response_report.png](../resources/manual/fig7_4_response_report.png)
-
-# 10. 事業者による再申請
-事業者は、行政担当者からの回答後、再申請が必要な場合は再申請を行います。
-1. 再申請画面を開く
-2. 再申請対象ファイルをアップロード
-![fig7_5_1.png](../resources/manual/fig7_5_1.png)
-
-## 再申請
-1. 「再申請」ボタンクリックし、ファイルアップロード画面を開きます。
-![fig7_5_2.png](../resources/manual/fig7_5_2.png)
-
-## 再申請対象ファイルのアップロード
-1. 要再申請に必要な資料の項目が表示されます。事業者は、各項目の「追加」ボタンにて該当する資料のファイルを指定してください。複数ファイルを指定することもできます。すべて指定したら、画面下の「次へ」ボタンをクリックします。
-
-![fig7_6_1.png](../resources/manual/fig7_6_1.png)
-※ 地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
-
-2. 申請内容を確認します。「申請ボタン」ボタンをクリックし、再申請を行います。
-![fig7_6_2.png](../resources/manual/fig7_6_2.png)
-
-# 11. 行政担当者による再回答
-行政担当者は、事業者からの再申請後、再回答が必要な場合は再回答を行います。
-1. 再回答画面を開く
-2. 回答を入力
-![fig7_5_1.png](../resources/manual/fig7_5_1.png)
-
-## 再回答
-1. 「詳細」ボタンをクリックし、回答画面を開く
-2. 回答を入力します。※回答入力の操作は、「7.行政担当者による回答入力」を参照。
-![fig7_5_2.png](../resources/manual/fig7_5_2.png)
-
-# 12. 事業者による問い合わせ
-事業者は、行政担当者へ問い合わせを行うことが出来ます。
-1. 問い合わせチャットを開く
-2. 問い合わせ内容を入力
-![fig7_7_1.png](../resources/manual/fig7_7_1.png)
-
-## 問い合わせチャットを開く
-1. 「吹き出し」ボタンクリックし、問い合わせチャット画面を開きます。
-![fig7_7_2.png](../resources/manual/fig7_7_2.png)
-
-## 問い合わせ内容を入力
-1. メッセージ入力欄にメッセージを入力し、「矢印」ボタンをクリックするとメッセージを送信します。
-2. ファイルを添付したい場合は、「クリップ」ボタンをクリックしファイルを添付します。
-![fig7_7_3.png](../resources/manual/fig7_7_3.png)
-
-# 13. 行政担当者による問い合わせ確認・回答
-行政担当者は、事業者からの問い合わせの確認、回答を行うことが出来ます。
-1. 問い合わせ詳細画面を開く
-2. 問い合わせ内容を確認
-3. チャットの宛先を設定
-4. 回答を入力し、送信
-![fig7_8_1.png](../resources/manual/fig7_8_1.png)
-
-## 問い合わせ詳細画面を開く
-1. 「詳細」ボタンクリックし、問い合わせ詳細画面を開きます。
-![fig7_8_2.png](../resources/manual/fig7_8_2.png)
-
-## 問い合わせ内容確認
-1. 「チャット」画面を開き、問い合わせの内容を確認します。
-![fig7_8_3.png](../resources/manual/fig7_8_3.png)
-
-## チャットの宛先を設定
-1. 「送信先」ボタンクリックし、チャットの送信先を設定します。※行政担当者の連絡は事業者には通知されません。
-![fig7_8_4.png](../resources/manual/fig7_8_4.png)
-
-## 回答を入力・送信
-1. 回答メッセージを入力後、「矢印」ボタンをクリックし、回答メッセージを送信する。
-![fig7_8_5.png](../resources/manual/fig7_8_5.png)
+# 1. 概要・基本操作
+## 1-1.概要
+<img src="../resources/manual/image11-1.png" alt="image11-1.png">
 
+<br>
+
+## 1-2.システム起動
+### ■起動URL：https://kisarazu-development-permission-system.com/viewer/　  
+<img src="../resources/manual/image12-1.png" alt="image12-1.png">
+
+<br>
+
+## 1-3.地図画面説明
+### ■機能ボタン
+
+<img src="../resources/manual/image13-1.png" alt="image13-1.png">  
+
+※地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
+
+### ■建物モデル・判定レイヤ表示
+<img src="../resources/manual/image13-2.png" alt="image13-2.png">
+
+※地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
+
+<br>
+
+# 2.事業者による申請地選択→概況判定
+## 2-1.概要図の位置づけ
+<img src="../resources/manual/image21-1.png" alt="image21-1-1.png">
+
+<br>
+
+## 2-2.申請対象地番選択
+### ■検索画面
+<img src="../resources/manual/image22-1.png" alt="image22-1.png">
+
+### ■地図検索（地番）
+<img src="../resources/manual/image22-2.png" alt="image22-2.png">  
+
+※地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
+
+<img src="../resources/manual/image22-3.png" alt="image22-3.png">  
+
+### ■地図選択
+<img src="../resources/manual/image22-4.png" alt="image22-4.png">
+
+<br>
+
+## 2-3.申請区分選択
+### ■申請区分選択（単体選択）
+<img src="../resources/manual/image23-1.png" alt="image23-1.png">  
+
+※地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
+
+### ■申請区分選択（複数選択）
+<img src="../resources/manual/image23-2.png" alt="image23-2.png">  
+
+<br>
+
+## 2-4.概況診断結果実施
+### ■概況診断結果表示
+<img src="../resources/manual/image24-1.png" alt="image24-1.png">
+
+### ■概況診断結果表示(都市計画判定結果複数時)
+<img src="../resources/manual/image24-2.png" alt="image24-2.png">
+
+### ■概況診断結果表示(レポート出力)
+<img src="../resources/manual/image24-3.png" alt="image24-3.png">
+
+<br><br>
+
+# 3.事業者による申請作業
+## 3-1.概要図の位置づけ
+<img src="../resources/manual/image31-1.png" alt="image31-1.png">
+
+<br><br>
+
+## 3-2.申請情報入力
+### ■申請者情報入力
+<img src="../resources/manual/image32-1.png" alt="image32-1.png">  
+<img src="../resources/manual/image32-2.png" alt="image32-2.png">
+
+<br>
+
+## 3-3.申請対象ファイルアップロード
+### ■申請対象ファイルアップロード
+<img src="../resources/manual/image33-1.png" alt="image33-1-1.png">
+
+<br>
+
+## 3-4.申請内容確認
+### ■申請内容確認
+<img src="../resources/manual/image34-1.png" alt="image34-1.png">
+
+<br>
+
+## 3-5.申請完了画面・概況診断レポート生成
+### ■申請完了画面・概況診断レポート生成状況表示
+<img src="../resources/manual/image35-1.png" alt="image35-1.png">
+
+### ■回答が記載されていないレポートキャプチャ
+<img src="../resources/manual/image35-2.png" alt="image35-2.png">
+
+<br><br>
+
+# 4.行政担当者による申請情報検索・参照
+## 4-1.概要図の位置づけ
+<img src="../resources/manual/image41-1.png" alt="image41-1.png">
+
+<br>
+
+## 4-2.行政担当者画面ログイン
+### ■起動URL https://kisarazu-development-permission-system.com/viewer/login/
+<img src="../resources/manual/image42-1.png" alt="image42-1.png">
+
+<br>
+
+## 4-3.行政担当者地図画面
+### ■行政担当者地図画面
+<img src="../resources/manual/image43-1.png" alt="image43-1.png">  
+
+※地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
+
+<br>
+
+## 4-4.申請情報検索
+### ■地図上での申請情報参照
+<img src="../resources/manual/image44-1.png" alt="image44-1.png">
+
+### ■申請情報検索
+<img src="../resources/manual/image44-2.png" alt="image44-2.png">  
+<img src="../resources/manual/image44-3.png" alt="image44-3.png">
+
+### ■申請情報詳細
+<img src="../resources/manual/image44-4.png" alt="image44-4.png">  
+<img src="../resources/manual/image44-5.png" alt="image44-5.png">
+
+<br><br>
+
+# 5.行政担当者による回答入力
+## 5-1.概要図の位置づけ
+<img src="../resources/manual/image51-1.png" alt="image51-1.png">
+
+<br>
+
+## 5-2.回答登録
+### ■回答登録（文字情報）
+<img src="../resources/manual/image52-1.png" alt="image52-1.png">  
+<img src="../resources/manual/image52-2.png" alt="image52-2.png">  
+<img src="../resources/manual/image52-3.png" alt="image52-3.png">
+
+### ■回答登録（関連資料）
+<img src="../resources/manual/image52-4.png" alt="image52-4.png">
+
+### ■回答登録（関連資料：編集）
+<img src="../resources/manual/image52-5.png" alt="image52-5.png">
+
+### ■回答登録（関連資料：編集/TIFF・JPG・PNG文書ファイル）各アイコン機能一覧
+<img src="../resources/manual/image52-6.png" alt="image52-6-1.png">
+
+<br>
+
+## 5-3.回答登録完了
+### ■回答登録完了
+<img src="../resources/manual/image53-1.png" alt="image53-1.png">
+
+<br><br>
+
+# 6.行政担当者（管理者）による通知作業
+## 6-1.概要図の位置づけ
+<img src="../resources/manual/image61-1.png" alt="image61-1.png">
+
+<br>
+
+## 6-2.申請情報検索
+### ■ステータス等で回答状況検索
+<img src="../resources/manual/image62-1.png" alt="image62-1.png">
+
+<br>
+
+## 6-3.内容確認・回答通知・完了画面
+### ■回答通知・完了
+<img src="../resources/manual/image63-1.png" alt="image63-1.png">  
+<img src="../resources/manual/image63-2.png" alt="image63-2.png">  
+<img src="../resources/manual/image63-3.png" alt="image63-3.png">
+
+<br><br>
+
+# 7.事業者による申請内容への回答確認作業
+## 7-1.概要図の位置づけ
+<img src="../resources/manual/image71-1.png" alt="image71-1.png">
+
+<br>
+
+## 7-2.申請のID/パスワード認証
+### ■申請時のID/パスワード入力
+<img src="../resources/manual/image72-1.png" alt="image72-1.png">
+<img src="../resources/manual/image72-2.png" alt="image72-2.png">
+
+<br>
+
+## 7-3.回答内容確認
+### ■回答内容確認（文字情報）
+<img src="../resources/manual/image73-1.png" alt="image73-1.png">
+
+### ■回答が記載された帳票キャプチャ
+<img src="../resources/manual/image73-2.png" alt="image73-2.png">
+
+<br><br>
+
+# 8.事業者による問い合わせ作業
+## 8-1.概要図の位置づけ
+<img src="../resources/manual/image81-1.png" alt="image81-1.png">
+
+<br>
+
+## 8-2.問い合わせ（事業者）
+### ■問い合わせ
+<img src="../resources/manual/image82-1.png" alt="image82-1.png">
+
+### ■問い合わせチャット
+<img src="../resources/manual/image82-2.png" alt="image82-2.png">
+
+<br><br>
+
+# 9.行政担当者による問い合わせ確認・回答作業
+## 9-1.概要図の位置づけ
+<img src="../resources/manual/image91-1.png" alt="image91-1.png">
+
+<br>
+
+## 9-2.問い合わせ（行政担当者）
+### ■問い合わせ
+<img src="../resources/manual/image92-1.png" alt="image92-1.png">
+
+### ■問い合わせチャット
+<img src="../resources/manual/image92-2.png" alt="image92-2.png">
+
+### ■送信先選択
+<img src="../resources/manual/image92-3.png" alt="image92-3.png">
+
+### ■問い合わせチャット
+<img src="../resources/manual/image92-4.png" alt="image92-4.png">
+
+<br><br>
+
+# 10.事業者による再申請作業（事前相談→事前相談）
+## 10-1.概要図の位置づけ
+### ■問い合わせチャット
+<img src="../resources/manual/image101-1.png" alt="image101-1.png">
+
+<br>
+
+## 10-2.再申請
+### ■再申請開始
+<img src="../resources/manual/image102-1.png" alt="image102-1.png">
+
+### ■申請区分再選択
+<img src="../resources/manual/image102-2.png" alt="image102-2.png">
+
+※地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
+
+### ■再申請時の概況診断結果表示
+<img src="../resources/manual/image102-3.png" alt="image102-3.png">
+
+### ■申請項目入力
+<img src="../resources/manual/image102-4.png" alt="image102-4.png">
+
+### ■ファイル再アップロード
+<img src="../resources/manual/image102-5.png" alt="image102-5.png">
+
+### ■再申請内容確認・再申請完了
+<img src="../resources/manual/image102-6.png" alt="image102-6.png">
+
+<br><br>
+
+# 11.事業者による再申請作業（事前相談→事前協議）
+## 11-1.概況図の位置づけ
+<img src="../resources/manual/image111-1.png" alt="image111-1.png">
+
+<br>
+
+## 11-2.再申請
+### ■再申請開始
+<img src="../resources/manual/image112-1.png" alt="image112-1.png">
+
+※地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
+
+### ■申請区分再選択
+<img src="../resources/manual/image112-2.png" alt="image112-2.png">
+
+### ■再申請時の概況診断結果表示
+<img src="../resources/manual/image112-3.png" alt="image112-3.png">
+
+### ■再申請時の申請項目入力
+<img src="../resources/manual/image112-4.png" alt="image112-4.png">
+
+### ■ファイル再アップロード
+<img src="../resources/manual/image112-5.png" alt="image112-5-1.png">
+
+### ■再申請内容確認・再申請完了
+<img src="../resources/manual/image112-6.png" alt="image112-6-1.png">
+
+### ■再申請
+<img src="../resources/manual/image112-7.png" alt="image112-7-1.png">
+
+<br><br>
+
+# 12.行政担当者による事前協議回答（各担当課へ通知）
+## 12-1.概要図の位置づけ
+<img src="../resources/manual/image121-1.png" alt="image121-1-1.png">
+
+<br>
+
+## 12-2.申請情報検索
+### 該当物件の絞り込み
+<img src="../resources/manual/image122-1.png" alt="image122-1-1.png">
+
+※地名・地域は実際の開発許可エリアではありません。操作例として表示しています。
+
+### 絞り込み結果＞詳細画面表示
+<img src="../resources/manual/image122-2.png" alt="image122-2.png">
+
+<br>
+
+## 12-3.対応者への通知
+### ■申請内容の確認・関係各課への回答依頼（統括部署→担当課）
+<img src="../resources/manual/image123-1.png" alt="image123-1.png">
+
+### ■通知宛先設定
+<img src="../resources/manual/image123-2.png" alt="image123-2.png">
+
+### ■回答通知
+<img src="../resources/manual/image123-3.png" alt="image123-3.png">
+
+<br><br>
+
+# 13.行政担当者による事前協議回答（各担当課回答登録）
+## 13-1.概要図の位置づけ
+<img src="../resources/manual/image131-1.png" alt="image131-1.png">
+
+<br>
+
+## 13-2.対象物件選択・回答画面表示
+### ■再申請
+<img src="../resources/manual/image132-1.png" alt="image132-1.png">
+
+### ■回答画面表示
+<img src="../resources/manual/image132-2.png" alt="image132-2.png">
+
+### ■回答する申請種別選択
+<img src="../resources/manual/image132-3.png" alt="image132-3.png">
+
+<br>
+
+## 13-3.回答登録
+### ■担当者による回答登録
+<img src="../resources/manual/image133-1.png" alt="image133-1.png">
+
+### ■回答登録（回答ファイルの選択）
+<img src="../resources/manual/image133-2.png" alt="image133-2.png">
+
+### ■回答登録（事業者提出ファイルを引用した修正指示）
+<img src="../resources/manual/image133-3.png" alt="image133-3.png">
+
+### ■追加条件登録
+<img src="../resources/manual/image133-4.png" alt="image133-4.png">
+
+### ■条件の削除
+<img src="../resources/manual/image133-5.png" alt="image133-5.png">
+
+### ■回答登録→担当課管理者に対し、回答内容が正しいか確認依頼
+<img src="../resources/manual/image133-6.png" alt="image133-6.png">
+
+<br><br>
+
+# 14.行政担当者による事前協議回答（各課管理者通知）
+## 14-1.概要図の位置づけ
+<img src="../resources/manual/image141-1.png" alt="image141-1.png">
+
+<br>
+
+## 14-2.担当課管理者から統括部署へ回答通知依頼
+### ■通知内容選択画面表示
+<img src="../resources/manual/image142-1.png" alt="image142-1.png">
+
+### ■通知内容選択
+<img src="../resources/manual/image142-2.png" alt="image142-2.png">
+
+### ■統括部署へ通知
+<img src="../resources/manual/image142-3.png" alt="image142-3.png">
+
+<br><br>
+
+# 15.行政担当者による事前協議回答（統括部署回答通知）
+## 15-1.概要図の位置づけ
+<img src="../resources/manual/image151-1.png" alt="image151-1.png">
+
+<br>
+
+## 15-2.行政担当者から事業者へ通知
+### ■通知担当課選択画面表示
+<img src="../resources/manual/image152-1.png" alt="image152-1.png">
+
+### ■通知担当課選択
+<img src="../resources/manual/image152-2.png" alt="image152-2.png">
+
+### ■事業者へ通知
+<img src="../resources/manual/image152-3.png" alt="image152-3.png">
+
+<br><br>
+
+# 16.事業者による事前協議回答（行政回答確認）
+## 16-1.概要図の位置づけ
+<img src="../resources/manual/image161-1.png" alt="image161-1.png">
+
+<br>
+
+## 16-2.行政回答参照
+### ■該当案件表示
+<img src="../resources/manual/image162-1.png" alt="image162-1.png">
+
+### ■行政回答の参照
+<img src="../resources/manual/image162-2.png" alt="image162-2.png">
+
+<br>
+
+## 16-3.行政回答に対する合意登録
+### ■行政回答に対し、合意登録・市への問い合わせ
+<img src="../resources/manual/image163-1.png" alt="image163-1.png">
+
+### ■行政担当者へ回答登録・通知
+<img src="../resources/manual/image163-2.png" alt="image163-2.png">
+
+<br><br>
+
+# 17.行政担当者による事前協議回答（各担当課回答登録）
+## 17-1.概要図の位置づけ
+<img src="../resources/manual/image171-1.png" alt="image171-1.png">
+
+<br>
+
+## 17-2.申請情報検索
+### ■申請情報を検索
+<img src="../resources/manual/image172-1.png" alt="image172-1.png">
+
+<br>
+
+## 17-3.行政確定登録
+### ■行政確定登録
+<img src="../resources/manual/image173-1.png" alt="image173-1.png">  
+<img src="../resources/manual/image173-2.png" alt="image173-2.png">  
+<img src="../resources/manual/image173-3.png" alt="image173-3.png">
+
+<br><br>
+
+# 18.行政担当者による事前協議回答（各課管理者）
+## 18-1.概要図の位置づけ
+<img src="../resources/manual/image181-1.png" alt="image181-1.png">
+
+<br>
+
+## 18-2.申請情報検索
+### ■申請情報検索
+<img src="../resources/manual/image182-1.png" alt="image182-1.png">
+
+<br>
+
+## 18-3.回答登録（課の行政確定登録）
+### ■回答登録（課の行政確定登録）
+<img src="../resources/manual/image183-1.png" alt="image183-1.png">  
+<img src="../resources/manual/image183-2.png" alt="image183-2.png">  
+<img src="../resources/manual/image183-3.png" alt="image183-3.png">
+
+<br>
+
+## 18-4.回答通知（課の行政確定通知）
+### ■回答通知（管理者から統括部署へ通知）
+<img src="../resources/manual/image184-1.png" alt="image184-1.png">  
+<img src="../resources/manual/image184-2.png" alt="image184-2.png">
+
+<br><br>
+
+# 19.行政担当者による事前協議回答（統括部署）
+## 19-1.概要図の位置づけ
+<img src="../resources/manual/image191-1.png" alt="image191-1.png">
+
+<br>
+
+## 19-2.申請情報検索
+### ■申請情報検索
+<img src="../resources/manual/image192-1.png" alt="image192-1.png">
+
+<br>
+
+## 19-3.事業者への回答通知
+### ■回答通知
+<img src="../resources/manual/image193-1.png" alt="image193-1.png">
+
+### ■回答通知（統括部署から事業者へ通知）
+<img src="../resources/manual/image193-2.png" alt="image193-2.png">  
+<img src="../resources/manual/image193-3.png" alt="image193-3.png">
+
+<br><br>
+
+# 20.行政担当者による同意書 登録・通知（統括部署）
+## 20-1.概要図の位置づけ
+<img src="../resources/manual/image201-1.png" alt="image201-1.png">
+
+<br>
+
+## 20-2.協議書・同意書登録
+### ■協議書・同意書ダウンロード
+<img src="../resources/manual/image202-1.png" alt="image202-1.png">
+
+### ■協議書・同意書登録
+<img src="../resources/manual/image202-2.png" alt="image202-2.png">  
+<img src="../resources/manual/image202-3.png" alt="image202-3.png">
+
+### ■協議書・同意書登録完了
+<img src="../resources/manual/image202-4.png" alt="image202-4.png">
+
+<br>
+
+## 20-3.協議書・同意書通知
+### ■協議書・同意書通知
+<img src="../resources/manual/image203-1.png" alt="image203-1.png">  
+<img src="../resources/manual/image203-2.png" alt="image203-2.png">
+
+<br><br>
+
+# 21.事業者による協議書・同意書受領
+## 21-1.概要図の位置づけ
+<img src="../resources/manual/image211-1.png" alt="image211-1.png">
+
+<br>
+
+## 21-2.協議書・同意書受領
+### ■ID/パスワードでログイン
+<img src="../resources/manual/image212-1.png" alt="image212-1.png">
+
+### ■協議書・同意書受領
+<img src="../resources/manual/image212-2.png" alt="image212-2.png">
+
+<br><br>
+
+# 22.事業者による再申請作業（事前協議→許可判定）
+## 22-1.概要図の位置づけ
+<img src="../resources/manual/image221-1.png" alt="image221-1.png">
+
+<br>
+
+## 22-2.再申請（事前協議→許可判定）
+### ■再申請
+<img src="../resources/manual/image222-1.png" alt="image222-1.png">
+
+### ■申請追加情報入力
+<img src="../resources/manual/image222-2.png" alt="image222-2.png">
+
+### ■申請ファイル登録
+<img src="../resources/manual/image222-3.png" alt="image222-3.png">
+
+### ■申請情報確認
+<img src="../resources/manual/image222-4.png" alt="image222-4.png">
+
+### ■再申請完了
+<img src="../resources/manual/image222-5.png" alt="image222-5.png">
+
+<br><br>
+
+# 23.行政担当者による許可判定回答（都市政策課担当者）
+# 23-1.概要図の位置づけ
+<img src="../resources/manual/image231-1.png" alt="image231-1.png">
+
+<br>
+
+# 23-2.申請情報検索
+### ■申請情報検索
+<img src="../resources/manual/image232-1.png" alt="image232-1.png">
+
+<br>
+
+## 23-3.許可判定回答登録
+### ■回答登録
+<img src="../resources/manual/image233-1.png" alt="image233-1.png">  
+<img src="../resources/manual/image233-2.png" alt="image233-2.png">
+
+### ■回答登録（判定結果/再申請要否）
+<img src="../resources/manual/image233-3.png" alt="image233-3.png">
+
+### ■回答登録完了
+<img src="../resources/manual/image233-4.png" alt="image233-4-1.png">
+
+<br><br>
+
+# 24.行政担当者による許可判定回答（統括部署回答通知）
+## 24-1.概要図の位置づけ
+<img src="../resources/manual/image241-1.png" alt="image241-1.png">
+
+<br>
+
+## 24-2.申請情報検索
+### ■申請情報検索
+<img src="../resources/manual/image242-1.png" alt="image242-1.png">
+
+<br>
+
+## 24-3.事業者へ回答通知
+### ■申請情報検索
+<img src="../resources/manual/image243-1.png" alt="image243-1.png">
+
+### ■回答通知確認
+<img src="../resources/manual/image243-2.png" alt="image243-2.png">
+
+### ■回答通知完了
+<img src="../resources/manual/image243-3.png" alt="image243-3.png">
+
+<br><br>
+
+# 25.行政担当者による許可通知書（統括部署）
+## 25-1.概要図の位置づけ
+<img src="../resources/manual/image251-1.png" alt="image251-1.png">
+
+<br>
+
+## 25-2.許可通知書登録
+### ■許可通知書登録
+<img src="../resources/manual/image252-1.png" alt="image252-1.png">  
+<img src="../resources/manual/image252-2.png" alt="image252-2.png">  
+<img src="../resources/manual/image252-3.png" alt="image252-3.png">  
+<img src="../resources/manual/image252-4.png" alt="image252-4.png">
+
+<br>
+
+## 25-3.許可通知書通知
+### ■許可通知書通知
+<img src="../resources/manual/image253-1.png" alt="image253-1.png">  
+<img src="../resources/manual/image253-2.png" alt="image253-2.png">
+
+<br>
+
+## 25-4.最終提出物一式
+### ■最終提出物一式
+<img src="../resources/manual/image254-1.png" alt="image254-1.png">
+
+<br><br>
+
+# 26.事業者による許可通知書受領
+## 26-1.概要図の位置づけ
+<img src="../resources/manual/image261-1.png" alt="image261-1.png">
+
+<br>
+
+## 26-2.許可通知書受領
+### ■許可通知書受領
+<img src="../resources/manual/image262-1.png" alt="image262-1.png">

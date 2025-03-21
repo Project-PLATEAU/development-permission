@@ -1,6 +1,6 @@
 <style>
 img {
-    border: 1px #dddddd solid;
+	border: 1px #dddddd solid;
 	margin-top: 0.1in;
 	margin-bottom: 0.1in;
 }
@@ -49,22 +49,22 @@ Web/APサーバとSMTPサーバ/DBサーバ/ファイルサーバは同一のサ
 <tbody>
 <tr class="odd">
 <td>1</td>
-<td rowspan="16">Web/APサーバ</td>
-<td>CentOS 8</td>
+<td rowspan="18">Web/APサーバ</td>
+<td>CentOS Stream 9</td>
 <td>GNU General Public License</td>
 <td>Web/APサーバを稼働させるOS</td>
 </tr>
 <tr class="even">
 <td>2</td>
-<td>Java1.8</td>
-<td>Oracle JDK License</td>
-<td>GeoServer、カスタムアプリを稼働させるためのプラットフォーム</td>
+<td>Apache</td>
+<td>Apache License 2.0</td>
+<td>Webアプリで配信を行うためのWebサーバ</td>
 </tr>
 <tr class="odd">
 <td>3</td>
-<td>apache</td>
-<td>Apache License 2.0</td>
-<td>Webアプリで配信を行うためのWebサーバ</td>
+<td>React.js</td>
+<td>MIT License</td>
+<td>JavaScriptのフレームワーク内で機能するUIを構築するためのライブラリ</td>
 </tr>
 <tr class="even">
 <td>4</td>
@@ -83,13 +83,13 @@ Web/APサーバとSMTPサーバ/DBサーバ/ファイルサーバは同一のサ
 <td>6</td>
 <td>Cesium</td>
 <td>Apache License 2.0</td>
-<td>3D都市モデルビューワ上にデータを描画するためのライブラリ</td>
+<td>3Dビューワ上にデータを描画するためのライブラリ</td>
 </tr>
 <tr class="odd">
 <td>7</td>
-<td>React.js</td>
-<td>MIT License</td>
-<td>JavaScriptのフレームワーク内で機能するUIを構築するためのライブラリ</td>
+<td>Leaflet</td>
+<td>2-clause BSD License</td>
+<td>2Dビューワ上にデータを描画するためのライブラリ</td>
 </tr>
 <tr class="even">
 <td>8</td>
@@ -111,55 +111,67 @@ Web/APサーバとSMTPサーバ/DBサーバ/ファイルサーバは同一のサ
 </tr>
 <tr class="odd">
 <td>11</td>
-<td>Node.js</td>
-<td>MIT License</td>
-<td>3D都市モデルビューワの実行環境</td>
-</tr>
-<tr class="even">
-<td>12</td>
-<td>GeoServer</td>
-<td>GNU GENERAL PUBLIC LICENSE Version 2</td>
-<td>各種データをWMS及びWFSなどで配信するためのGISサーバ</td>
-</tr>
-<tr class="odd">
-<td>13</td>
-<td>Apache POI</td>
-<td>Apache License 2.0</td>
-<td>帳票出力にて、Excel出力を行うライブラリ</td>
-</tr>
-<tr class="even">
-<td>14</td>
 <td>PDFBox</td>
 <td>Apache License 2.0</td>
 <td>PDF文章を扱うライブラリで、PDFファイルの画像ファイル変換に利用</td>
 </tr>
+<tr class="even">
+<td>12</td>
+<td>Node.js</td>
+<td>MIT License</td>
+<td>3Dビューワの実行環境</td>
+</tr>
 <tr class="odd">
-<td>15</td>
+<td>13</td>
+<td>Java1.8</td>
+<td>GPL v2 with Classpath Exception</td>
+<td>GeoServer、カスタムアプリを稼働させるためのプラットフォーム</td>
+</tr>
+<tr class="even">
+<td>14</td>
 <td>Tomcat</td>
 <td>Apache License 2.0</td>
-<td>GeoServer、カスタムアプリを起動するJ2EEのSDK</td>
+<td>GeoServer、カスタムアプリを実行するためのJava Servletコンテナ</td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>GeoServer</td>
+<td>GNU GENERAL PUBLIC LICENSE Version 2</td>
+<td>各種データをWMS及びWFSなどで配信するためのGISサーバ</td>
 </tr>
 <tr class="even">
 <td>16</td>
+<td>Apache POI</td>
+<td>Apache License 2.0</td>
+<td>帳票出力にて、Excel出力を行うライブラリ</td>
+</tr>
+<tr class="odd">
+<td>17</td>
 <td>Spring boot</td>
 <td>Apache License 2.0</td>
 <td>Javaで利用可能なWebアプリのフレームワーク</td>
 </tr>
+<tr class="even">
+<td>18</td>
+<td>Selenium WebDriver</td>
+<td>Apache License 2.0</td>
+<td>仮想ブラウザでの操作をシミュレートするためのライブラリ</td>
+</tr>
 <tr class="odd">
-<td>17</td>
+<td>19</td>
 <td rowspan="2">DBサーバ</td>
 <td>PostgresSQL</td>
 <td>PostgreSQL License</td>
 <td>各種配信するデータを格納するデータベース</td>
 </tr>
 <tr class="even">
-<td>18</td>
+<td>20</td>
 <td>PostGIS</td>
 <td>GNU General Public License</td>
-<td>PostgreSQLで位置情報を扱うことを可能とするextention</td>
+<td>PostgreSQLで位置情報を扱うことを可能とする拡張機能</td>
 </tr>
 <tr class="odd">
-<td>19</td>
+<td>21</td>
 <td>ファイルサーバ</td>
 <td colspan="2">3DTile等配信データ</td>
 <td>データベース以外で配信する3Dデータ等</td>
@@ -179,19 +191,17 @@ Web/APサーバとSMTPサーバ/DBサーバ/ファイルサーバは同一のサ
 
 【WEB/APサーバ環境】
 
--   動作環境：CentOS Version 8.5.2111
+-   動作環境：CentOS Stream 9
 
 -   必要なソフトウェア：
 
-    -   Apache Version 2.4.37
+	-   Apache Version 2.4
 
-    -   Java Version 1.8.0\_312 (OpenJDK 64-Bit Server VM)
+	-   Java Version 1.8.0\_392 (OpenJDK 64-Bit Server VM)
 
-    -   Apache Tomcat Version 9.0.65
+	-   Apache Tomcat Version 9.0.65
 
-    -   GeoServer Version 2.21.0
-
-    -   Node.js Version 16.17.0
+	-   GeoServer Version 2.21.5
 
 【DBサーバ環境】
 
@@ -211,25 +221,27 @@ GitHubリポジトリのフォルダ構成は下図の通りです。
 
 【稼働環境】
 
-Cent OS 8 Stream
+CentOS Stream 9
 
 【セットアップ環境】
 
 -	稼働環境と80,8080,5432ポートでTCP通信可能であること
 
--	Windows10
+-	Windows10または11
 
 【アプリケーション】
 
--	申請画面（3DViewer）ソースコード（**/development-permission/SRC/3dview**）
+-	申請画面（3DViewer）ソースコード（**/SRC/3dview**）
 
--	申請API（Springboot）ソースコード（**/development-permission/SRC/api**）
+-	申請API（Springboot）ソースコード（**/SRC/api**）
 
--	PDFビューワ（PDF.js）スタイルシート（**/development-permission/SRC/pdfjs**）
+-	PDFビューワ（PDF.js）スタイルシート（**/SRC/pdfjs**）
+
+-	シミュレータAPI（Springboot）ソースコード（**/SRC/simulator_api**）
 
 【環境構築ファイル】
 
-（**/development-permission/Settings/environment\_settings 以下一式**）
+（**/Settings/environment\_settings 以下一式**）
 
 -	テーブル作成（**/create\_table.sql**）
 
@@ -247,7 +259,7 @@ Cent OS 8 Stream
 
 【サンプルデータ】
 
-（**/development-permission/SampleData 以下一式**）
+（**/SampleData 以下一式**）
 
 -	大字（**/f\_district 以下一式**）
 
@@ -275,86 +287,19 @@ Cent OS 8 Stream
 
 # 4 稼働環境構築（事前準備）
 
-構築対象：Web/APサーバ
+アプリケーション及びデータベースの実行に必要なサーバ環境をご準備ください。
 
-検証済みサーバ環境：CentOS 8 Stream
+本書ではCentOS Stream 9で行います。
 
-※基本管理者アカウントで操作を行います。
-
-管理者アカウントに切り替えます。
-
-```Text
-su -
-```
-
-SELinuxを一時的に無効にします。
-
-（環境構築時の妨げになる為、ここでは一時的に無効化します）
-
-```Text
-setenforce 0
-```
+※セキュリティに関する設定は含まれておりませんので、公開前には必ず適切なセキュリティ対策を講じることを強く推奨します。
 
 <a id="sec401"></a>
 
-## 4-1.Node.js v10.0 以降、npm v6.0 以降をインストール
-
-現在、有効になっている Node.js のバージョンを確認します。
-
-```Text
-dnf module list nodejs
-```
-
-バージョンを指定してインストールを行います。
-
-```Text
-dnf module -y install nodejs:16
-```
-
-有効になっているnodejsのバージョンを確認します。
-
-```Text
-node -v
-```
-
-<a id="sec402"></a>
-
-## 4-2.yarn v1.19.0 以降をインストール
-
-yarnのインストールを行います。
-
-```Text
-curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo
-
-yum install yarn
-```
-バージョンを確認します。
-
-```Text
-yarn -v
-```
-
 # 5 稼働環境構築（MW,SW）
 
-検証済みサーバ環境：CentOS 8 Stream
+検証済みサーバ環境：CentOS Stream 9
 
-構築対象；Web/APサーバ（DBサーバ）
-
-※基本管理者アカウントで操作を行います。
-
-管理者アカウントに切り替えます。
-
-```Text
-su -
-```
-
-SELinuxを一時的に無効にします。
-
-（環境構築時の妨げになる為、ここでは一時的に無効化します）
-
-```Text
-setenforce 0
-```
+構築対象；Web/APサーバ DBサーバ
 
 <a id="sec501"></a>
 
@@ -363,7 +308,7 @@ setenforce 0
 1.  Apache httpd 2.4 をインストールします。
 
 	```Text
-	yum -y install httpd
+	sudo dnf install httpd
 	```
 
 2.  インストール後バージョンを確認します。
@@ -375,7 +320,7 @@ setenforce 0
 3.  自動起動の設定を行います。
 
 	```Text
-	systemctl enable httpd.service
+	sudo systemctl enable httpd.service
 	```
 
 	※起動
@@ -383,43 +328,45 @@ setenforce 0
 	「http://&lt;サーバマシンのIPアドレス&gt;/」でアクセスできることを確認してください。
 
 	```Text
-	systemctl start httpd.service
+	sudo systemctl start httpd
 	```
 
 	※再起動
 
 	```Text
-	systemctl restart httpd.service
+	sudo systemctl restart httpd
 	```
 
 	※停止
 
 	```Text
-	systemctl stop httpd.service
+	sudo systemctl stop httpd
 	```
 
 	※必要な場合、ファイアーウォールの設定を行います。
 
 	```Text
-	firewall-cmd --zone=public --add-service=http –-permanent
+	sudo firewall-cmd --zone=public --add-service=http --permanent
 
-	firewall-cmd --reload
+	sudo firewall-cmd --zone=public --add-service=https --permanent
+	
+	sudo firewall-cmd --reload
 	```
 
 <a id="sec502"></a>
 
-## 5-2.OpenJDK 8 のインストール
+## 5-2.OpenJDK java 1.8 のインストール
 
 1.  java-1.8.0-openjdkをインストールします。
 
 	```Text
-	yum install java-1.8.0-openjdk-devel
+	sudo dnf install java-1.8.0-openjdk
 	```
 
 2.  インストール後バージョンを確認します。
 
 	```Text
-	Java -version
+	java -version
 	```
 
 3.  Java Pathの確認
@@ -431,13 +378,13 @@ setenforce 0
 4.  環境変数を設定します。
 
 	```Text
-	vi /etc/profile
+	sudo vi /etc/profile
 	```
 
 	最終行に以下の内容を追記し保存します。（/usr/lib/jvm以降は適宜バージョンを確認）
 
 	```Text
-	export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.312.b07-2.el8_5.x86_64
+	export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.362.b09-4.el9.x86_64
 
 	export PATH=$PATH:$JAVA_HOME/bin
 
@@ -469,7 +416,7 @@ setenforce 0
 1.  ユーザーを作成します。
 
 	```Text
-	useradd -s /sbin/nologin tomcat
+	sudo useradd -r -m -U -d /opt/tomcat -s /bin/false tomcat
 	```
 
 2.  homeなどに移動し、tomcatのダウンロードを行います。(適宜tomcatのversionを確認) 
@@ -477,22 +424,22 @@ setenforce 0
 	```Text
 	cd /home/
 
-	curl -O http://ftp.yz.yamagata-u.ac.jp/pub/network/apache/tomcat/tomcat-9/v9.0.70/bin/apache-tomcat-9.0.70.tar.gz
+	sudo curl -O http://ftp.yz.yamagata-u.ac.jp/pub/network/apache/tomcat/tomcat-9/v9.0.97/bin/apache-tomcat-9.0.97.tar.gz
 	```
 3.  展開及びファイル移動を行います。
 
 	```Text
-	tar xvzf apache-tomcat-9.0.70.tar.gz -C /opt
+	sudo tar xvzf apache-tomcat-9.0.97.tar.gz -C /opt
 
-	ln -s /opt/apache-tomcat-9.0.70 /opt/apache-tomcat
+	sudo ln -s /opt/apache-tomcat-9.0.97 /opt/apache-tomcat
 
-	chown -R tomcat. /opt/apache-tomcat-9.0.70
+	sudo chown -R tomcat. /opt/apache-tomcat-9.0.97
 	```
 
 4.  パスを通します。
 
 	```Text
-	echo "export CATALINA_HOME=/opt/apache-tomcat" > /etc/profile.d/tomcat.sh
+	echo "export CATALINA_HOME=/opt/apache-tomcat" | sudo tee /etc/profile.d/tomcat.sh
 
 	source /etc/profile
 	```
@@ -500,49 +447,39 @@ setenforce 0
 5.  サービス定義ファイルを作成します。
 
 	```Text
-	vi /etc/systemd/system/tomcat.service
+	sudo vi /etc/systemd/system/tomcat.service
 	```
 
 	以下全て入力して保存します。
 
 	```Text
 	[Unit]
-
 	Description=Apache Tomcat 9
-
-	After=syslog.target network.target
+	After=network.target
 
 	[Service]
-
 	User=tomcat
-
 	Group=tomcat
-
-	Type=oneshot
-
-	PIDFile=/opt/apache-tomcat/tomcat.pid
-
-	RemainAfterExit=yes
+	Type=forking
 
 	ExecStart=/opt/apache-tomcat/bin/startup.sh
-
 	ExecStop=/opt/apache-tomcat/bin/shutdown.sh
+	ExecReload=/opt/apache-tomcat/bin/shutdown.sh && /opt/apache-tomcat/bin/startup.sh
 
 	[Install]
-
 	WantedBy=multi-user.target
 	```
 
 6.  権限を付与します。
 
 	```Text
-	chmod 755 /etc/systemd/system/tomcat.service
+	sudo chmod 755 /etc/systemd/system/tomcat.service
 	```
 
 7.  自動起動の設定を行います。
 
 	```Text
-	systemctl enable tomcat
+	sudo systemctl enable tomcat
 	```
 
 8.  タイムゾーンの設定とHttpHeaderサイズの設定を行います。
@@ -550,19 +487,23 @@ setenforce 0
 	環境設定ファイルを新規で作成してください。
 
 	```Text
-	vi /opt/apache-tomcat/bin/setenv.sh
+	sudo vi /opt/apache-tomcat/bin/setenv.sh
 	```
 
-	下記を入力後、保存してください。
+	下記を入力後、保存してください。内容は必要に応じて変更してください。
 
 	```Text
-	CATALINA_OPTS="-Duser.timezone=Asia/Tokyo"
+	#!/bin/sh
+	export JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom"
+	export CATALINA_OPTS="-server -Xmx1536m -Xms512m -XX:MaxMetaspaceSize=1536m -DALLOW_ENV_PARAMETRIZATION=true -Duser.timezone=Asia/Tokyo"
+	export CATALINA_HOME=/opt/apache-tomcat
+	export CATALINA_BASE=/opt/apache-tomcat
 	```
 
 	次にserver.xmlを編集します。
 
 	```Text
-	vi /opt/apache-tomcat/conf/server.xml
+	sudo vi /opt/apache-tomcat/conf/server.xml
 	```
 
 	下記をConnectorタグに追加後、保存してください。
@@ -579,7 +520,7 @@ setenforce 0
 	設定を反映させるため、再起動します。
 
 	```Text
-	systemctl restart tomcat
+	sudo systemctl restart tomcat
 	```
 
 
@@ -588,46 +529,42 @@ setenforce 0
 	「http://&lt;サーバマシンのIPアドレス&gt;:8080/」でアクセスできることを確認してください。
 
 	```Text
-	systemctl start tomcat
+	sudo systemctl start tomcat
 	```
 
 	※再起動
 
 	```Text
-	systemctl restart tomcat
+	sudo systemctl restart tomcat
 	```
 
 	※停止
 
 	```Text
-	systemctl stop tomcat
+	sudo systemctl stop tomcat
 	```
 
 	※必要な場合、ファイアーウォールの設定を行います。
 
 	```Text
-	firewall-cmd --add-port=8080/tcp --zone=public --permanent
-
-	systemctl restart firewalld
-
+	sudo firewall-cmd --permanent --add-port=8080/tcp
+	sudo firewall-cmd --reload
 	```
 
 <a id="sec504"></a>
 
-## 5-4.GeoServer2.21.xのインストール
+## 5-4.GeoServer2.21.5のインストール
 
 1.  SOURCE FORGEで配信されているため、
 
-	ブラウザから「https://geoserver.org/release/stable/」にアクセス後、Web Archiveからwarのダウンロード及び解凍を行います。
-
-	<img src="../resources/environment/image3.png" style="width:5.90556in;height:2.72847in" />
+	ブラウザから「https://geoserver.org/release/2.21.5/」にアクセス後、Web Archiveからwarのダウンロード及び解凍を行います。
 
 2.  解凍したwarをtomcatに配備します。
 
 	```Text
 	cd "warが置いてある場所"
 
-	mv geoserver.war /opt/apache-tomcat/webapps/
+	sudo mv geoserver.war /opt/apache-tomcat/webapps/
 	```
 
 3.  展開後、「http://&lt;サーバマシンのIPアドレス&gt;:8080/geoserver/」でアクセスできることを確認してください。
@@ -641,25 +578,25 @@ setenforce 0
 1.  PostgreSQLのリポジトリRPMのインストールを行います。
 
 	```Text
-	dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+	sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
 	```
 
 2.  組み込みPostgreSQLモジュールを無効化します。
 
 	```Text
-	dnf -qy module disable postgresql
+	sudo dnf -qy module disable postgresql
 	```
 
 3.  PostgreSQL 14をインストールします。
 
 	```Text
-	dnf install -y postgresql14-server
+	sudo dnf install -y postgresql14 postgresql14-server
 	```
 
 4.  manコマンドでマニュアル参照を行えるように設定します。
 
 	```Text
-	vi /etc/man_db.conf
+	sudo vi /etc/man_db.conf
 	```
 
 	以下を追加して保存してください。
@@ -671,32 +608,32 @@ setenforce 0
 5.  データベースの初期化（データベースクラスタの作成）を行います。
 
 	```Text
-	PGSETUP_INITDB_OPTIONS='--encoding=UTF-8 --no-locale' /usr/pgsql-14/bin/postgresql-14-setup initdb
+	sudo PGSETUP_INITDB_OPTIONS='--encoding=UTF-8 --no-locale' /usr/pgsql-14/bin/postgresql-14-setup initdb
 	```
 
 6.  自動起動の設定を行います。
 
 	```Text
-	systemctl enable postgresql-14
+	sudo systemctl enable --now postgresql-14
 	```
 
 	※起動
 
 	```Text
-	systemctl start postgresql-14
+	sudo systemctl start postgresql-14
 	```
 
 
 	※停止
 
 	```Text
-	systemctl stop postgresql-14
+	sudo systemctl stop postgresql-14
 	```
 
 	※postgresユーザーへ切り替え
 
 	```Text
-	su - postgres
+	sudo su - postgres
 	```
 
 	※終了
@@ -720,9 +657,8 @@ setenforce 0
 	※必要な場合、ファイアーウォールの設定を行います。
 
 	```Text
-	firewall-cmd --permanent --add-port=5432/tcp
-
-	firewall-cmd --reload
+	sudo firewall-cmd --add-service=postgresql --permanent
+	sudo firewall-cmd --reload
 	```
 
 	※外部からPostgreSQL14への接続を許可する際は下記の設定を変更してください
@@ -730,10 +666,7 @@ setenforce 0
 	postgresql.confの修正
 
 	```Text
-
-	cd /var/lib/pgsql/14/data
-
-	vi postgresql.conf
+	sudo vi /var/lib/pgsql/14/data/postgresql.conf
 	```
 
 	listen_addressesとportのコメントアウトを外す(セキュリティに留意して見直してください)
@@ -747,40 +680,26 @@ setenforce 0
 	pg\_hba.confの修正
 
 	```Text
-
-	cd /var/lib/pgsql/14/data
-
-	vi pg_hba.conf
+	sudo vi /var/lib/pgsql/14/data/pg_hba.conf
 	```
 
-	IPv4の「METHOD」を「password」にし、「ADDRESS」を「all」に変更(セキュリティに留意して見直してください)
+	IPv4の「METHOD」を「password」にし、「ADDRESS」に許可するIPアドレスを指定(セキュリティに留意して見直してください)
 
 <a id="sec506"></a>
 
 ## 5-6.PostGIS3のインストール(※同環境にpostgresを入れる場合のみ)
 
-1.	EPEL および PowerTools リポジトリを有効にします。
+1.	EPEL,crbリポジトリを有効にします。
 
 	```Text
-	yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-
-	dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-
-	dnf install dnf-plugins-core
-
-	dnf config-manager --set-enabled powertools
+	sudo dnf install -y epel-release
+	sudo dnf config-manager --set-enabled crb
 	```
 
-2.  デフォルトの PostgreSQL AppStream リポジトリを無効にします。
+2.  PostGISをインストールします。
 
 	```Text
-	dnf -qy module disable postgresql
-	```
-
-3.  PostGISをインストールします。
-
-	```Text
-	yum install postgis32_14
+	sudo dnf install -y postgis31_14 postgis31_14-client
 	```
 
 <a id="sec507"></a>
@@ -792,12 +711,12 @@ setenforce 0
 	postgresユーザへ切り替え後、PostgreSQL に接続します。
 
 	```Text
-	su - postgres
+	sudo su - postgres
 
 	psql
 	```
 
-	ロールを作成します。
+	ロールを作成します。(queryは必要に応じて変更してください)
 
 	```Text
 	CREATE ROLE devps WITH
@@ -876,7 +795,7 @@ setenforce 0
 	postgresユーザへ切り替えます。
 
 	```Text
-	su - postgres
+	sudo su - postgres
 	```
 
 	テーブルスペース用のディレクトリを作成します。
@@ -929,11 +848,13 @@ setenforce 0
 
 	OWNER = devps
 
+	TEMPLATE template0 
+
 	ENCODING = 'UTF8'
 
-	LC_COLLATE = 'C'
+	LC_COLLATE = 'ja_JP.UTF-8'
 
-	LC_CTYPE = 'C'
+	LC_CTYPE = 'ja_JP.UTF-8'
 
 	TABLESPACE = devps_tbs
 
@@ -970,7 +891,7 @@ setenforce 0
 1.	postgresユーザへ切り替え後、DB に接続します。
 
 	```Text
-	su - postgres
+	sudo su - postgres
 
 	psql -h localhost -p 5432 -U devps -d devps_db
 	```
@@ -1039,7 +960,7 @@ setenforce 0
 
 	<img src="../resources/environment/image13.png" style="width:5.90556in;height:4.40278in" />
 
-10. **development-permission/Settings/environment\_settings/create\_table.sql**を取得します。テキストエディタで開き、9.で開いたタブにコピーします。
+10. **/Settings/environment\_settings/create\_table.sql**を取得します。テキストエディタで開き、9.で開いたタブにコピーします。
 
 	<img src="../resources/environment/image14.png" style="width:6.03933in;height:4.02101in" />
 
@@ -1051,7 +972,7 @@ setenforce 0
 
 	<img src="../resources/environment/image15.png" style="width:2.35358in;height:4.51265in" />
 
-13.	**development-permission/Settings/environment\_settings/sequence.sql**を取得し、ファイルを開き、同様に実行します。
+13.	**/Settings/environment\_settings/sequence.sql**を取得し、ファイルを開き、同様に実行します。
 
 	<img src="../resources/environment/image16.png" style="width:2.27166in;height:3.49194in" />
 
@@ -1063,13 +984,13 @@ setenforce 0
 
 サンプルデータを使用される場合は、
 
-**development-permission/SampleData/create\_master\_data\_sheet.xlsx**
+**/SampleData/create\_master\_data\_sheet.xlsx**
 
 を使用してください。
 
 独自にマスタデータを作成する場合は、
 
-**development-permission/Settings/create\_master\_data\_sheet.xlsx**
+**/Settings/create\_master\_data\_sheet.xlsx**
 
 を使用してください。
 
@@ -1168,6 +1089,72 @@ setenforce 0
 <td>道路判定結果の案内文言一覧</td>
 <td>道路判定を有効にしない場合本テーブルは不要。</td>
 </tr>
+<tr class="even">
+<td><p>M_カレンダー</p>
+<p>m_calendar</p></td>
+<td>営業日一覧</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><p>M_権限</p>
+<p>m_authority</p></td>
+<td>各部署の回答、通知権限一覧</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><p>M_判定結果</p>
+<p>m_judgement_result</p></td>
+<td>各判定項目の判定結果一覧</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><p>M_申請区分_区分判定</p>
+<p>m_application_category_judgement</p></td>
+<td>M_申請区分とM_区分判定の紐付け一覧</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><p>M_申請情報項目選択肢</p>
+<p>m_applicant_information_item_option</p></td>
+<td>項目型が単一選択または複数選択の各申請者情報項目の選択肢</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><p>M_申請種類</p>
+<p>m_application_type</p></td>
+<td>申請種類一覧</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><p>M_申請段階</p>
+<p>m_application_step</p></td>
+<td>申請段階一覧</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><p>M_帳票ラベル</p>
+<p>m_ledger_label</p></td>
+<td>各帳票中に、置換必要な文字列の設定一覧</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><p>M_帳票</p>
+<p>m_ledger</p></td>
+<td>帳票一覧</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><p>M_開発登録簿</p>
+<p>m_development_document</p></td>
+<td>開発登録簿一覧</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><p>M_区分判定_権限</p>
+<p>m_judgement_authority</p></td>
+<td>各判定項目の担当部署一覧</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
@@ -1176,20 +1163,20 @@ setenforce 0
 本章におけるセットアップ対象のマスタデータは青色のテーブルになります。
 
 <span style="color: red;">
-赤字のテーブルおよびカラムは令和5年度実証において追加された内容です。
+赤字のテーブルおよびカラムは令和6年度実証において追加された内容です。
 </span>
 
-<img src="../resources/environment/image17.png" style="width:5.90556in;height:6.51667in" />
+<img src="../resources/environment/image17.png" style="width:100%;margin:0;padding:0;" />
 
 各テーブル共通の手順は以下になります。
 
 1.	「create\_master\_data\_sheet.xlsx」を編集します。各テーブルに対応するシートの項目を埋め、マスタデータを作成します。シートの各列の設定内容は次節以降の各テーブルの記載を参照してください。
 
-	※サンプルデータ（**development-permission/SampleData/create\_master\_data\_sheet.xlsx**）をそのまま使用される場合は編集不要です。
+	※サンプルデータ（**/SampleData/create\_master\_data\_sheet.xlsx**）をそのまま使用される場合は編集不要です。
 
 	※独自にマスタデータを作成する場合は、
 
-	**development-permission/Settings/** **create\_master\_data\_sheet.xlsx**の各シートに参考のサンプルデータを記載しておりますので、変更してください。
+	**/Settings/** **create\_master\_data\_sheet.xlsx**の各シートに参考のサンプルデータを記載しておりますので、変更してください。
 
 	<img src="../resources/environment/image18.png" style="width:3.89511in;height:2.72163in" />
 
@@ -1259,8 +1246,6 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 
 <span style="color: red; ">
 
-※view\_idは「1001」～「1010」まで固定で必ず設定してください。
-
 ※表示に使用しない画面（申請区分）はview\_flagを0に設定してください。
 
 </span>
@@ -1290,7 +1275,7 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>view_id</td>
 <td>画面ID</td>
 <td>○</td>
-<td>「1001」～「1010」まで固定で設定すること</td>
+<td></td>
 </tr>
 <tr class="even">
 <td>B</td>
@@ -1332,10 +1317,10 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <tr class="odd">
 <td>G</td>
 <td>judgement_type</td>
-<td>概況診断タイプ</td>
+<td>申請種類</td>
 <td>○</td>
-<td><p>申請区分選択画面で概況診断タイプ選択後に表示する申請区分の切替フラグ。</p>
-<p>カンマ区切りで表示対象の概況診断タイプのコードを格納する。</p></td>
+<td><p>申請区分選択画面で申請種類選択後に表示する申請区分の切替フラグ。</p>
+<p>カンマ区切りで表示対象の申請種類のコードを格納する。</p></td>
 </tr>
 </tbody>
 </table>
@@ -1559,11 +1544,20 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 </tr>
 <tr class="even">
 <td>D</td>
+<td>admin_mail_address</td>
+<td>管理者メールアドレス</td>
+<td>○</td>
+<td><p>該当部署の管理者の通知先のメールアドレス</p>
+<p>カンマ区切りで複数指定可</p>
+</td>
+</tr>
+<tr class="odd">
+<td>E</td>
 <td>answer_authority_flag</td>
 <td>回答権限フラグ</td>
 <td>○</td>
-<td><p>回答通知を行う権限の有無</p>
-<p>1=権限あり,0=権限なし のいずれかで設定</p></td>
+<td><p>該当部署が統括部署であるかを設定すること</p>
+<p>1=統括部署,0=統括部署以外 のいずれかで設定</p></td>
 </tr>
 </tbody>
 </table>
@@ -1614,94 +1608,6 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 </tr>
 <tr class="even">
 <td>B</td>
-<td>department_id</td>
-<td>担当部署ID</td>
-<td>○</td>
-<td><p>判定項目に回答を実施する担当部署の部署ID</p>
-<p><a href="#sec704">7-4. M_部署</a>で設定したIDを使用すること</p></td>
-</tr>
-<tr class="odd">
-<td>C</td>
-<td>category_1</td>
-<td>区分1</td>
-<td>○</td>
-<td><p>画面ID=1001と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="even">
-<td>D</td>
-<td>category_2</td>
-<td>区分2</td>
-<td>○</td>
-<td><p>画面ID=1002と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="odd">
-<td>E</td>
-<td>category_3</td>
-<td>区分3</td>
-<td>○</td>
-<td><p>画面ID=1003と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="even">
-<td>F</td>
-<td>category_4</td>
-<td>区分4</td>
-<td>○</td>
-<td><p>画面ID=1004と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="odd">
-<td>G</td>
-<td>category_5</td>
-<td>区分5</td>
-<td>○</td>
-<td><p>画面ID=1005と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="even">
-<td>H</td>
-<td>category_6</td>
-<td>区分6</td>
-<td>○</td>
-<td><p>画面ID=1006と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="odd">
-<td>I</td>
-<td>category_7</td>
-<td>区分7</td>
-<td>○</td>
-<td><p>画面ID=1007と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="even">
-<td>J</td>
-<td>category_8</td>
-<td>区分8</td>
-<td>○</td>
-<td><p>画面ID=1008と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="odd">
-<td>K</td>
-<td>category_9</td>
-<td>区分9</td>
-<td>○</td>
-<td><p>画面ID=1009と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="even">
-<td>L</td>
-<td>category_10</td>
-<td>区分10</td>
-<td>○</td>
-<td><p>画面ID=1010と紐づく申請区分IDのうち、区分判定で該当と判定したい申請区分IDをカンマ区切りで設定する</p>
-<p>判定に用いない場合0を格納すること</p></td>
-</tr>
-<tr class="odd">
-<td>M</td>
 <td>gis_judgement</td>
 <td>GIS判定</td>
 <td>○</td>
@@ -1714,16 +1620,16 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p>5=道路判定</p>
 <p>のいずれかで設定</p></td>
 </tr>
-<tr class="even">
-<td>N</td>
+<tr class="odd">
+<td>C</td>
 <td>buffer</td>
 <td>バッファ</td>
 <td>○</td>
 <td><p>バッファ判定時のバッファ半径(m,小数可)</p>
 <p>バッファ判定を使用しない場合0とすること</p></td>
 </tr>
-<tr class="odd">
-<td>O</td>
+<tr class="even">
+<td>D</td>
 <td>display_attribute_flag</td>
 <td>重なり属性表示フラグ</td>
 <td>○</td>
@@ -1736,8 +1642,8 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p><span style="color: red; ">※属性表示する場合、table_nameとfield_nameを設定すること</span></p>
 <p><span style="color: red; ">※区切り文字はapplication.propertiesで設定。</span></p></td>
 </tr>
-<tr class="even">
-<td>P</td>
+<tr class="odd">
+<td>E</td>
 <td>judgement_layer</td>
 <td>判定対象レイヤ</td>
 <td></td>
@@ -1748,71 +1654,16 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p><span style="color: red; ">※GIS判定では必須、GIS判定以外では不要</span></p>
 <p><span style="color: red; ">※図形重なり属性表示を行う場合複数指定不可</span></p></td>
 </tr>
-<tr class="odd">
-<td>Q</td>
-<td>title</td>
-<td>タイトル</td>
-<td>○</td>
-<td><p>概況診断結果一覧と回答一覧の「対象」列に表示する内容</p>
-<p>改行可</p></td>
-</tr>
 <tr class="even">
-<td>R</td>
-<td>applicable_summary</td>
-<td>該当表示概要</td>
-<td>○</td>
-<td><p>該当時に帳票の概要に出力する文字列</p>
-<p>改行可</p></td>
-</tr>
-<tr class="odd">
-<td>S</td>
-<td>applicable_description</td>
-<td>該当表示文言</td>
-<td>○</td>
-<td><p>該当時に概況診断結果一覧のツールチップと帳票の詳細に表示・出力する文字列</p>
-<p>改行可</p>
-<p>&lt;a&gt;&lt;/a&gt;で囲んだ範囲の文字列をリンクとして表示</p>
-<p>&lt;span&gt;&lt;/span&gt;で囲んだ範囲の文字列はstyle属性でスタイル設定可能</p>
-<p>属性表示したい場合、表示したい箇所に「@1」のように「@」+「フィールド名の順番」を記載</p>
-<p>地番と判定対象レイヤの最短距離を表示したい場合、表示したい箇所に「{distance}」と記載</p>
-<p>道路判定(gis_judgement=5)の場合、判定結果による文言変更箇所に置換文字列を設定する。置換文字列の設定内容については、<a href="#sec7013">7-13. M_道路判定ラベル</a>を参照のこと</p>
-</td>
-</tr>
-<tr class="even">
-<td>T</td>
-<td>non_applicable_display_flag</td>
-<td>非該当表示有無</td>
-<td>○</td>
-<td><p>非該当時に概況診断結果一覧に表示するか否かを設定</p>
-<p>1=表示, 0=非表示 のいずれかで設定</p></td>
-</tr>
-<tr class="odd">
-<td>U</td>
-<td>non_applicable_summary</td>
-<td>非該当表示概要</td>
-<td></td>
-<td><p>非該当時に帳票の概要に出力する文字列</p>
-<p>改行可</p></td>
-</tr>
-<tr class="even">
-<td>V</td>
-<td>non_applicable_description</td>
-<td>非該当表示文言</td>
-<td></td>
-<td><p>非該当時に概況診断結果一覧のツールチップと帳票の詳細に表示・出力する文字列</p>
-<p>改行可</p>
-<p>&lt;a&gt;&lt;/a&gt;で囲んだ範囲の文字列をリンクとして表示</p></td>
-</tr>
-<tr class="odd">
-<td>W</td>
+<td>F</td>
 <td>table_name</td>
 <td>テーブル名</td>
 <td></td>
 <td><p>属性表示するテーブル名</p>
 <p>※judgement_layerで指定した判定レイヤのテーブル名を指定すること</p></td>
 </tr>
-<tr class="even">
-<td>X</td>
+<tr class="odd">
+<td>G</td>
 <td>field_name</td>
 <td>フィールド名</td>
 <td></td>
@@ -1820,8 +1671,8 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p>カンマ区切りで複数設定可能</p>
 <p>※【W】で指定したテーブルのフィールド名(カラム名)を指定すること</p></td>
 </tr>
-<tr class="odd">
-<td>Y</td>
+<tr class="even">
+<td>H</td>
 <td>non_applicable_layer_display_flag</td>
 <td>判定レイヤ非該当時表示有無</td>
 <td>○</td>
@@ -1829,61 +1680,28 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p>※該当時はレイヤを設定している場合必ず表示</p>
 <p>1=表示,0=非表示 のいずれかで設定</p></td>
 </tr>
-<tr class="even">
-<td>Z</td>
+<tr class="odd">
+<td>I</td>
 <td>simultaneous_display_layer</td>
 <td>同時表示レイヤ</td>
 <td></td>
 <td>概況診断結果一覧画面で判定対象レイヤと同時に表示する関連レイヤのID（カンマ区切り）</td>
 </tr>
-<tr class="odd">
-<td>AA</td>
+<tr class="even">
+<td>J</td>
 <td>simultaneous_display_layer_flag</td>
 <td>同時表示レイヤ表示有無</td>
 <td>○</td>
 <td><p>概況診断結果一覧画面で判定対象レイヤと同時に関連レイヤを表示するか否か</p>
 <p>1=表示, 0=非表示 のいずれかで設定</p></td>
 </tr>
-<tr class="even">
-<td>AB</td>
+<tr class="odd">
+<td>K</td>
 <td>disp_order</td>
 <td>表示順</td>
 <td>○</td>
 <td><p>概況診断結果一覧画面および帳票における表示順</p>
 <p>小数で設定する</p></td>
-</tr>
-<tr class="odd">
-<td>AC</td>
-<td>answer_require_flag</td>
-<td>回答必須フラグ</td>
-<td>○</td>
-<td><p>区分判定に行政による回答が必須か否か</p>
-<p>任意の場合、申請受付時にデフォルト回答を回答として登録・通知する。</p>
-<p>1=必須, 0=任意 のいずれかで設定</p></td>
-</tr>
-<tr class="even">
-<td>AD</td>
-<td>default_answer</td>
-<td>デフォルト回答</td>
-<td></td>
-<td>申請受付時に自動で設定する回答文言</td>
-</tr>
-<tr class="odd">
-<td>AE</td>
-<td>answer_editable_flag</td>
-<td>編集可能フラグ</td>
-<td>○</td>
-<td><p>回答の編集を可能とするか否か</p>
-<p>1=編集可能, 0=編集不可</p>
-<p></p>
-<p><span style="color: red; ">※answer_require_flagが1かつanswer_editable_flagが0のケースは指定できません</span></p></td>
-</tr>
-<tr class="even">
-<td>AF</td>
-<td>answer_days</td>
-<td>回答日数</td>
-<td></td>
-<td>行政担当者が該当の条項に回答する目安日数を設定。事業者にはすべての該当条項の回答日数の最大値+システム設定したバッファ日数が回答日数として通知される。行政担当者には担当の部署の該当条項の回答日数の最大値が回答日数として通知される。</td>
 </tr>
 </tbody>
 </table>
@@ -1944,7 +1762,7 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>必須有無</td>
 <td>○</td>
 <td><p>申請登録時にファイルのアップロードが必須か否か</p>
-<p>必須=1, 任意=0 のいずれかで設定</p></td>
+<p>2=任意(注意文言あり), 必須=1, 任意=0 のいずれかで設定</p></td>
 </tr>
 <tr class="even">
 <td>D</td>
@@ -1959,6 +1777,13 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>拡張子</td>
 <td>○</td>
 <td><p>利用可能な拡張子をカンマ区切りで設定</p>
+</tr>
+<tr class="even">
+<td>F</td>
+<td>application_file_type</td>
+<td>申請ファイル種別</td>
+<td>○</td>
+<td><p>1=開発登録簿に含める , 0=開発登録簿に含めない</p></td>
 </tr>
 </tbody>
 </table>
@@ -2032,6 +1857,16 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p>HTML埋め込み可能</p>
 <p>必要に応じてマスタデータ作成シートの内容から変更</p></td>
 </tr>
+<tr class="even">
+<td>F</td>
+<td>application_step</td>
+<td>申請段階</td>
+<td>○</td>
+<td><p>申請段階IDを指定</p>
+<p>カンマ区切りで複数設定可能</p>
+<p>申請段階IDを問わず、常に表示する場合、「all」で書く</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -2071,7 +1906,7 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>利用者規約画面同意ボタン</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1000</td>
 <td>4</td>
 <td>利用者規約画面ヘッダタイトル</td>
@@ -2083,10 +1918,16 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>利用者規約画面利用目的選択説明文</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1000</td>
 <td>6</td>
 <td>利用者規約画面アンケート説明文</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>1000</td>
+<td>7</td>
+<td>利用者規約画面TOPボタン</td>
 <td></td>
 </tr>
 <tr class="even">
@@ -2099,43 +1940,79 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>1001</td>
 <td>2</td>
 <td>申請完了画面説明文</td>
-<td></td>
+<td>回答日数を表示したい場合、埋め込み表示する箇所に「${回答日数}」を設定する</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1001</td>
 <td>3</td>
 <td>申請完了画面アンケート説明文</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>1002</td>
 <td>1</td>
 <td>回答完了画面タイトル</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1002</td>
 <td>2</td>
 <td>回答完了画面説明文</td>
-<td>回答日数を表示したい場合、埋め込み表示する箇所に「${回答日数}」を設定する</td>
+<td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>1003</td>
 <td>1</td>
 <td>回答通知完了画面タイトル</td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>1003</td>
 <td>2</td>
 <td>回答通知完了画面説明文</td>
 <td></td>
 </tr>
+<tr class="odd">
+<td>1003</td>
+<td>3</td>
+<td>申請差戻通知完了画面説明文</td>
+<td></td>
+</tr>
 <tr class="even">
+<td>1003</td>
+<td>4</td>
+<td>申請受付通知完了画面説明文</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>1003</td>
+<td>5</td>
+<td>回答許可通知完了画面説明文</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>1003</td>
+<td>6</td>
+<td>行政確定登録許可通知完了画面説明文</td>
+<td></td>
+</tr>
+<tr class="odd">
 <td>1004</td>
 <td>1</td>
 <td>行政ログイン画面ヘッダ</td>
 <td>○○市の部分を使用される自治体名に変更すること</td>
+</tr>
+<tr class="even">
+<td>1004</td>
+<td>2</td>
+<td>行政ログイン画面アンケートリンク文言</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>1004</td>
+<td>3</td>
+<td>行政ログイン画面アンケートリンクのリンク先URL</td>
+<td></td>
 </tr>
 <tr class="even">
 <td>1005</td>
@@ -2143,11 +2020,35 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>概況診断結果画面説明文</td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>1006</td>
 <td>1</td>
-<td>申請ファイルアップロード画面アップロード説明文</td>
-<td>1ファイル当たり容量上限、合計ファイル容量を埋め込み表示する箇所にそれぞれ「${maxFileSize}」、「${maxRequestFileSize}」を設定する</td>
+<td>申請ファイルアップロード画面 アップロード説明文</td>
+<td>1ファイル当たり容量上限を埋め込み表示する箇所にそれぞれ「${maxFileSize}」」を設定する</td>
+</tr>
+<tr class="even">
+<td>1006</td>
+<td>2</td>
+<td>申請ファイルアップロード画面 任意ファイル不足時の注意文言</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>1007</td>
+<td>1</td>
+<td>申請者情報入力画面の申請者情報の説明文</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>1007</td>
+<td>2</td>
+<td>申請者情報入力画面の連絡先の説明文</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>2000</td>
+<td>1</td>
+<td>申請地番選択画面の相談ボタン</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -2385,7 +2286,7 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 </tr>
 <tr class="odd">
 <td>C</td>
-<td>Display_flag</td>
+<td>display_flag</td>
 <td>表示有無</td>
 <td>○</td>
 <td><p>表示を行うか否か</p>
@@ -2433,6 +2334,42 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>○</td>
 <td><p>申請情報検索画面の検索条件として表示するか否か</p>
 <p>1=表示, 0=非表示 のいずれかで設定</p></td>
+</tr>
+<tr class="odd">
+<td>I</td>
+<td>item_type</td>
+<td>項目型</td>
+<td>○</td>
+<td><p>0:1行のみの入力欄で表示</p>
+<p>1:複数行の入力欄で表示</p>
+<p>2:日付（カレンダー）</p>
+<p>3:数値</p>
+<p>4:ドロップダウン単一選択</p>
+<p>5:ドロップダウン複数選択</p></td>
+</tr>
+<tr class="even">
+<td>J</td>
+<td>application_step</td>
+<td>申請段階</td>
+<td></td>
+<td><p>申請段階IDを指定</p>
+<p>カンマ区切りで複数設定可能</p></td>
+</tr>
+<tr class="odd">
+<td>K</td>
+<td>add_information_item_flag</td>
+<td>追加情報フラグ</td>
+<td>○</td>
+<td><p>申請者情報項目（初回申請）か申請追加情報項目（再申請）かを指定</p>
+<p>0=申請者情報項目, 1=申請追加情報項目</p></td>
+</tr>
+<tr class="even">
+<td>L</td>
+<td>contact_address_flag</td>
+<td>連絡先フラグ</td>
+<td>○</td>
+<td><p>0=連絡先として表示しない, 1=連絡先として表示</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -2511,6 +2448,14 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>user_name</td>
 <td>氏名</td>
 <td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>G</td>
+<td>admin_flag</td>
+<td>管理者フラグ</td>
+<td>○</td>
+<td><p>0=一般ユーザ, 1=管理者</p></td>
 </tr>
 </tbody>
 </table>
@@ -2699,7 +2644,9 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <td>最大値</td>
 <td></td>
 <td>
-<p>幅員値の判定結果により案内文言を変更するために使用する。最小値以上最大値未満の時該当レコードの文言を案内する。</p></td>
+<p>幅員値の判定結果により案内文言を変更するために使用する。最小値以上最大値未満の時該当レコードの文言を案内する。</p>
+</td>
+</tr>
 <tr class="odd">
 <td>G</td>
 <td>replace_text</td>
@@ -2710,7 +2657,6 @@ create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです
 <p>&lt;a&gt;&lt;/a&gt;で囲んだ範囲の文字列をリンクとして表示</p>
 <p>&lt;span&gt;&lt;/span&gt;で囲んだ範囲の文字列はstyle属性でスタイル設定可能</p>
 </td>
-</tr>
 </tr>
 </tbody>
 </table>
@@ -2728,20 +2674,20 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
   <col style="width: 40%" />
 </colgroup>
 	<thead>
-    <tr class="header">
+	<tr class="header">
 		<th>判定対象</th>
-    <th><p>replace_identify設定値</p>
-    <p>※M_区分判定の該当表示文言にも設定</p>
-    </th>
+	<th><p>replace_identify設定値</p>
+	<p>※M_区分判定の該当表示文言にも設定</p>
+	</th>
 		<th>判定結果</th>
 		<th>設定値（カラム=値）</th>
 		<th>備考</th>
-    </tr>
+	</tr>
 	</thead>
   <tbody>
 	<tr>
 		<td rowspan="2">道路判定結果総括</td>
-    <td  rowspan="2">{width_text_area}</td>
+	<td  rowspan="2">{width_text_area}</td>
 		<td>正常に判定終了</td>
 		<td>index_value=0</td>
 		<td></td>
@@ -2753,7 +2699,7 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 	</tr>
 	<tr>
 		<td rowspan="4">区割り線取得結果</td>
-    <td rowspan="4">{split_line_result_area}</td>
+	<td rowspan="4">{split_line_result_area}</td>
 		<td>両方向で区割り線取得</td>
 		<td>index_value=2</td>
 		<td></td>
@@ -2775,7 +2721,7 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 	</tr>
 	<tr>
 		<td rowspan="2">隣接歩道判定結果</td>
-    <td rowspan="2">{walkway_result_area}</td>
+	<td rowspan="2">{walkway_result_area}</td>
 		<td>隣接歩道あり</td>
 		<td>index_value=1</td>
 		<td></td>
@@ -2788,7 +2734,7 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 	<tr>
 		<td>最大幅員判定結果</td>
 		<td>{max_width_text_area}</td>
-    	<td></td>
+		<td></td>
 		<td>index_value=0</td>
 		<td><p>replace_text内の道路部最大幅員値を表示したい箇所に{road_max_width}を埋め込む。</p>
 		<p>replace_text内の車道最大幅員値を表示したい箇所に{roadway_max_width}を埋め込む。</p>
@@ -2798,7 +2744,7 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 	<tr>
 		<td>最小幅員判定結果</td>
 		<td>{min_width_text_area}</td>
-    <td></td>
+	<td></td>
 		<td>index_value=0</td>
 		<td><p>replace_text内の道路部最小幅員値を表示したい箇所に{road_min_width}を埋め込む。</p>
 		<p>replace_text内の車道最小幅員値を表示したい箇所に{roadway_min_width}を埋め込む。</p>
@@ -2808,17 +2754,17 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 	<tr>
 		<td>幅員値による案内文言</td>
 		<td>{display_by_width_area}</td>
-    <td></td>
+	<td></td>
 		<td>min_value=[最小値],max_value=[最大値]</td>
 		<td><p>[最小値]m以上[最大値]m未満で、文言を変えたい範囲毎に行を作成する。</p>
-    <p>以上、未満の片方を使用する場合もう一方は空とする。</p>
-    </td>
+	<p>以上、未満の片方を使用する場合もう一方は空とする。</p>
+	</td>
 	</tr>
 	<tr>
 		<td>道路種別による案内文言</td>
-    	<td>{display_by_road_type_area}</td>
+		<td>{road_type_result_area}</td>
 		<td>道路種別取得時</td>
-		<td>index_string=[道路種別識別コード]</td>
+		<td>index_text=[道路種別識別コード]</td>
 		<td>道路種別コード値ごとに行を作成する。</td>
 	</tr>
 	<tr>
@@ -2827,6 +2773,1015 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
   </tbody>
 </table>
 
+<a id="sec7014"></a>
+
+## 7-14. M\_カレンダー（m\_calendar）
+
+create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです。
+
+システムが稼働する間の営業日分作成してください。
+
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+<col style="width: 8%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>列番号</th>
+<th>カラム名</th>
+<th>エイリアス</th>
+<th>必須</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>cal_date</td>
+<td>カレンダー日付</td>
+<td>○</td>
+<td>
+<p>yyyy/MM/dd形式</p>
+</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>week_day</td>
+<td>曜日</td>
+<td>○</td>
+<td>
+<p>1=日曜日, 2=月曜日, 3=火曜日, 4=水曜日, 5=木曜日, 6=金曜日, 7=土曜日</p>
+</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>biz_day_flag</td>
+<td>営業日フラグ</td>
+<td>○</td>
+<td>
+<p>0=非営業日,1=営業日</p>
+</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>comment</td>
+<td>備考</td>
+<td></td>
+<td>
+<p></p>
+</td>
+</tr>
+</tbody>
+</table>
+
+<a id="sec7015"></a>
+
+## 7-15. M\_権限（m\_authority）
+
+create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです。
+
+部署及び申請段階毎に回答、通知権限を作成してください。
+
+回答権限は各申請段階の回答入力時の権限制御で使用されます。
+
+通知権限は各申請段階の回答通知時の権限制御で使用されます。
+
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+<col style="width: 8%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>列番号</th>
+<th>カラム名</th>
+<th>エイリアス</th>
+<th>必須</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>department_id</td>
+<td>部署ID</td>
+<td>○</td>
+<td>
+<p></p>
+</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>application_step_id</td>
+<td>申請段階ID</td>
+<td>○</td>
+<td>
+<p></p>
+</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>answer_authority_flag</td>
+<td>回答権限フラグ</td>
+<td>○</td>
+<td>
+<p>0=権限なし, 1:=権限あり（所属部署のみ操作可）, 2=権限あり（他部署も操作可）</p>
+</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>notification_authority_flag</td>
+<td>通知権限フラグ</td>
+<td>○</td>
+<td>
+<p>0=権限なし, 1:=権限あり（所属部署のみ操作可）, 2=権限あり（他部署も操作可）</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+<a id="sec7016"></a>
+
+## 7-16. M\_判定結果（m\_judgement\_result）
+
+create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです。
+
+M_区分判定に対応する判定項目結果を申請種類、申請段階、部署ごとに作成してください。
+
+概況診断結果表示及び回答生成で使用されます。
+
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+<col style="width: 8%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>列番号</th>
+<th>カラム名</th>
+<th>エイリアス</th>
+<th>必須</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>judgement_item_id</td>
+<td>判定項目ID</td>
+<td>○</td>
+<td>
+<p>M_区分判定テーブルの判定項目IDを指定</p>
+</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>application_type_id</td>
+<td>申請種類ID</td>
+<td>○</td>
+<td>
+<p>M_申請種類テーブルの申請種類IDを指定</p>
+</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>application_step_id</td>
+<td>申請段階ID</td>
+<td>○</td>
+<td>
+<p>M_申請段階テーブルの申請段階IDを指定</p>
+</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>department_id</td>
+<td>部署ID</td>
+<td>○</td>
+<td>
+<p>M_部署テーブルの部署IDを指定</p>
+</td>
+</tr>
+<tr class="odd">
+<td>E</td>
+<td>title</td>
+<td>タイトル</td>
+<td>○</td>
+<td>
+<p>
+概況診断結果一覧と回答一覧の「対象」列に表示する内容
+
+改行可
+</p>
+</td>
+</tr>
+<tr class="even">
+<td>F</td>
+<td>applicable_summary</td>
+<td>該当表示概要</td>
+<td>○</td>
+<td>
+<p>
+該当時に帳票の概要に出力する文字列
+
+改行可
+</p>
+</td>
+</tr>
+<tr class="odd">
+<td>G</td>
+<td>applicable_description</td>
+<td>該当表示文言</td>
+<td>○</td>
+<td><p>該当時に概況診断結果一覧のツールチップと帳票の詳細に表示・出力する文字列</p>
+<p>改行可</p>
+<p>&lt;a&gt;&lt;/a&gt;で囲んだ範囲の文字列をリンクとして表示</p>
+<p>&lt;span&gt;&lt;/span&gt;で囲んだ範囲の文字列はstyle属性でスタイル設定可能</p>
+<p>道路判定(gis_judgement=5)の場合、判定結果による文言変更箇所に置換文字列を設定する。置換文字列の設定内容については、<a href="#sec7013">7-13. M_道路判定ラベル</a>を参照のこと</p>
+</td>
+</tr>
+<tr class="odd">
+<td>H</td>
+<td>non_applicable_display_flag</td>
+<td>非該当表示有無</td>
+<td>○</td>
+<td>
+<p>
+非該当時に概況診断結果一覧に表示するか否かを設定
+
+1=表示, 0=非表示 のいずれかで設定
+</p>
+</td>
+</tr>
+<tr class="even">
+<td>I</td>
+<td>non_applicable_summary</td>
+<td>非該当表示概要</td>
+<td></td>
+<td>
+<p>
+非該当時に帳票の概要に出力する文字列
+
+改行可
+</p>
+</td>
+</tr>
+<tr class="odd">
+<td>J</td>
+<td>non_applicable_description</td>
+<td>非該当表示文言</td>
+<td></td>
+<td>
+<p>非該当時に概況診断結果一覧のツールチップと帳票の詳細に表示・出力する文字列</p>
+<p>改行可</p>
+<p>&lt;a&gt;&lt;/a&gt;で囲んだ範囲の文字列をリンクとして表示</p>
+</td>
+</tr>
+<tr class="even">
+<td>K</td>
+<td>answer_require_flag</td>
+<td>回答必須フラグ</td>
+<td>○</td>
+<td>
+<p>
+区分判定に行政による回答が必須か否か
+
+任意の場合、申請受付時にデフォルト回答を回答として登録・通知する。
+
+1=必須, 0=任意 のいずれかで設定
+</p>
+</td>
+</tr>
+<tr class="odd">
+<td>L</td>
+<td>default_answer</td>
+<td>デフォルト回答</td>
+<td></td>
+<td>
+<p>
+申請受付時に自動で設定する回答文言
+</p>
+</td>
+</tr>
+<tr class="odd">
+<td>M</td>
+<td>answer_editable_flag</td>
+<td>編集可能フラグ </td>
+<td>○</td>
+<td>
+<p>回答の編集を可能とするか否か</p>
+<p>1=編集可能, 0=編集不可</p>
+<p></p>
+<p><span style="color: red; ">※answer_require_flagが1かつanswer_editable_flagが0のケースは指定できません</span></p>
+</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td>answer_days</td>
+<td>回答日数</td>
+<td>○</td>
+<td>
+<p>
+申請登録日から起算した回答期日までの日数
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+<a id="sec7017"></a>
+
+## 7-17. M\_申請区分\_区分判定（m\_application\_category\_judgement）
+
+create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです。
+
+M_申請区分と区分判定の対応付けを設定してください。
+
+概況診断の区分判定で使用されます。
+
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+<col style="width: 8%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>列番号</th>
+<th>カラム名</th>
+<th>エイリアス</th>
+<th>必須</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>judgement_item_id</td>
+<td>判定項目ID</td>
+<td>○</td>
+<td>
+<p>M_区分判定テーブルの判定項目IDを指定</p>
+</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>view_id</td>
+<td>画面ID</td>
+<td>○</td>
+<td>
+<p>M_申請区分テーブルの画面IDを指定</p>
+</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>category_id</td>
+<td>申請区分ID</td>
+<td>○</td>
+<td>
+<p>M_申請区分テーブルの申請区分IDを指定</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+<a id="sec7018"></a>
+
+## 7-18. M\_申請情報項目選択肢（m\_applicant\_information\_item\_option）
+
+create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです。
+
+M_申請者情報項目の項目型が4(単一選択)または5(複数選択)の項目選択肢を設定してください。
+
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+<col style="width: 8%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>列番号</th>
+<th>カラム名</th>
+<th>エイリアス</th>
+<th>必須</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>applicant_information_item_option_id</td>
+<td>申請情報項目選択肢ID</td>
+<td>○</td>
+<td>
+<p>一意のIDを指定</p>
+</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>applicant_information_item_id</td>
+<td>申請者情報項目ID</td>
+<td>○</td>
+<td>
+<p>M_申請者情報項目の申請者情報項目IDを指定</p>
+</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>display_order</td>
+<td>昇順</td>
+<td>○</td>
+<td>
+<p>一覧で表示される並び順を昇順で設定</p>
+</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>applicant_information_item_option_name</td>
+<td>選択肢名</td>
+<td>○</td>
+<td>
+<p>選択肢名を設定</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+<a id="sec7019"></a>
+
+## 7-19. M\_申請種類（m\_application_type）
+
+create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです。
+
+本テーブルは申請全体の設定で使用されます。
+
+区分判定に影響があるため変更時は整合性の確認が必要となります。
+
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+<col style="width: 8%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>列番号</th>
+<th>カラム名</th>
+<th>エイリアス</th>
+<th>必須</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>application_type_id</td>
+<td>申請種類ID</td>
+<td>○</td>
+<td>
+<p>一意のIDを指定</p>
+</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>application_type_name</td>
+<td>申請種類名</td>
+<td>○</td>
+<td>
+<p>申請種類名を設定</p>
+</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>application_step</td>
+<td>申請段階</td>
+<td>○</td>
+<td>
+<p>
+M_申請段階テーブルの申請段階IDを実施順でカンマ区切りで指定
+
+例） 開発許可:「1:事前相談」⇒「2:事前協議」⇒「3:許可判定」
+
+「1,2,3」で格納
+
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+<a id="sec7020"></a>
+
+## 7-20. M\_申請段階（m\_application\_step）
+
+create\_master\_data\_sheet.xlsxから取り込む内容は以下の通りです。
+
+本テーブルはシステム固有の設定です。
+
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+<col style="width: 8%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>列番号</th>
+<th>カラム名</th>
+<th>エイリアス</th>
+<th>必須</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>application_step_id</td>
+<td>申請段階ID</td>
+<td>○</td>
+<td>
+<p>一意のIDを指定</p>
+</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>application_step_name</td>
+<td>申請段階名</td>
+<td>○</td>
+<td>
+<p>申請段階名を設定</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+<a id="sec7021"></a>
+
+## 7-21. M\_帳票ラベル（m\_ledger\_label）
+
+create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです。
+
+帳票で動的な項目値を使用して置き換える必要がある場合設定してください。※xlsx形式のみ対応
+
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+<col style="width: 8%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>列番号</th>
+<th>カラム名</th>
+<th>エイリアス</th>
+<th>必須</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>ledger_label_id</td>
+<td>帳票ラベルID</td>
+<td>○</td>
+<td>
+<p>一意のIDを指定</p>
+</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>ledger_id</td>
+<td>帳票マスタID</td>
+<td>○</td>
+<td>
+<p>M_帳票テーブルの帳票マスタIDを指定</p>
+</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>replace_identify</td>
+<td>置換識別子</td>
+<td>○</td>
+<td>
+<p>帳票テンプレートに埋め込む置換識別子を指定</p>
+</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>table_name</td>
+<td>テーブル名</td>
+<td>○</td>
+<td>
+<p>
+出力に使用するテーブル名<br/><br/>
+
+指定可能なテーブルは以下<br/><br/>
+
+・O_申請<br/>
+o_application<br/>
+・O_申請区分<br/>
+o_application_category<br/>
+・O_申請版情報<br/>
+o_application_version_information<br/>
+・O_申請追加情報<br/>
+o_applicant_information_add<br/>
+・O_申請者情報<br/>
+o_applicant_information<br/>
+・F_申請地番<br/>
+f_application_lot_number<br/>
+
+</p>
+</td>
+</tr>
+<tr class="odd">
+<td>E</td>
+<td>export_column_name</td>
+<td>出力カラム名</td>
+<td></td>
+<td>
+<p>
+出力に使用するカラム名<br/><br/>
+
+指定可能なカラム名は以下<br/><br/>
+
+・F_申請地番<br/>
+lot_numbers<br/>
+・O_申請版情報<br/>
+complete_datetime<br/>
+・O_申請<br/>
+register_datetime<br/>
+</p>
+</td>
+</tr>
+<tr class="even">
+<td>F</td>
+<td>filter_column_name</td>
+<td>フィルタカラム名（未使用）</td>
+<td></td>
+<td>
+<p>将来的な使用を想定</p>
+</td>
+</tr>
+<tr class="odd">
+<td>G</td>
+<td>filter_condition</td>
+<td>フィルタ条件（未使用）</td>
+<td></td>
+<td>
+<p>将来的な使用を想定</p>
+</td>
+</tr>
+<tr class="even">
+<td>H</td>
+<td>item_id_1</td>
+<td>項目ID1</td>
+<td></td>
+<td>
+<p>
+テーブルに対応するマスタのID、フラグ値を指定<br/><br/>
+
+指定可能な項目値は以下<br/><br/>
+
+・O_申請区分<br/>
+画面ID<br/>
+・O_申請版情報<br/>
+申請段階ID(1=事前相談,2=事前協議,3=許可判定)<br/>
+・O_申請追加情報<br/>
+項目ID<br/>
+・O_申請者情報<br/>
+連絡先フラグ（0：申請者情報,1：連絡先情報）<br/>
+</p>
+</td>
+</tr>
+<tr class="odd">
+<td>I</td>
+<td>item_id_2</td>
+<td>項目ID2</td>
+<td></td>
+<td>
+<p>
+
+o_applicant_information(O_申請者情報)を指定している場合のみ使用<br/><br/>
+
+項目IDを指定<br/><br/>
+
+※指定可能な項目IDは1001~1010固定<br/>
+</p>
+</td>
+</tr>
+<tr class="even">
+<td>J</td>
+<td>convert_order</td>
+<td>変換オーダ</td>
+<td></td>
+<td>
+<p>
+埋め込み文字列の変換方法を指定<br/><br/>
+
+変換対象1=変換値,<br>
+変換対象2=変換値,<br>
+変換対象x=変換値<br>
+のフォーマットで指定<br/><br/>
+
+指定可能なフォーマットは以下<br/><br/>
+
+・丸める桁数<br>
+round=x 
+
+・日付の出力フォーマット<br>
+dateformat=yyyy年mm月dd日
+
+・加減算する日数<br>
+day=x 
+
+・区切り文字（カンマの場合comma）<br>
+separate=comma 
+
+・和暦表示するか否か<br>
+japanese=true 
+</p>
+</td>
+</tr>
+<tr class="odd">
+<td>K</td>
+<td>convert_format</td>
+<td>変換フォーマット</td>
+<td></td>
+<td>
+<p>変換後の文字列を埋め込むフォーマット %sで埋込文字列を指定</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+<a id="sec7022"></a>
+
+## 7-22. M\_帳票（m\_ledger）
+
+create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです。
+
+各申請段階で生成する帳票を必要に応じて設定してください。
+
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+<col style="width: 8%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>列番号</th>
+<th>カラム名</th>
+<th>エイリアス</th>
+<th>必須</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>ledger_id</td>
+<td>帳票マスタID</td>
+<td>○</td>
+<td>
+<p>一意のIDを指定</p>
+</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>application_step_id</td>
+<td>申請段階ID</td>
+<td>○</td>
+<td>
+<p>M_申請段階テーブルの申請段階IDを指定</p>
+</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>ledger_name</td>
+<td>帳票名</td>
+<td>○</td>
+<td>
+<p></p>
+</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>display_name</td>
+<td>画面表示名</td>
+<td></td>
+<td>
+<p>出力種類が１の場合、設定必須</p>
+</td>
+</tr>
+<tr class="odd">
+<td>E</td>
+<td>template_path</td>
+<td>テンプレートパス</td>
+<td>○</td>
+<td>
+<p>application.propertiesのapp.file.rootpathを起点とするテンプレートファイルのパス（ファイル名含む）</p>
+</td>
+</tr>
+<tr class="even">
+<td>F</td>
+<td>output_type</td>
+<td>出力種類</td>
+<td>○</td>
+<td>
+<p>0=常に出力,1=画面に選択されたレコードがあれば出力</p>
+</td>
+</tr>
+<tr class="odd">
+<td>G</td>
+<td>notification_flag</td>
+<td>受領時通知要否</td>
+<td>○</td>
+<td>
+<p>
+事業者側でダウンロードした際の行政側への通知要否
+
+0=通知不要,1=通知必要
+</p>
+</td>
+</tr>
+<tr class="even">
+<td>H</td>
+<td>ledger_type</td>
+<td>帳票種類</td>
+<td></td>
+<td>
+<p>1=開発登録簿に含める帳票</p>
+</td>
+</tr>
+<tr class="odd">
+<td>I</td>
+<td>update_flag</td>
+<td>更新フラグ</td>
+<td>○</td>
+<td>
+<p>行政側で申請毎に帳票テンプレートの差し替えを可能とするか否か</p>
+<p>0=更新不可,1=更新可能</p>
+</td>
+</tr>
+<tr class="even">
+<td>J</td>
+<td>notify_flag</td>
+<td>通知フラグ</td>
+<td>○</td>
+<td>
+<p>
+0=通知不要,1=通知必要
+</p>
+</td>
+</tr>
+<tr class="odd">
+<td>K</td>
+<td>upload_extension</td>
+<td>アップロード時拡張子</td>
+<td></td>
+<td>
+<p>複数項目の場合カンマ指定可能</p>
+</td>
+</tr>
+<tr class="even">
+<td>L</td>
+<td>information_text</td>
+<td>案内テキスト</td>
+<td></td>
+<td>
+<p>更新時の案内文言</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+<a id="sec7023"></a>
+
+## 7-23. M\_開発登録簿（m\_development\_document)
+
+create\_master\_data\_sheet.xlsxから取り込む内容は以下の通りです。
+
+本テーブルはシステム固有の設定です。
+
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+<col style="width: 8%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>列番号</th>
+<th>カラム名</th>
+<th>エイリアス</th>
+<th>必須</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>development_document_id</td>
+<td>開発登録簿マスタID</td>
+<td>○</td>
+<td>
+<p>
+1:最終提出書類
+2:全提出書類
+3:開発登録簿
+</p>
+</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>document_name</td>
+<td>書類名</td>
+<td>○</td>
+<td>
+<p></p>
+</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>document_type</td>
+<td>書類種類</td>
+<td>○</td>
+<td>
+<p>1=開発登録簿（帳票アップロード時に業務データ生成）</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+## 7-23. M\_区分判定\_権限（m\_judgement\_authority)
+
+create\_master\_data\_sheet.xlsxで作成するカラムは以下の通りです。
+
+各判定項目の担当部署を作成します。
+
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 28%" />
+<col style="width: 20%" />
+<col style="width: 8%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>列番号</th>
+<th>カラム名</th>
+<th>エイリアス</th>
+<th>必須</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>judgement_item_id</td>
+<td>判定項目ID</td>
+<td>○</td>
+<td>
+<p>M_区部判定テーブルの判定項目IDを指定</p>
+</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>department_id</td>
+<td>部署ID</td>
+<td>○</td>
+<td>
+<p>M_部署テーブルの部署IDを指定</p>
+</td>
+</tr>
+</tbody>
+</table>
 
 <a id="sec800"></a>
 
@@ -2851,7 +3806,7 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 
 -   サンプルデータを使用される場合は、以下手順の4. ~ 12. は実施不要です。
 
-**サンプルデータ： development-permission/SampleData/f\_district 一式**
+**サンプルデータ： /SampleData/f\_district 一式**
 
 1.  QGISを立ち上げ、「新規プロジェクト」を開きます。
 
@@ -3119,7 +4074,7 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 
 -   サンプルデータを使用される場合は、以下手順の3.~14. は実施不要です。
 
-**サンプルデータ： development-permission/SampleData/f\_lot\_number 一式**
+**サンプルデータ： /SampleData/f\_lot\_number 一式**
 
 1.  QGISを立ち上げ、「新規プロジェクト」を開きます。
 
@@ -3399,7 +4354,7 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 
 以下、サンプルデータ（SHP形式）をQGISで判定レイヤとして取り込む手順を記載します。
 
-**必要リソース： development-permission/SampleData/judgement\_layers/ 一式**
+**必要リソース： /SampleData/judgement\_layers/ 一式**
 
 用意しているサンプルデータは下表の通りです。
 
@@ -3424,34 +4379,34 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 <td>用途地域</td>
 <td>use_districts</td>
 <td>2450</td>
-<td><p><strong>development-permission/</strong></p>
-<p><strong>SampleData/judgement_layers/use_districts/</strong></p></td>
+<td>
+<p><strong>/SampleData/judgement_layers/use_districts/</strong></p></td>
 </tr>
 <tr class="even">
 <td>農用地地域</td>
 <td>agricultural_land</td>
 <td>2450</td>
-<td>development-permission/SampleData/judgement_layers/agricultural_land/</td>
+<td>/SampleData/judgement_layers/agricultural_land/</td>
 </tr>
 <tr class="odd">
 <td>都市計画区域</td>
 <td>city_planning</td>
 <td>2450</td>
-<td><p><strong>development-permission/</strong></p>
-<p><strong>SampleData/judgement_layers/city_planning/</strong></p></td>
+<td>
+<p><strong>/SampleData/judgement_layers/city_planning/</strong></p></td>
 </tr>
 <tr class="even">
 <td>埋蔵文化財包蔵地域</td>
 <td>buried_cultural_property</td>
 <td>2450</td>
-<td>development-permission/SampleData/judgement_layers/buried_cultural_property/</td>
+<td>/SampleData/judgement_layers/buried_cultural_property/</td>
 </tr>
 <tr class="odd">
 <td>浸水想定区域</td>
 <td>flood_assumption</td>
 <td>2450</td>
-<td><p><strong>development-permission/</strong></p>
-<p><strong>SampleData/judgement_layers/flood_assumption/</strong></p></td>
+<td>
+<p><strong>/SampleData/judgement_layers/flood_assumption/</strong></p></td>
 </tr>
 </tbody>
 </table>
@@ -3460,7 +4415,7 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 
 他のデータについても同様の手順で取込を実施してください。
 
-1.  development-permission/SampleData/judgement\_layers/use\_districts/　以下のファイル一式（下記）をダウンロードします。
+1.  /SampleData/judgement\_layers/use\_districts/　以下のファイル一式（下記）をダウンロードします。
 
 	-	use\_districts.cpg
 
@@ -3723,7 +4678,7 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 
 以下、サンプルデータ（SHP形式）をQGISで取り込みます。
 
-**必要リソース： development-permission/SampleData/road\_layers/ 一式**
+**必要リソース： /SampleData/road\_layers/ 一式**
 
 用意しているサンプルデータは下表の通りです。
 
@@ -3748,22 +4703,22 @@ replace_identifyの文字列とindex_valueの定義値は[application.properties
 <td>道路LOD2</td>
 <td>f_road_lod2</td>
 <td>2450</td>
-<td><p><strong>development-permission/</strong></p>
-<p><strong>SampleData/road_layers/f_road_lod2/</strong></p></td>
+<td>
+<p><strong>/SampleData/road_layers/f_road_lod2/</strong></p></td>
 </tr>
 <tr class="even">
 <td>道路中心線</td>
 <td>f_road_center_line</td>
 <td>2450</td>
-<td><p><strong>development-permission/</strong></p>
-<p><strong>SampleData/road_layers/f_road_center_line/</strong></p></td>
+<td>
+<p><strong>/SampleData/road_layers/f_road_center_line/</strong></p></td>
 </tr>
 <tr class="odd">
 <td>区割り線</td>
 <td>f_split_line</td>
 <td>2450</td>
-<td><p><strong>development-permission/</strong></p>
-<p><strong>SampleData/road_layers/f_split_line/</strong></p></td>
+<td>
+<p><strong>/SampleData/road_layers/f_split_line/</strong></p></td>
 </tr>
 </tbody>
 </table>
@@ -3952,7 +4907,7 @@ QGISでの取込手順は[9 判定レイヤ取込](#sec900)を参照してくだ
 
 ## 12-1. ランドマークのポイントデータの準備 
 
-サンプルデータを使用される場合、**development-permission/SampleData/landmark** 以下のファイル一式を取得してください。
+サンプルデータを使用される場合、**/SampleData/landmark** 以下のファイル一式を取得してください。
 
 ※作業PC上にて行う
 
@@ -3964,7 +4919,7 @@ QGISでの取込手順は[9 判定レイヤ取込](#sec900)を参照してくだ
 
 	サンプルデータを使用される場合：
 
-	**development-permission/SampleData/landmark/landmark.shp**
+	**/SampleData/landmark/landmark.shp**
 
 	<img src="../resources/environment/image94.png" style="width:5.02007in;height:2.71311in" />
 
@@ -4083,7 +5038,7 @@ Python3.xの実行環境を準備します。
 
 	**取得元:**
 
-	**development-permission/Settings/environment\_settings/generate\_landmark\_billboard.py**
+	**/Settings/environment\_settings/generate\_landmark\_billboard.py**
 
 2.	作業ディレクトリを作成し、「generate\_landmark\_billboard.py」と、[12-1. ランドマークのポイントデータの準備](#sec1201)で作成したGeoJSONファイルを格納します。
 
@@ -4103,9 +5058,9 @@ Python3.xの実行環境を準備します。
 
 
 	```Text
-            # ビルボードの色分け定義をここで設定してください。
+			# ビルボードの色分け定義をここで設定してください。
 
-            # (【カテゴリ値】, (r,g,b)) で設定します。
+			# (【カテゴリ値】, (r,g,b)) で設定します。
 	        color_define = [
 
 	            ("駅", (230,121,40)),
@@ -4405,7 +5360,7 @@ Python3.xの実行環境を準備します。
 
 レイヤ作成の際はそれぞれ下表のスタイルファイルとSQLファイルを使用します。
 
-ファイルは **development-permission/Settings/environment_settings/** より下表に記載のファイルを取得してください。
+ファイルは **/Settings/environment_settings/** より下表に記載のファイルを取得してください。
 
 <table>
 <colgroup>
@@ -4448,7 +5403,7 @@ Python3.xの実行環境を準備します。
 <td>概況診断結果表示</td>
 <td>申請対象の地番を表示.</td>
 <td>layer_style_lotnumber_application_target.sld</td>
-<td>layer_sql_lotnumber_disignate.txt</td>
+<td>layer_sql_lotnumber_search_establishment.txt</td>
 <td><img src="../resources/environment/image120.png" style="width:0.21878in;height:0.17711in" /></td>
 </tr>
 <tr class="even">
@@ -4456,7 +5411,7 @@ Python3.xの実行環境を準備します。
 <td>申請地選択</td>
 <td>選択中の地番を表示.</td>
 <td>layer_style_lotnumber_selected.sld</td>
-<td>layer_sql_lotnumber_disignate.txt</td>
+<td>layer_sql_lotnumber_search_establishment.txt</td>
 <td><img src="../resources/environment/image121.png" style="width:0.20836in;height:0.19794in" /></td>
 </tr>
 <tr class="odd">
@@ -4467,22 +5422,22 @@ Python3.xの実行環境を準備します。
 <td>layer_sql_lotnumber_search_establishment.txt</td>
 <td><img src="../resources/environment/image122.png" style="width:0.23962in;height:0.2292in" /></td>
 </tr>
+
 <tr class="even">
-<td>地番検索結果（行政）</td>
-<td>地番検索（行政）</td>
-<td><p>地番検索の結果に該当する地番を表示.</p>
-<p>申請中地番を着色表示.</p></td>
-<td>layer_style_lotnumber_result_government.sld</td>
-<td>llayer_sql_lotnumber_search_government.txt</td>
-<td><img src="../resources/environment/image123.png" style="width:0.32296in;height:0.85429in" /></td>
-</tr>
-<tr class="odd">
 <td>申請情報表示地番</td>
 <td>申請情報表示地番</td>
 <td>行政側の申請情報検索結果の行クリック時にクリック業の申請地番を着色表示.</td>
 <td>layer_style_lotnumber_application_info.sld</td>
 <td>layer_sql_lotnumber_disignate.txt</td>
 <td><img src="../resources/environment/image124.png" style="width:0.28129in;height:0.20836in" /></td>
+</tr>
+<tr class="odd">
+<td>全筆かからない筆選択地番</td>
+<td>地番検索</td>
+<td>一部しか含まれない筆がある地番を表示.</td>
+<td>layer_style_lotnumber_part_selected.sld</td>
+<td>layer_sql_lotnumber_part_selected.txt</td>
+<td><img src="../resources/environment/image199.png" style="width:0.28129in;height:0.20836in" /></td>
 </tr>
 </tbody>
 </table>
@@ -4718,7 +5673,7 @@ Python3.xの実行環境を準備します。
 	サンプルデータでは、用途地域が該当します。
 	以下テキストファイル内のSQLを貼り付けてください。
 
-	**development-permission/Settings/environment_settings/layer_sql_use_district.txt**
+	**/Settings/environment_settings/layer_sql_use_district.txt**
 
 10.	レイヤ追加元で、[14-1. ワークスペースとストアを登録する](#sec1401)で追加したデータソースを選択します。
 
@@ -4761,7 +5716,7 @@ Python3.xの実行環境を準備します。
 
 レイヤ作成の際はそれぞれ下表のスタイルファイルとSQLファイルを使用します。
 
-ファイルは **development-permission/Settings/environment_settings/road_judge/** より下表に記載のファイルを取得してください。
+ファイルは **/Settings/environment_settings/road_judge/** より下表に記載のファイルを取得してください。
 
 レイヤの設定手順は[14-2](#sec1402)を参照してください。
 
@@ -4967,7 +5922,7 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 1.  httpd.conf を編集します。
 
 	```Text 
-	vi /etc/httpd/conf/httpd.conf
+	sudo vi /etc/httpd/conf/httpd.conf
 	```
 
 2.	最終行に以下の内容を追記して保存します。
@@ -4993,9 +5948,11 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 	```
 
 3.	設定を反映する為、apacheの再起動を行います。
+	合わせてApacheがネットワーク経由で外部サーバに接続できるよう許可しておきます。
 
 	```Text
-	systemctl restart httpd.service
+	sudo setsebool -P httpd_can_network_connect 1
+	sudo systemctl restart httpd
 	```
 
 4.	再起動後、「http://&lt;サーバマシンのIPアドレス&gt;/geoserver/」でログイン画面が表示されることを確認してください。
@@ -5006,7 +5963,7 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 
 # 16 アプリケーションデプロイ（Spring Boot）
 
-確認済みサーバ環境：CentOS 8 Stream
+確認済みサーバ環境：CentOS Stream 9
 
 確認済み作業PC環境 ：Windows 10 Pro
 
@@ -5038,7 +5995,7 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 
 ※作業PC上にて行う
 
-1.	**/development-permission/SRC/api**からソースコードを入手し、適当な場所にworkspaceを作成してプロジェクトを配置してください。
+1.	**/SRC/api**からソースコードを入手し、適当な場所にworkspaceを作成してプロジェクトを配置してください。
 
 	<img src="../resources/environment/image165.png" style="width:5.90556in;height:2.88056in" />
 
@@ -5080,8 +6037,6 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 
 	-	自治体名
 
-	<img src="../resources/environment/image171.png" style="width:5.90556in;height:3.13264in" />
-
 	<span style="color: red; ">
 	※application.propertiesが文字化けする場合は、application.propertiesを右クリック&gt;properties&gt;Resource&gt;Text file encodingをUTF-8へ変更してください。
 	</span>
@@ -5117,81 +6072,152 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 	```Text
 	cd /home/upload/
 
-	mv developmentpermissionapi-0.0.1-SNAPSHOT.war /opt/apache-tomcat/webapps/developmentpermissionapi.war
+	sudo mv developmentpermissionapi-0.0.1-SNAPSHOT.war /opt/apache-tomcat/webapps/developmentpermissionapi.war
 	```
 
 	※配備後にapplication.propertiesを編集する場合は下記のように行います。編集後、保存して再起動を行ってください。
 	```Text
-	vi /opt/apache-tomcat/webapps/developmentpermissionapi/WEB-INF/classes/application.properties
+	sudo vi /opt/apache-tomcat/webapps/developmentpermissionapi/WEB-INF/classes/application.properties
 
-	systemctl restart tomcat
+	sudo systemctl restart tomcat
 	```
 
 <a id="sec1605"></a>
 
-## 16-5. メール設定ファイル、帳票テンプレート、マニュアルの配置
+## 16-5. メール設定ファイル、概況診断結果テンプレート、帳票テンプレート、マニュアルの配置
 
-1.	適当な場所にプロジェクトフォルダ内にあるtemplateフォルダの「mail.properties」と、「judgeResult.xlsx」、「事業者向けマニュアル（PDF形式）」、「行政担当者向けマニュアル（PDF形式）」をアップロードしてください。※ マニュアルは別途ご用意ください。
+1.	適当な場所にプロジェクト直下にあるtemplateフォルダの「mail.properties（メール設定ファイル）」、「judgeResult.xlsx（概況診断結果テンプレート）」、「事業者向けマニュアル（PDF形式）」、「行政担当者向けマニュアル（PDF形式）」、「M_帳票マスタテーブルで設定している帳票」をアップロードしてください。
 
-	ここでは /home/upload/ に転送する事としています。
+	※ マニュアルは別途ご用意ください。
 
-2.	application.propertiesで設定している場所（app.mail.properties.path、app.judge.report.path）に「mail.properties」と「judgeResult.xlsx」を配置します。
+	※ <span style="color:red">M_帳票マスタテーブルで設定した帳票は事前協議完了時及び許可判定完了時に生成（複製）されます。</span><br/>
+	サンプルデータを使用する際の帳票テンプレートはtemplateフォルダで既に用意されています。
+	対象のテンプレートファイルは以下です。<br/>
+	「32条協議書.xlsx」、「同意通知書.xlsx」、「調書.xlsx」、「開発行為許可通知書.xlsx」、「開発行為許可申請書.xlsx」<br/>
+	また、独自の帳票生成を実施する場合、<a href="#sec7022">7-22. M_帳票（m_ledger）</a>、<a href="#sec7022">7-21. M_帳票ラベル（m_ledger_label）</a>を参照してDB設定及び対応する帳票テンプレートを事前にご準備ください。<br>
+
+	ここではtemplateフォルダ配下のファイル一式を /home/upload/ に転送した例を示しています。
+
+2.	application.propertiesで設定している場所（app.mail.properties.path、app.judge.report.path）に「mail.properties（メール設定ファイル）」と「judgeResult.xlsx（概況診断結果テンプレート）」を配置します。
 
 	必要に応じてフォルダの作成を行ってください。
 
-	下記はデフォルトでの設定場所での手順になります。Pathを変更している場合は必要に応じて置き換えてください。
+	application.propertiesで設定済みのパスに合わせて配置します。
 	```Text
 	cd /home/upload/
 
-	mkdir -p /opt/apache-tomcat/properties/
-	```
+	sudo mkdir -p [app.mail.properties.pathで設定したパス]
+	
+	sudo mkdir -p [app.judge.report.pathで設定したパス]
 
-	※「/opt/apache-tomcat/properties/」 はapp.mail.properties.pathで設定している場所
+	sudo mv [app.mail.properties.pathで設定したファイル名] [app.mail.properties.pathで設定したパス]
 
-	```Text
-	mv mail.properties /opt/apache-tomcat/properties/
-
-	mkdir -p /mnt/s3/application/report/
-	```
-
-	※「/mnt/s3/application/report/」 はapp.judge.report.pathで設定している場所
-
-	```Text
-	mv judgeResult.xlsx /mnt/s3/application/report/
-	```
-
-3. マニュアルはapp.file.rootpathとapp.file.manual.folderで設定している場所に配置します。
-	また、ファイル名は事業者用マニュアルがapp.file.manual.business.file、行政用マニュアルがapp.file.manual.goverment.fileで設定したファイル名とします。
-
-	```Text
-	mv [app.file.manual.business.fileで設定したファイル名] [app.file.rootpathで設定したパス]/[app.file.manual.folderで設定したパス]
-	mv [app.file.manual.goverment.fileで設定したファイル名] [app.file.rootpathで設定したパス]/[app.file.manual.folderで設定したパス]
+	sudo mv [app.judge.report.pathで設定したファイル名] [app.judge.report.pathで設定したパス]
 	```
 
 	下記はデフォルトの設定場所の場合の手順になります。
 	```Text
-	mv 事業者用マニュアル.pdf /mnt/s3/application/manual/
-	mv 行政用マニュアル.pdf /mnt/s3/application/manual/
+	cd /home/upload/
+
+	sudo mkdir -p /opt/apache-tomcat/properties/
+	
+	sudo mkdir -p /mnt/s3/application/report/
+
+	sudo mv mail.properties /opt/apache-tomcat/properties/
+
+	sudo mv judgeResult.xlsx /mnt/s3/application/report/
 	```
 
-4.  パーミッションの確認及び変更を行います。
+3.	M_帳票マスタテーブルで設定している帳票を配置します。
 
-	```Text 
-	cd /mnt/s3/
+	必要に応じてフォルダの作成を行ってください。
+
+	application.properties及びM_帳票マスタテーブルで設定済みのパスに合わせて配置します。
+	```Text
+	cd /home/upload/
+
+	sudo mkdir -p [app.file.rootpathで設定したパス]/[M_帳票マスタテーブル.template_pathで設定したパス]
+
+	sudo mv [M_帳票マスタテーブル.template_pathで設定したファイル名] [app.file.rootpathで設定したパス]/[M_帳票マスタテーブル.template_pathで設定したパス]
+
 	```
+
+	下記はデフォルトの設定場所の場合の手順になります。
+	
+	サンプルデータで使用している「32条協議書.xlsx」、「同意通知書.xlsx」、「調書.xlsx」、「開発行為許可通知書.xlsx」、「開発行為許可申請書.xlsx」の配置方法を示します。
+	```Text
+	cd /home/upload/
+
+	sudo mkdir -p /mnt/s3/application/ledger/template/
+
+	sudo mv 32条協議書.xlsx /mnt/s3/application/ledger/template/
+	
+	sudo mv 同意通知書.xlsx /mnt/s3/application/ledger/template/
+
+	sudo mv 調書.xlsx /mnt/s3/application/ledger/template/
+
+	sudo mv 開発行為許可通知書.xlsx /mnt/s3/application/ledger/template/
+
+	sudo mv 開発行為許可申請書.xlsx /mnt/s3/application/ledger/template/
+	```
+
+4. application.propertiesで設定している場所（app.file.rootpath/app.file.manual.folder/）にマニュアルを配置します。
+	また、ファイル名は事業者用マニュアルがapp.file.manual.business.file、行政用マニュアルがapp.file.manual.goverment.fileで設定したファイル名とします。
+
+	必要に応じてフォルダの作成を行ってください。
+
+	application.propertiesで設定済みのパスに合わせて配置します。
+	```Text
+	cd /home/upload/
+
+	sudo mkdir -p [app.file.rootpathで設定したパス]/[app.file.manual.folderで設定したパス]
+	
+	sudo mv [app.file.manual.business.fileで設定したファイル名] [app.file.rootpathで設定したパス]/[app.file.manual.folderで設定したパス]
+	
+	sudo mv [app.file.manual.goverment.fileで設定したファイル名] [app.file.rootpathで設定したパス]/[app.file.manual.folderで設定したパス]
+	```
+
+	下記はデフォルトの設定場所の場合の手順になります。
+	```Text
+	cd /home/upload/
+
+	sudo mkdir -p /mnt/s3/application/manual/
+	
+	sudo mv 事業者用マニュアル.pdf /mnt/s3/application/manual/
+	
+	sudo mv 行政用マニュアル.pdf /mnt/s3/application/manual/
+	```
+6. 許可判定で使用する開発登録の出力先を作成します。
+
+	application.propertiesで設定している出力先（app.file.developmentRegister.rootPath）を作成します。
+	```Text
+	sudo mkdir -p [app.file.developmentRegister.rootPathで設定したパス]
+	```
+
+	下記はデフォルトの設定場所の場合の手順になります。
+	```Text
+	sudo mkdir -p /mnt/s3/application/development_register
+	```
+
+7.  パーミッションの確認及び変更を行います。
 
 	ディレクトリの所有権及びパーミッションを変更してください。
 
+	下記はデフォルトの設定場所の場合の手順になります。
 	```Text 
-	chown -hR tomcat:tomcat ./application
+	sudo chown -hR tomcat:tomcat /mnt/s3/application
 
-	chmod -c -R 755 ./application
+	sudo chmod -c -R 755 /mnt/s3/application
+
+	sudo chown -hR tomcat:tomcat /opt/apache-tomcat/properties
+
+	sudo chmod -c -R 755 /opt/apache-tomcat/properties
 	```
 
-5.	設定を反映する為、tomcatの再起動を行います。
+8.	設定を反映する為、tomcatの再起動を行います。
 
 	```Text 
-	systemctl restart tomcat
+	sudo systemctl restart tomcat
 	```
 
 <a id="sec1606"></a>
@@ -5201,7 +6227,7 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 1.	httpd.conf を編集します。
 
 	```Text 
-	vi /etc/httpd/conf/httpd.conf
+	sudo vi /etc/httpd/conf/httpd.conf
 	```
 
 	最終行に以下の内容を追記して保存します。
@@ -5215,7 +6241,7 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 2.	設定を反映する為、apacheの再起動を行います。
 
 	```Text 
-	systemctl restart httpd.service
+	sudo systemctl restart httpd
 	```
 
 <a id="sec1607"></a>
@@ -5267,69 +6293,69 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 <th rowspan="2"><strong>内容</strong></th>
 <th rowspan="2"><strong>設定値</strong></th>
 </tr>
-<tr class="odd">
+<tr>
 <th><strong>必須</strong></th>
 <th><strong>任意</strong></th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>spring.jpa.database</td>
 <td>　</td>
 <td>　</td>
 <td>データベース種類</td>
 <td>POSTGRESQL</td>
 </tr>
-<tr class="even">
+<tr>
 <td>spring.datasource.url</td>
 <td>○</td>
 <td>　</td>
 <td>データベース接続情報</td>
 <td>jdbc:postgresql://[DBサーバのIPアドレス]:[DBサーバのポート番号]/[データベース名]</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>spring.datasource.username</td>
 <td>○</td>
 <td>　</td>
 <td>データベースアクセスに使用するユーザ名</td>
 <td>postgres</td>
 </tr>
-<tr class="even">
+<tr>
 <td>spring.datasource.password</td>
 <td>○</td>
 <td>　</td>
 <td>データベースアクセスに使用するパスワード</td>
 <td>（省略）</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.mail.host</td>
 <td>○</td>
 <td>　</td>
 <td>メール送信設定（ホスト名）</td>
 <td>[SMTPサーバのホスト名]</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.mail.port</td>
 <td>○</td>
 <td>　</td>
 <td>メール送信設定（ポート番号）</td>
 <td>[SMTPサーバのポート番号]</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.mail.username</td>
 <td>○</td>
 <td>　</td>
 <td>メール送信設定（ユーザ名）</td>
 <td>[SMTPサーバのユーザ名]</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.mail.password</td>
 <td>○</td>
 <td>　</td>
 <td>メール送信設定（パスワード）</td>
 <td>[SMTPサーバのパスワード]</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.mail.sendfrom</td>
 <td>○</td>
 <td>　</td>
@@ -5337,14 +6363,14 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 <p>（送信元アドレス）</p></td>
 <td>送信元のメールアドレス</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.mail.accept.timestamp.format</td>
 <td>　</td>
 <td>　</td>
 <td>メールの申請登録日時フォーマット</td>
 <td>yyyy/MM/dd HH:mm</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.mail.validsendmail</td>
 <td>○</td>
 <td>　</td>
@@ -5352,35 +6378,40 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 ※TRUE = 有効/FALSE=無効</td>
 <td>TRUE</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.mail.send.interval</td>
 <td>　</td>
 <td>　</td>
 <td> 問い合わせメール通知間隔(分)</td>
 <td>1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.mail.send.answer.update</td>
 <td>　</td>
 <td>　</td>
 <td>回答更新通知（行政向け）を送信するかどうか (0:送信しない、1:送信する)</td>
 <td>0</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.applicant.name.item.number</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報の氏名を格納したアイテム番号(メール通知で使用)</td>
 <td>1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.cors.allowed.origins</td>
 <td>○</td>
 <td></td>
 <td>CORS許可オリジン</td>
-<td></td>
+<td>
+<p><span style="color: red; ">本API実行を許可するoriginを指定</span>
+<br>
+例）https://example.com
+</p>
+</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.filter.ignore</td>
 <td>　</td>
 <td>　</td>
@@ -5388,21 +6419,21 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 <td><p>（省略）</p>
 <p>※ ログイン画面でも使用する為、「/label」の例外path設定は必須</p></td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.filter.goverment</td>
 <td>　</td>
 <td>　</td>
 <td>フィルタの行政のみ許可するパス</td>
 <td>（省略）</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.filter.unable</td>
 <td>　</td>
 <td>　</td>
 <td>アクセス不能パス</td>
 <td>（省略）</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.custom.log.flag</td>
 <td></td>
 <td>○</td>
@@ -5411,49 +6442,49 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 <span style="color: red; ">※カスタムログは利用者のアクセス履歴を記録するために使用するログになります。目的に応じて設定を変更してください。</span></p></td>
 <td>true</td>
 </tr>
-<tr class="even">
+<tr>
 <td>logging.level.org.springframework.web</td>
 <td>　</td>
 <td>○</td>
 <td>アプリケーションログ出力レベル設定</td>
 <td>INFO</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>logging.level.developmentpermission</td>
 <td>　</td>
 <td>○</td>
 <td>アプリケーションログ出力レベル設定</td>
 <td>DEBUG</td>
 </tr>
-<tr class="even">
+<tr>
 <td>spring.servlet.multipart.max-file-size</td>
 <td>　</td>
 <td>　</td>
 <td>ファイル1つの最大サイズ</td>
 <td>50MB</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>spring.servlet.multipart.max-request-size</td>
 <td>　</td>
 <td>　</td>
 <td>複数ファイル全体の最大サイズ</td>
 <td>100MB</td>
 </tr>
-<tr class="even">
+<tr>
 <td>server.address</td>
 <td>　</td>
 <td>　</td>
 <td>Server IP Address</td>
 <td>127.0.0.1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.filter.cookie.expire</td>
 <td>　</td>
 <td>　</td>
 <td>Cookieの有効時間(秒)</td>
 <td>2592000</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.epsg</td>
 <td>○</td>
 <td>　</td>
@@ -5462,21 +6493,21 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 <td>[平面直角座標系のEPSG]<br />
 例)2450</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.lonlat.epsg</td>
 <td>　</td>
 <td>　</td>
 <td>画面表示応答で使用する座標系（EPSG）</td>
 <td>4326</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.city.name</td>
 <td>○</td>
 <td>　</td>
 <td>市町村名</td>
 <td>[市町村名]</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.jwt.token.secretkey</td>
 <td>○</td>
 <td></td>
@@ -5485,189 +6516,231 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 <p><span style="color: red; ">※tokenの検証や署名で使用</span></p></td>
 <td>[自治体固有のsecretKey]</td>
 </tr>
-<tr class="even">
+<tr>
+<td>app.api.secretkey</td>
+<td>○</td>
+<td></td>
+<td><p>リマインド通知APIの認証で使用する共通鍵</p></td>
+<td>[自治体固有のsecretKey]</td>
+</tr>
+<tr>
 <td>logging.file.name</td>
 <td>　</td>
 <td>○</td>
 <td>ログ出力ファイル名</td>
 <td>/opt/apache-tomcat/logs/developmentpermission/developmentPermission.log</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.mail.properties.path</td>
 <td>　</td>
 <td>　</td>
 <td>メール通知系定義プロパティパス</td>
 <td>/opt/apache-tomcat/properties/mail.properties</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.path</td>
 <td>　</td>
 <td>　</td>
 <td>テンプレートパス</td>
 <td>/mnt/s3/application/report/judgeResult.xlsx</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.file.rootpath</td>
 <td>　</td>
 <td>　</td>
 <td>ファイル管理rootパス</td>
 <td>/mnt/s3/application</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.file.application.folder</td>
 <td>　</td>
 <td>　</td>
 <td>申請ファイル管理フォルダパス</td>
 <td>/application</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.file.answer.folder</td>
 <td>　</td>
 <td>　</td>
 <td>回答ファイル管理フォルダパス</td>
 <td>/answer</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.file.inquiry.folder</td>
 <td>　</td>
 <td>　</td>
 <td>問合せファイル管理フォルダパス</td>
 <td>/chat</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.file.manual.folder</td>
 <td>　</td>
 <td>　</td>
 <td>マニュアルファイル管理フォルダパス</td>
 <td>/manual</td>
 </tr>
-<tr class="even">
+<tr>
+<td>app.file.ledger.folder</td>
+<td>　</td>
+<td>　</td>
+<td>帳票ファイル管理フォルダパス</td>
+<td>/ledger</td>
+</tr>
+<tr>
 <td>app.file.manual.business.file</td>
 <td>　</td>
 <td>〇</td>
 <td>事業者用マニュアルファイル</td>
 <td>\u4e8b\u696d\u8005\u7528\u30de\u30cb\u30e5\u30a2\u30eb.pdf</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.file.manual.goverment.file</td>
 <td>　</td>
 <td>〇</td>
 <td>行政用マニュアルファイル</td>
 <td>\u884c\u653f\u7528\u30de\u30cb\u30e5\u30a2\u30eb.pdf</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.file.service.rootpath</td>
 <td>　</td>
 <td>　</td>
 <td>レイヤ関連ファイル取得サービスルートパス</td>
 <td>/mnt/s3/application/layer</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.file.judgement.folder</td>
 <td>　</td>
 <td>　</td>
 <td>概況診断画像管理フォルダパス</td>
 <td>/opt/apache-tomcat/img_tmp</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.json.log.rootPath.judgeresult</td>
 <td>　</td>
 <td></td>
 <td>概況診断結果ログのpath</td>
 <td>/mnt/s3/application/customlogs/judgeresult/</td>
 </tr>
-<tr class="odd">
+<tr>
+<td>app.file.developmentRegister.rootPath</td>
+<td>　</td>
+<td></td>
+<td>開発登録簿ファイル出力ルートパス</td>
+<td>/mnt/s3/application/development_register</td>
+</tr>
+<tr>
 <td>app.csv.log.path.business.login</td>
 <td>　</td>
 <td></td>
 <td>事業者ログイン（アクセス）ログのpath</td>
 <td>/mnt/s3/application/customlogs/business_login_log.csv</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.csv.log.path.judge.report</td>
 <td>　</td>
 <td></td>
 <td>概況診断結果レポート（出力件数）ログのpath</td>
 <td>/mnt/s3/application/customlogs/judge_report_log.csv</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.path.application.register</td>
 <td>　</td>
 <td></td>
 <td>申請登録ログのpath</td>
 <td>/mnt/s3/application/customlogs/application_register_log.csv</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.csv.log.path.administration.login</td>
 <td>　</td>
 <td></td>
 <td>行政ログインログのpath</td>
 <td>/mnt/s3/application/customlogs/administration_login_log.csv</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.path.answer.register</td>
 <td>　</td>
 <td></td>
 <td>回答登録ログのpath</td>
 <td>/mnt/s3/application/customlogs/answer_register_log.csv</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.csv.log.path.answer.notification</td>
 <td>　</td>
 <td></td>
 <td>回答通知ログのpath</td>
 <td>/mnt/s3/application/customlogs/answer_notification_log.csv</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.path.answer.confirm</td>
 <td>　</td>
 <td>　</td>
 <td>回答確認ログのpath</td>
 <td>/mnt/s3/application/customlogs/answer_confirm_log.csv</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.csv.log.path.questionnaire.reply</td>
 <td>　</td>
 <td>　</td>
 <td>利用目的保存ログのpath</td>
 <td>/mnt/s3/application/customlogs/questionnaire_reply_log.csv</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.path.application.reapplication</td>
 <td>　</td>
 <td>　</td>
 <td>再申請登録ログのpath</td>
 <td>/mnt/s3/application/customlogs/application_reapplication_log.csv</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.csv.log.path.chat.business.message.post</td>
 <td>　</td>
 <td>　</td>
 <td>チャット投稿（事業者）ログのpath</td>
 <td>/mnt/s3/application/customlogs/chat_business_message_post_log.csv</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.path.chat.government.message.post</td>
 <td>　</td>
 <td>　</td>
 <td>チャット投稿（行政）ログのpath</td>
 <td>/mnt/s3/application/customlogs/chat_government_message_post_log.csv</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.csv.log.path.lotnumber.search.establishment</td>
 <td>　</td>
 <td>　</td>
 <td>地番検索（事業者）ログのpath</td>
 <td>/mnt/s3/application/customlogs/lotnumber_search_establishment_log.csv</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.path.category.views</td>
 <td>　</td>
 <td>　</td>
 <td>申請区分項目取得ログのpath</td>
 <td>/mnt/s3/application/customlogs/category_views_log.csv</td>
 </tr>
-<tr class="even">
+<tr>
+<td>app.csv.log.path.answer.consent.input</td>
+<td>　</td>
+<td>　</td>
+<td>同意項目承認否認登録（事業者）ログのpath</td>
+<td>/mnt/s3/application/customlogs/answer_consent_input_log.csv</td>
+</tr>
+<tr>
+<td>app.csv.log.path.answer.register.government.confirm</td>
+<td>　</td>
+<td>　</td>
+<td>回答登録(行政確定登録内容登録（事前協議のみ）)ログのpath</td>
+<td>/mnt/s3/application/customlogs/answer_government_confirm_register_log.csv</td>
+</tr>
+<tr>
+<td>app.csv.log.path.answer.register.government.confirm.department</td>
+<td>　</td>
+<td>　</td>
+<td>回答登録(部署回答行政確定登録内容登録（事前協議のみ）)ログのpath</td>
+<td>/mnt/s3/application/customlogs/department_answer_government_confirm_register_log.csv</td>
+</tr>
+<tr>
 <td>app.def.questionarypurpose</td>
 <td>　</td>
 <td>〇</td>
@@ -5676,12 +6749,11 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 </p>
 </td>
 <td><p>初期値では以下が設定されています。</p>
-<p>0：土地相談</p>
-<p>1：開発許可申請</p>
-<p>2：その他</p>
+<p>0：開発許可</p>
+<p>1：その他</p>
 </td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.def.judgementType</td>
 <td>　</td>
 <td>〇</td>
@@ -5689,1385 +6761,1688 @@ M_区分判定テーブルでは下表に示したカラムの設定を確認し
 <p><span style="color: red; ">※申請区分選択画面で概況診断タイプの選択が可能です。選択可能な概況診断タイプとコード値の対応をここで設定してください。設定したコード値は、<a href="#sec701">7-1. M_申請区分選択画面</a>で、表示対象の画面に対して概況診断タイプとして設定してください。</span>
 </p></td>
 <td><p>初期値では以下が設定されています。</p>
-<p>0：土地相談</p>
-<p>1：開発許可関連</p>
+<p>0：開発許可</p>
+<p>1：その他</p>
 </td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judgementtype.default.value</td>
 <td>　</td>
 <td>〇</td>
 <td>概況診断タイプリストのデフォルト選択値</td>
-<td></td>
+<td>0</td>
 </tr>
-<tr class="odd">
+<tr>
+<td>app.applicationtype.inapplicable</td>
+<td>　</td>
+<td>　</td>
+<td><p>申請不可の申請種類</p>
+<p><span style="color: red; ">※申請区分選択画面で、申請不可の申請種類が選択したら、概況診断結果表示画面で、申請ボタンが非活性になる。設定したコード値は、<a href="#sec7019">7-19. M_申請種類</a>を参考して設定してください。
+</p></td>
+<td>初期値では何も設定されていません。</td>
+</tr>
+<tr>
 <td>app.application.answer.buffer.days</td>
 <td>　</td>
 <td>〇</td>
 <td>申請登録時の回答予定のバッファ日数（各区分判定の回答予定日数最大値に追加で加算）</td>
+<td>0</td>
+</tr>
+<tr>
+<td>app.application.step2.control.department.buffer.days</td>
+<td>　</td>
+<td>〇</td>
+<td>事前協議の申請登録時の統括部署向けのバッファ日数</td>
+<td>2</td>
+</tr>
+<tr>
+<td>app.application.step2.control.department.accepting.confirm.days</td>
+<td>　</td>
+<td>〇</td>
+<td>事前協議の統括部署の受付確認日数</td>
 <td>1</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.roadcenterline.buffer</td>
 <td>　</td>
 <td>〇</td>
 <td>道路判定 道路中心線取得バッファ(m)</td>
 <td>15.0</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.roadtype.nondisplay.value</td>
 <td>　</td>
 <td>〇</td>
 <td>道路判定 道路種別該当時文言非表示対象道路種別値（該当時に他の案内文言を非表示とする道路種別値をカンマ区切りで指定）</td>
 <td>1,2,3,9020</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.roadtype.nondisplay.identifyText</td>
 <td>　</td>
 <td>〇</td>
 <td>道路判定 道路種別該当時文言非表示対象テキスト識別子（該当時に非表示とする対象の案内文言の識別子をカンマ区切りで指定）</td>
 <td>{width_text_area},{max_width_text_area},{min_width_text_area},{split_line_result_area},{walkway_result_area},{display_by_width_area}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.roadtype.unknown.value</td>
 <td>　</td>
 <td>〇</td>
 <td>道路判定 道路種別不明値</td>
 <td>9020</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.role.business</td>
 <td>　</td>
 <td>　</td>
 <td>事業者のロール</td>
 <td>1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.department.business</td>
 <td>　</td>
 <td>　</td>
 <td>事業者の部署コード</td>
 <td>0000000000</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.file.answer.foldername.format</td>
 <td>　</td>
 <td>　</td>
 <td>回答ファイル用フォルダのtimestampフォーマット</td>
 <td>yyyyMMddHHmmssSSS</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.def.status</td>
 <td>　</td>
 <td>　</td>
 <td>申請ステータス定義</td>
 <td>　</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.def.answerstatus</td>
 <td>　</td>
 <td>　</td>
 <td>問合せステータス定義</td>
 <td>　</td>
 </tr>
-<tr class="odd">
+<tr>
+<td>app.def.itemanswerstatus</td>
+<td>　</td>
+<td>　</td>
+<td>条文ステータス定義</td>
+<td>　</td>
+</tr>
+<tr>
 <td>app.def.answerfilehistory.updatetype</td>
 <td>　</td>
 <td>　</td>
 <td>回答ファイル履歴更新タイプ定義</td>
 <td>　</td>
 </tr>
-<tr class="even">
+<tr>
+<td>app.def.answer.notify.type</td>
+<td>　</td>
+<td>　</td>
+<td>回答通知の通知種別定義（ログ出力用）</td>
+<td>　</td>
+</tr>
+<tr>
+<td>app.def.answer.register.updatetype</td>
+<td>　</td>
+<td>　</td>
+<td>回答登録の操作種別定義（ログ出力用）</td>
+<td>　</td>
+</tr>
+<tr>
 <td>app.category.judgement.attribute.joint</td>
 <td>　</td>
 <td>　</td>
 <td>概況診断 重なり属性表示フラグが1の場合の属性区切り文字</td>
 <td>\u30FB</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.attribute.distance.replaceText</td>
 <td></td>
 <td></td>
 <td>概況診断 距離表示置き換え文字</td>
 <td>{distance}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.attribute.distance.replacedText</td>
 <td></td>
 <td></td>
 <td>概況診断 距離表示置き換え後文字</td>
 <td>\u8ddd\u96e2\uff1a</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.attribute.distance.applicationAreaText</td>
 <td></td>
 <td></td>
 <td>概況診断 距離表示置き換え後文字（申請地範囲内の場合の表示文言）</td>
 <td>\u7533\u8acb\u5730\u7bc4\u56f2\u5185</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.distance.epsg</td>
 <td></td>
 <td></td>
 <td>概況診断 距離判定時に使用するepsg</td>
 <td>4612</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.application.versioninformation.text</td>
 <td></td>
 <td></td>
 <td>申請版情報表示用文字列</td>
 <td>\u7b2c{version}\u7248</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.versioninformation.replacetext</td>
 <td></td>
 <td></td>
 <td>申請版情報置換文字列</td>
 <td>{version}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.application.default.reapplication.false</td>
 <td></td>
 <td></td>
 <td>申請登録時再申請不要で登録する区分判定概要文字列（カンマ区切り）</td>
 <td>\u4e8b\u524d\u76f8\u8ac7\u4e0d\u8981</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.default.reapplication.true</td>
 <td></td>
 <td></td>
 <td>申請登録時再申請必要で登録する区分判定概要文字列（カンマ区切り）</td>
 <td>\u8981\u518d\u7533\u8acb</td>
 </tr>
-<tr class="odd">
+<tr>
+<td>app.application.default.discussion.false</td>
+<td></td>
+<td></td>
+<td>申請登録時事前協議不要で登録する区分判定概要文字列（カンマ区切り）</td>
+<td>\u4e8b\u524d\u5354\u8b70\u4e0d\u8981</td>
+</tr>
+<tr>
+<td>app.application.default.discussion.true</td>
+<td></td>
+<td></td>
+<td>申請登録時事前協議必要で登録する区分判定概要文字列（カンマ区切り）</td>
+<td>\u8981\u4e8b\u524d\u5354\u8b70</td>
+</tr>
+<tr>
+<td>app.application.goverment.add.answer.title</td>
+<td></td>
+<td></td>
+<td>回答登録時行政で登録した回答の関連条項表示文字列</td>
+<td>\u305d\u306e\u4ed6</td>
+</tr>
+<tr>
+<td>app.application.permission.default.add.judgementItemId</td>
+<td></td>
+<td></td>
+<td>許可判定の申請登録時一律追加の判定項目ID（カンマ区切り）</td>
+<td>9991,9992</td>
+</tr>
+<tr>
+<td>app.category.judgement.attribute.nullValue</td>
+<td></td>
+<td></td>
+<td>概況診断 属性NULL時表示文字</td>
+<td>---</td>
+</tr>
+<tr>
 <td>app.roadjudge.splitcenterline.buffer</td>
 <td></td>
 <td></td>
 <td>道路判定 分割道路中心線取得時分割処理用バッファ径(m)</td>
 <td>0.001</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.roadMaxWidth.replaceText</td>
 <td></td>
 <td></td>
 <td>道路判定 道路部幅員置き換え文字</td>
 <td>{road_max_width}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.roadwayMaxWidth.replaceText</td>
 <td></td>
 <td></td>
 <td>道路判定 車道幅員置き換え文字</td>
 <td>{roadway_max_width}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.roadMinWidth.replaceText</td>
 <td></td>
 <td></td>
 <td>道路判定 道路部最小幅員置き換え文字</td>
 <td>{road_min_width}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.roadwayMinWidth.replaceText</td>
 <td></td>
 <td></td>
 <td>道路判定 車道幅員最小置き換え文字</td>
 <td>{roadway_min_width}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.layerQueryReplaceText.value</td>
 <td></td>
 <td></td>
 <td>道路判定 レイヤクエリ値置き換え文字</td>
 <td>{value}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.identifyText.roadLod2Layer</td>
 <td></td>
 <td></td>
 <td>道路判定 道路LOD2レイヤ識別文字</td>
 <td>{roadLod2}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.identifyText.splitLineLayer</td>
 <td></td>
 <td></td>
 <td>道路判定 区割り線レイヤ識別文字</td>
 <td>{splitLine}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.identifyText.maxWidthLayer</td>
 <td></td>
 <td></td>
 <td>道路判定 最大幅員レイヤ識別文字</td>
 <td>{maxWidth}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.identifyText.minWidthLayer</td>
 <td></td>
 <td></td>
 <td>道路判定 最小幅員レイヤ識別文字</td>
 <td>{minWidth}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.identifyText.sideWalkLayer</td>
 <td></td>
 <td></td>
 <td>道路判定 隣接歩道レイヤ識別文字</td>
 <td>{sideWalk}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.identifyText.widthTextLayer</td>
 <td></td>
 <td></td>
 <td>道路判定 幅員値レイヤ識別文字</td>
 <td>{widthText}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.identifyText.sideWalkLayer.lotNumber</td>
 <td></td>
 <td></td>
 <td>道路判定 隣接歩道地番ID値置き換え文字</td>
 <td>{lot_number}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.identifyText.sideWalkLayer.sideWalk</td>
 <td></td>
 <td></td>
 <td>道路判定 隣接歩道隣接歩道ID値置き換え文字</td>
 <td>{side_walk}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.identifyText.widthTextArea</td>
 <td></td>
 <td></td>
 <td>道路判定 幅員表示範囲識別文字</td>
 <td>{width_text_area}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.identifyText.maxWidthTextArea</td>
 <td></td>
 <td></td>
 <td>道路判定 最大幅員表示範囲識別文字</td>
 <td>{max_width_text_area}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.identifyText.minWidthTextArea</td>
 <td></td>
 <td></td>
 <td>道路判定 最小幅員表示範囲識別文字</td>
 <td>{min_width_text_area}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.identifyText.splitLineResult</td>
 <td></td>
 <td></td>
 <td>道路判定 分割線取得結果表示範囲識別文字</td>
 <td>{split_line_result_area}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.identifyText.walkwayResult</td>
 <td></td>
 <td></td>
 <td>道路判定 隣接歩道判定結果表示範囲識別文字</td>
 <td>{walkway_result_area}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.identifyText.displayByWidth</td>
 <td></td>
 <td></td>
 <td>道路判定 幅員による段階表示範囲識別文字</td>
 <td>{display_by_width_area}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.identifyText.roadTypeResult</td>
 <td></td>
 <td></td>
 <td>道路判定 道路種別案内表示範囲識別文字</td>
 <td>{road_type_result_area}</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.splitLineResult.flag.bothSide</td>
 <td></td>
 <td></td>
 <td>道路判定 分割線取得結果 両側取得フラグ値</td>
 <td>2</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.splitLineResult.flag.oneSide</td>
 <td></td>
 <td></td>
 <td>道路判定 分割線取得結果 片側取得フラグ値</td>
 <td>1</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.splitLineResult.flag.noSide</td>
 <td></td>
 <td></td>
 <td>道路判定 分割線取得結果 取得なしフラグ値</td>
 <td>0</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.splitLineResult.flag.error</td>
 <td></td>
 <td></td>
 <td>道路判定 分割線取得結果 取得エラーフラグ値</td>
 <td>-1</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.walkwayResult.true</td>
 <td></td>
 <td></td>
 <td>道路判定 隣接歩道判定結果 隣接有りフラグ値</td>
 <td>1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.roadjudge.walkwayResult.false</td>
 <td></td>
 <td></td>
 <td>道路判定 隣接歩道判定結果 隣接なしフラグ値</td>
 <td>0</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.roadjudge.widthErrorCode</td>
 <td></td>
 <td></td>
 <td>道路判定 幅員エラーコード</td>
 <td>9999</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.applicant.id.length</td>
 <td>　</td>
 <td>　</td>
 <td>照合IDの文字数</td>
 <td>20</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.password.length</td>
 <td>　</td>
 <td>　</td>
 <td>パスワード発行時の文字数</td>
 <td>10</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.password.character</td>
 <td>　</td>
 <td>　</td>
 <td>パスワードに使用する文字種</td>
 <td>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.report.filename.header</td>
 <td>　</td>
 <td>　</td>
 <td>申請登録時の概況診断レポート接頭句</td>
 <td>\u6982\u6CC1\u8A3A\u65AD\u7D50\u679C_</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.application.report.filename.footer</td>
 <td>　</td>
 <td>　</td>
 <td>申請登録時の概況診断レポート接尾句(日付フォーマット)</td>
 <td>_yyyy_MM_dd</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.report.fileid</td>
 <td>　</td>
 <td>　</td>
 <td>申請登録時の概況診断レポートのファイルID</td>
 <td>9999</td>
 </tr>
-<tr class="odd">
+<tr>
+<td>app.answer.report.filename.header</td>
+<td>　</td>
+<td>　</td>
+<td>回答通知時の回答レポート接頭句</td>
+<td>\u56de\u7b54\u30ec\u30dd\u30fc\u30c8_</td>
+</tr>
+<tr>
+<td>app.answer.report.filename.footer</td>
+<td>　</td>
+<td>　</td>
+<td>回答通知時の回答レポート接尾句(日付フォーマット)</td>
+<td>_yyyy_MM_dd</td>
+</tr>
+<tr>
+<td>app.answer.report.fileid</td>
+<td>　</td>
+<td>　</td>
+<td>回答通知時の回答レポートのファイルID</td>
+<td>9998</td>
+</tr>
+<tr>
+<td>app.answer.report.master.filename</td>
+<td>　</td>
+<td>　</td>
+<td>回答レポートの表示名</td>
+<td>\u56de\u7b54\u30ec\u30dd\u30fc\u30c8</td>
+</tr>
+<tr>
 <td>app.lotnumber.getfigure.limit</td>
 <td>　</td>
 <td>　</td>
 <td>範囲選択時地番取得上限</td>
 <td>500</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.lotnumber.result.type.lotnumber</td>
 <td>　</td>
 <td>　</td>
 <td>テーブル種別: 地番</td>
 <td>1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.lotnumber.result.type.district</td>
 <td>　</td>
 <td>　</td>
 <td>テーブル種別: 大字</td>
 <td>0</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.result.type.category</td>
 <td>　</td>
 <td>　</td>
 <td>参照タイプ: 申請区分</td>
 <td>0</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.application.result.type.applicant</td>
 <td>　</td>
 <td>　</td>
 <td>参照タイプ: 申請者情報</td>
 <td>1</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.result.type.other</td>
 <td>　</td>
 <td>　</td>
 <td>参照タイプ: その他</td>
 <td>2</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.application.table.application.category</td>
 <td>　</td>
 <td>　</td>
 <td>テーブル名: O_申請区分</td>
 <td>o_application_category</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.table.application.category.master</td>
 <td>　</td>
 <td>　</td>
 <td>テーブル名: M_申請区分</td>
 <td>m_application_category</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.application.table.applicant.information</td>
 <td>　</td>
 <td>　</td>
 <td>テーブル名: O_申請者情報</td>
 <td>o_applicant_information</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.table.answer</td>
 <td>　</td>
 <td>　</td>
 <td>テーブル名: O_回答</td>
 <td>o_answer</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.application.table.category.judgement</td>
 <td>　</td>
 <td>　</td>
 <td>テーブル名: M_区分設定</td>
 <td>m_category_judgement</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.table.department</td>
 <td>　</td>
 <td>　</td>
 <td>テーブル名: M_部署</td>
 <td>m_department</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.application.table.application</td>
 <td>　</td>
 <td>　</td>
 <td>テーブル名： O_申請</td>
 <td>o_application</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.column.status</td>
 <td>　</td>
 <td>　</td>
 <td>カラム名：O_申請.ステータス</td>
 <td>status</td>
 </tr>
-<tr class="odd">
+<tr>
+<td>app.application.column.applicationid</td>
+<td>　</td>
+<td>　</td>
+<td>カラム名：O_申請.申請ID</td>
+<td>application_id</td>
+</tr>
+<tr>
 <td>app.application.category.column.applicationid</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請区分 申請ID</td>
 <td>application_id</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.category.column.viewid</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請区分 画面ID</td>
 <td>view_id</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.application.category.column.categoryid</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請区分 申請区分ID</td>
 <td>category_id</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.category.master.column.categoryid</td>
 <td>　</td>
 <td>　</td>
 <td>M_申請区分 申請区分ID</td>
 <td>category_id</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.application.category.master.column.viewid</td>
 <td>　</td>
 <td>　</td>
 <td>M_申請区分 画面ID</td>
 <td>view_id</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.application.category.master.column.order</td>
 <td>　</td>
 <td>　</td>
 <td>M_申請区分 昇順</td>
 <td>order</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.application.category.master.column.labelname</td>
 <td>　</td>
 <td>　</td>
 <td>M_申請区分 選択肢名</td>
 <td>label_name</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.applicant.information.column.applicationid</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報 申請ID</td>
 <td>application_id</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.applicant.information.column.applicantid</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報 申請者情報ID</td>
 <td>applicant_id</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.applicant.information.column.item1</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　項目1</td>
 <td>item_1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.applicant.information.column.item2</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　項目2</td>
 <td>item_2</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.applicant.information.column.item3</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　項目3</td>
 <td>item_3</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.applicant.information.column.item4</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　項目4</td>
 <td>item_4</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.applicant.information.column.item5</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　項目5</td>
 <td>item_5</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.applicant.information.column.item6</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　項目6</td>
 <td>item_6</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.applicant.information.column.item7</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　項目7</td>
 <td>item_7</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.applicant.information.column.item8</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　項目8</td>
 <td>item_8</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.applicant.information.column.item9</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　項目9</td>
 <td>item_9</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.applicant.information.column.item10</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　項目10</td>
 <td>item_10</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.applicant.information.column.mailaddress</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　メールアドレス</td>
 <td>mail_address</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.applicant.information.column.collationid</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　照合ID</td>
 <td>collation_id</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.applicant.information.column.password</td>
 <td>　</td>
 <td>　</td>
 <td>O_申請者情報　パスワード</td>
 <td>password</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.answer.column.answerid</td>
 <td>　</td>
 <td>　</td>
 <td>O_回答 回答ID</td>
 <td>answer_id</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.answer.column.applicationid</td>
 <td>　</td>
 <td>　</td>
 <td>O_回答 申請ID</td>
 <td>application_id</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.answer.column.judgementid</td>
 <td>　</td>
 <td>　</td>
 <td>O_回答 判定項目ID</td>
 <td>judgement_id</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.answer.column.judgementresult</td>
 <td>　</td>
 <td>　</td>
 <td>O_回答 判定結果</td>
 <td>judgement_result</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.answer.column.answercontent</td>
 <td>　</td>
 <td>　</td>
 <td>O_回答 回答内容</td>
 <td>answer_content</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.answer.column.notifiedtext</td>
 <td>　</td>
 <td>　</td>
 <td>O_回答 通知テキスト</td>
 <td>notified_text</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.answer.column.registerdatetime</td>
 <td>　</td>
 <td>　</td>
 <td>O_回答 登録日時</td>
 <td>register_datetime</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.answer.column.updatedatetime</td>
 <td>　</td>
 <td>　</td>
 <td>O_回答 更新日時</td>
 <td>update_datetime</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.answer.column.completeflag</td>
 <td>　</td>
 <td>　</td>
 <td>O_回答 完了フラグ</td>
 <td>complete_flag</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.answer.column.notifiedflag</td>
 <td>　</td>
 <td>　</td>
 <td>O_回答 通知フラグ</td>
 <td>notified_flag</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.judgementitemid</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 判定項目ID</td>
 <td>judgement_item_id</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.departmentid</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 担当部署ID</td>
 <td>department_id</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.category1</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 区分1</td>
 <td>category_1</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.category2</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 区分2</td>
 <td>category_2</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.category3</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 区分3</td>
 <td>category_3</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.category4</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 区分4</td>
 <td>category_4</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.category5</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 区分5</td>
 <td>category_5</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.category6</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 区分6</td>
 <td>category_6</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.category7</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 区分7</td>
 <td>category_7</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.category8</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 区分8</td>
 <td>category_8</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.category9</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 区分9</td>
 <td>category_9</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.category10</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 区分10</td>
 <td>category_10</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.gisjudgement</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 GIS判定</td>
 <td>gis_judgement</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.buffer</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 バッファ</td>
 <td>buffer</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.judgementlayer</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 判定対象レイヤ</td>
 <td>judgement_layer</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.title</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 タイトル</td>
 <td>title</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.applicablesummary</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 該当表示概要</td>
 <td>applicable_summary</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.applicabledescription</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 該当表示文言</td>
 <td>applicable_description</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.nonapplicabledisplayflag</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 非該当表示有無</td>
 <td>non_applicable_display_flag</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.nonapplicablesummary</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 非該当表示概要</td>
 <td>non_applicable_summary</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.nonapplicabledescription</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 非該当表示文言</td>
 <td>non_applicable_description</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.tablename</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 テーブル名</td>
 <td>table_name</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.fieldname</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 フィールド名</td>
 <td>field_name</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.nonapplicablelayerdisplayflag</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 判定レイヤ非該当時表示有無</td>
 <td>non_applicable_layer_display_flag</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.category.judgement.column.simultaneousdisplaylayer</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 同時表示レイヤ</td>
 <td>simultaneous_display_layer</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.category.judgement.column.simultaneousdisplaylayerflag</td>
 <td>　</td>
 <td>　</td>
 <td>M_区分判定 同時表示レイヤ表示有無</td>
 <td>simultaneous_display_layer_flag</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.department.column.departmentid</td>
 <td>　</td>
 <td>　</td>
 <td>M_部署 部署ID</td>
 <td>department_id</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.department.column.departmentname</td>
 <td>　</td>
 <td>　</td>
 <td>M_部署 部署名</td>
 <td>department_name</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.department.column.answerauthorityflag</td>
 <td>　</td>
 <td>　</td>
 <td>M_部署 回答権限フラグ</td>
 <td>answer_authority_flag</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.department.column.mailaddress</td>
 <td>　</td>
 <td>　</td>
 <td>M_部署 メールアドレス</td>
 <td>mail_address</td>
 </tr>
-<tr class="odd">
+<tr>
+<td>app.chat.search.title.step2</td>
+<td>　</td>
+<td>　</td>
+<td>問合せ検索 対象列出力内容（事前協議）</td>
+<td>\u4e8b\u524d\u5354\u8b70\u554f\u5408\u305b\uff08{department_name}\uff09</td>
+</tr>
+<tr>
+<td>app.chat.search.title.step3</td>
+<td>　</td>
+<td>　</td>
+<td>問合せ検索 対象列出力内容（許可判定）</td>
+<td>\u8a31\u53ef\u5224\u5b9a\u554f\u5408\u305b</td>
+</tr>
+<tr>
+<td>app.chat.search.title.step2.replaceText</td>
+<td>　</td>
+<td>　</td>
+<td>問合せ検索 対象列出力内容置換文字列（事前協議）</td>
+<td>{department_name}</td>
+</tr>
+<tr>
+<td>app.chat.search.csv.headName.status</td>
+<td>　</td>
+<td>　</td>
+<td>問合せ検索CSV出力 出力ラベル名:ステータス</td>
+<td>\u30b9\u30c6\u30fc\u30bf\u30b9</td>
+</tr>
+<tr>
+<td>app.chat.search.csv.headName.applicationid</td>
+<td>　</td>
+<td>　</td>
+<td>問合せ検索CSV出力 出力ラベル名:申請ID</td>
+<td>\u7533\u8acbID</td>
+</tr>
+<tr>
+<td>app.chat.search.csv.headName.title</td>
+<td>　</td>
+<td>　</td>
+<td>問合せ検索CSV出力 出力ラベル名:対象</td>
+<td>\u5bfe\u8c61</td>
+</tr>
+<tr>
+<td>app.chat.search.csv.headName.department</td>
+<td>　</td>
+<td>　</td>
+<td>問合せ検索CSV出力 出力ラベル名:回答担当課</td>
+<td>\u56de\u7b54\u62c5\u5f53\u8ab2</td>
+</tr>
+<tr>
+<td>app.chat.search.csv.headName.initialDate</td>
+<td>　</td>
+<td>　</td>
+<td>問合せ検索CSV出力 出力ラベル名:初回投稿日時</td>
+<td>\u521d\u56de\u6295\u7a3f\u65e5\u6642</td>
+</tr>
+<tr>
+<td>app.chat.search.csv.headName.latestDate</td>
+<td>　</td>
+<td>　</td>
+<td>問合せ検索CSV出力 出力ラベル名:最新投稿日時</td>
+<td>\u6700\u65b0\u6295\u7a3f\u65e5\u6642</td>
+</tr>
+<tr>
+<td>app.chat.search.csv.headName.latestAnswer</td>
+<td>　</td>
+<td>　</td>
+<td>問合せ検索CSV出力 出力ラベル名:最新回答者</td>
+<td>\u6700\u65b0\u56de\u7b54\u8005</td>
+</tr>
+<tr>
+<td>app.chat.search.csv.headName.latestAnswerDate</td>
+<td>　</td>
+<td>　</td>
+<td>問合せ検索CSV出力 出力ラベル名:最新回答日時</td>
+<td>\u6700\u65b0\u56de\u7b54\u65e5\u6642</td>
+</tr>
+<tr>
+<td>app.application.answer.file.item.step2</td>
+<td>　</td>
+<td>　</td>
+<td>申請回答情報の回答ファイル一覧 対象列出力内容（事前協議）</td>
+<td>\u4e8b\u524d\u5354\u8b70\u56de\u7b54\u30d5\u30a1\u30a4\u30eb\uff08{department_name}\uff09</td>
+</tr>
+<tr>
+<td>app.application.answer.file.item.step2.replaceText</td>
+<td>　</td>
+<td>　</td>
+<td>申請回答情報の回答ファイル一覧 対象列出力内容置換文字列（事前協議）</td>
+<td>{department_name}</td>
+</tr>
+<tr>
+<td>app.application.answer.file.item.step3</td>
+<td>　</td>
+<td>　</td>
+<td>申請回答情報の回答ファイル一覧 対象列出力内容（許可判定）</td>
+<td>\u8a31\u53ef\u5224\u5b9a\u56de\u7b54\u30d5\u30a1\u30a4\u30eb</td>
+</tr>
+<tr>
 <td>app.judge.report.name</td>
 <td>　</td>
 <td>　</td>
 <td>ダウンロード時のファイル名</td>
 <td>judgeReport.xlsx</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.answer.report.name</td>
 <td>　</td>
 <td>　</td>
 <td>ダウンロード時のファイル名(回答レポート)</td>
 <td>answerReport.xlsx</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.page.maxrow</td>
 <td>　</td>
 <td>　</td>
 <td>ページ当たりの最大行数</td>
 <td>47</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.font.name</td>
 <td>　</td>
 <td>　</td>
 <td>帳票フォント名</td>
 <td>\u6E38\u30B4\u30B7\u30C3\u30AF</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.separator</td>
 <td>　</td>
 <td>　</td>
 <td>複数項目の区切り文字</td>
-<td>　</td>
+<td>,</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.date.row</td>
 <td>　</td>
 <td>　</td>
 <td>出力日 出力行</td>
 <td>0</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.date.col</td>
 <td>　</td>
 <td>　</td>
 <td>出力日 出力列</td>
 <td>5</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.date.format</td>
 <td>　</td>
 <td>　</td>
 <td>出力日 フォーマット</td>
 <td>yyyy/MM/dd</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.overview.startrow</td>
 <td>　</td>
 <td>　</td>
 <td>概況図 開始行</td>
 <td>1</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.overview.endrow</td>
 <td>　</td>
 <td>　</td>
 <td>概況図 終了行</td>
 <td>6</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.overview.startcol</td>
 <td>　</td>
 <td>　</td>
 <td>概況図 開始列</td>
 <td>5</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.overview.endcol</td>
 <td>　</td>
 <td>　</td>
 <td>概況図 終了列</td>
 <td>20</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.category.startrow</td>
 <td>　</td>
 <td>　</td>
 <td>区分 開始行</td>
 <td>7</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.category.endrow</td>
 <td>　</td>
 <td>　</td>
 <td>区分 終了行</td>
 <td>16</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.title.col</td>
 <td>　</td>
 <td>　</td>
 <td>区分名 出力列</td>
 <td>0</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.description.col</td>
 <td>　</td>
 <td>　</td>
 <td>区分説明 出力列</td>
 <td>5</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.address.row</td>
 <td>　</td>
 <td>　</td>
 <td>開発予定地　出力行</td>
 <td>1</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.address.col</td>
 <td>　</td>
 <td>　</td>
 <td>開発予定地　出力列</td>
 <td>21</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.lotnumber.separators</td>
 <td>　</td>
 <td>　</td>
 <td>開発予定地 番地区切り文字群(正規表現)</td>
-<td>　</td>
+<td>[-,\uff0d,\u2010,\u2015,\u306e\u3000]</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.startrow</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果出力開始行</td>
 <td>18</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.mergerow</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果 結合行数</td>
-<td>1</td>
+<td>2</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.title.col</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果タイトル 出力列</td>
 <td>0</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.title.mergecol</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果タイトル 結合列数</td>
 <td>12</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.title.font.size</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果タイトル 文字サイズ</td>
 <td>8</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.summary.col</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果要約 出力列</td>
 <td>12</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.summary.mergecol</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果要約 結合列数</td>
 <td>17</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.summary.font.size</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果要約 文字サイズ</td>
 <td>7</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.description.mergerow</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 行結合数</td>
 <td>11</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.description.title.col</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 タイトル出力列</td>
 <td>0</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.description.title.font.size</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 タイトル　文字サイズ</td>
 <td>8</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.description.title.mergecol</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 タイトル 結合列数</td>
 <td>6</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.description.col</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細　詳細列</td>
 <td>6</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.description.mergecol</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 詳細結合列数</td>
 <td>13</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.description.font.size</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 詳細　文字サイズ</td>
 <td>8</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.description.image.col</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 画像列</td>
 <td>19</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.description.image.mergecol</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 画像結合列数</td>
 <td>10</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.description.nogis.label</td>
 <td>　</td>
 <td>　</td>
 <td>「画像なし 区分判定」ラベル</td>
 <td>\u753B\u50CF\u306A\u3057\r\n\u533A\u5206\u5224\u5B9A</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.description.noapply.label</td>
 <td>　</td>
 <td>　</td>
 <td> 「画像なし 非該当」ラベル</td>
 <td>\u753b\u50cf\u306a\u3057\r\n\u975e\u8a72\u5f53</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.description.nogis.label.size</td>
 <td>　</td>
 <td>　</td>
 <td>「画像なし 区分判定」ラベル文字サイズ</td>
 <td>20</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.description.answer.title.megerow</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 回答タイトル結合行数</td>
 <td>1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.description.answer.title.mergecol</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 回答タイトル結合列数</td>
 <td>23</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.description.answer.title.template.text1</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 回答タイトルテンプレート文字列1</td>
-<td>\u56de\u7b54(ID</td>
+<td>\u56de\u7b54(ID=</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.description.answer.title.template.text2</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 回答タイトルテンプレート文字列2</td>
 <td>)</td>
 </tr>
-<tr class="even">
+<tr>
+<td>app.judge.report.judgeresult.description.answer.title.template.text3</td>
+<td>　</td>
+<td>　</td>
+<td>判定結果詳細 回答タイトルテンプレート文字列3</td>
+<td>\u56de\u7b54</td>
+</tr>
+<tr>
 <td>app.judge.report.judgeresult.description.answer.title.col</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 回答タイトル出力列</td>
 <td>6</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.description.answer.content.mergerow</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 回答内容結合行数</td>
 <td>11</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.description.answer.content.mergecol</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 回答内容結合列数</td>
 <td>23</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.description.answer.content.col</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 回答内容出力列</td>
 <td>6</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.judge.report.judgeresult.description.answer.title.noapply</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 回答タイトル非該当時文字列</td>
 <td>\u56de\u7b54(\u975e\u8a72\u5f53)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.judge.report.judgeresult.description.answer.content.noapply</td>
 <td>　</td>
 <td>　</td>
 <td>判定結果詳細 回答内容非該当時文字列</td>
 <td>\u975e\u8a72\u5f53\u3067\u3059\u3002</td>
 </tr>
+<tr>
+<td>app.judge.report.judgeresult.description.answer.delete</td>
+<td>　</td>
+<td>　</td>
+<td>判定結果詳細 行政による回答削除</td>
+<td>\u3053\u306e\u9805\u76ee\u306f\u884c\u653f\u62c5\u5f53\u8005\u306b\u3088\u308a\u524a\u9664\u3055\u308c\u307e\u3057\u305f\u3002</td>
+</tr>
 
-<tr class="even">
+<tr>
 <td>app.csv.log.header.business.login</td>
 <td>　</td>
 <td></td>
 <td>事業者ログイン（アクセス）ログのheader カンマ区切り</td>
-<td>\u30ed\u30b0\u30a4\u30f3\u65e5\u6642</td>
+<td>\u30ed\u30b0\u30a4\u30f3\u65e5\u6642,\u30a2\u30af\u30bb\u30b9ID,IP\u30a2\u30c9\u30ec\u30b9</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.header.judge.report</td>
 <td>　</td>
 <td></td>
 <td>概況診断結果レポート（出力件数）ログのheader カンマ区切り</td>
-<td>\u30a2\u30af\u30bb\u30b9\u65e5\u6642</td>
+<td>\u30a2\u30af\u30bb\u30b9\u65e5\u6642,\u30a2\u30af\u30bb\u30b9ID,\u6982\u6cc1\u8a3a\u65ad\u7d50\u679cID,\u7533\u8acb\u7a2e\u985e,\u7533\u8acb\u6bb5\u968e\r\n</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.csv.log.header.application.register</td>
 <td>　</td>
 <td></td>
 <td>申請登録ログのheader カンマ区切り</td>
-<td>\u30a2\u30af\u30bb\u30b9ID</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u30a2\u30af\u30bb\u30b9\u65e5\u6642,\u6982\u6cc1\u8a3a\u65ad\u7d50\u679cID,\u7533\u8acbID,\u7533\u8acb\u7a2e\u985e,\u7533\u8acb\u6bb5\u968e</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.header.administration.login</td>
 <td>　</td>
 <td></td>
 <td>行政ログインログのheader カンマ区切り</td>
-<td>\u30a2\u30af\u30bb\u30b9ID</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,IP\u30a2\u30c9\u30ec\u30b9,\u30ed\u30b0\u30a4\u30f3\u65e5\u6642,\u30ed\u30b0\u30a4\u30f3\u30e6\u30fc\u30b6,\u6240\u5c5e\u90e8\u7f72</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.csv.log.header.answer.register</td>
 <td>　</td>
 <td></td>
 <td>回答登録ログのheader カンマ区切り</td>
-<td>\u30a2\u30af\u30bb\u30b9ID</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u767b\u9332\u65e5\u6642,\u64cd\u4f5c\u30e6\u30fc\u30b6,\u64cd\u4f5c\u30e6\u30fc\u30b6\u6240\u5c5e\u90e8\u7f72,\u7533\u8acbID,,\u7533\u8acb\u7a2e\u985e,\u7533\u8acb\u6bb5\u968e,\u7248\u60c5\u5831,\u64cd\u4f5c\u7a2e\u5225,\u56de\u7b54ID,\u56de\u7b54\u5bfe\u8c61\u6761\u9805,\u66f4\u65b0\u3057\u305f\u56de\u7b54\u5185\u5bb9</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.header.answer.notification</td>
 <td>　</td>
 <td></td>
 <td>回答通知ログのheader カンマ区切り</td>
-<td> \u30a2\u30af\u30bb\u30b9ID</td>
+<td> \u30a2\u30af\u30bb\u30b9ID,\u901a\u77e5\u65e5\u6642,\u64cd\u4f5c\u30e6\u30fc\u30b6,\u64cd\u4f5c\u30e6\u30fc\u30b6\u6240\u5c5e\u90e8\u7f72,\u7533\u8acbID,\u7533\u8acb\u7a2e\u985e,\u7533\u8acb\u6bb5\u968e,\u7248\u60c5\u5831,\u901a\u77e5\u7a2e\u5225</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.csv.log.header.answer.confirm</td>
 <td>　</td>
 <td></td>
 <td>回答確認ログのheader カンマ区切り</td>
-<td>\u30a2\u30af\u30bb\u30b9ID</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u30a2\u30af\u30bb\u30b9\u65e5\u6642,\u7533\u8acbID,\u7533\u8acb\u7a2e\u985e,\u7533\u8acb\u6bb5\u968e,\u7248\u60c5\u5831</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.header.questionnaire.reply</td>
 <td>　</td>
 <td></td>
 <td>アンケートの利用目的保存ログのheader カンマ区切り</td>
-<td>\u30a2\u30af\u30bb\u30b9ID</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u5229\u7528\u76ee\u7684</td>
 </tr>
 
-<tr class="even">
+<tr>
 <td>app.csv.log.header.application.reapplication</td>
 <td>　</td>
 <td></td>
 <td>再申請登録ログのheader カンマ区切り</td>
-<td>\u30a2\u30af\u30bb\u30b9ID</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u30a2\u30af\u30bb\u30b9\u65e5\u6642,\u7533\u8acbID,\u7533\u8acb\u7a2e\u985e,\u7533\u8acb\u6bb5\u968e,\u7248\u60c5\u5831</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.header.chat.business.message.post</td>
 <td>　</td>
 <td></td>
 <td> チャット投稿（事業者）ログのheader カンマ区切り</td>
-<td>\u30a2\u30af\u30bb\u30b9ID</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u30a2\u30af\u30bb\u30b9\u65e5\u6642,\u7533\u8acbID,\u7533\u8acb\u7a2e\u985e,\u7533\u8acb\u6bb5\u968e,\u56de\u7b54ID,\u554f\u5408\u305b\u90e8\u7f72</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.csv.log.header.lotnumber.search.establishment</td>
 <td>　</td>
 <td></td>
 <td>地番検索（事業者）ログのheader カンマ区切り</td>
-<td>\u30a2\u30af\u30bb\u30b9ID</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u30a2\u30af\u30bb\u30b9\u65e5\u6642</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>app.csv.log.header.category.views</td>
 <td>　</td>
 <td></td>
 <td>地番検索（事業者）ログのheader カンマ区切り</td>
-<td>\u30a2\u30af\u30bb\u30b9ID</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u30a2\u30af\u30bb\u30b9\u65e5\u6642</td>
 </tr>
-<tr class="even">
+<tr>
 <td>app.csv.log.header.chat.government.message.post</td>
 <td>　</td>
 <td></td>
 <td>チャット投稿（行政）ログのheader カンマ区切り</td>
-<td>\u30a2\u30af\u30bb\u30b9ID</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u30a2\u30af\u30bb\u30b9\u65e5\u6642,\u64cd\u4f5c\u30e6\u30fc\u30b6,\u64cd\u4f5c\u30e6\u30fc\u30b6\u6240\u5c5e\u90e8\u7f72,\u7533\u8acbID,\u7533\u8acb\u7a2e\u985e,\u7533\u8acb\u6bb5\u968e,\u56de\u7b54ID,\u554f\u5408\u305b\u90e8\u7f72</td>
 </tr>
-<tr class="odd">
+<tr>
+<td>app.csv.log.header.answer.consent.input</td>
+<td>　</td>
+<td>　</td>
+<td>同意項目承認否認登録（事業者（事前協議のみ））ログのheader カンマ区切り</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u767b\u9332\u65e5\u6642,\u7533\u8acbID,\u7533\u8acb\u7a2e\u985e,\u7533\u8acb\u6bb5\u968e,\u7248\u60c5\u5831,\u56de\u7b54ID,\u56de\u7b54\u5bfe\u8c61,\u66f4\u65b0\u3057\u305f\u4e8b\u696d\u8005\u5408\u5426\u30b9\u30c6\u30fc\u30bf\u30b9,\u66f4\u65b0\u3057\u305f\u4e8b\u696d\u8005\u5408\u5426\u30b3\u30e1\u30f3\u30c8</td>
+</tr>
+<tr>
+<td>app.csv.log.header.answer.register.government.confirm</td>
+<td>　</td>
+<td>　</td>
+<td>回答登録(行政確定登録内容登録（事前協議のみ）)ログのheader カンマ区切り</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u767b\u9332\u65e5\u6642,\u64cd\u4f5c\u30e6\u30fc\u30b6,\u64cd\u4f5c\u30e6\u30fc\u30b6\u6240\u5c5e\u90e8\u7f72,\u7533\u8acbID,\u7533\u8acb\u7a2e\u985e,\u7533\u8acb\u6bb5\u968e,\u7248\u60c5\u5831,\u56de\u7b54ID,\u56de\u7b54\u5bfe\u8c61,\u66f4\u65b0\u3057\u305f\u884c\u653f\u78ba\u8a8d\u767b\u9332\u30b9\u30c6\u30fc\u30bf\u30b9,\u66f4\u65b0\u3057\u305f\u884c\u653f\u78ba\u8a8d\u767b\u9332\u65e5\u6642,\u66f4\u65b0\u3057\u305f\u884c\u653f\u78ba\u8a8d\u767b\u9332\u30b3\u30e1\u30f3\u30c8</td>
+</tr>
+<tr>
+<td>app.csv.log.header.answer.register.government.confirm.department</td>
+<td>　</td>
+<td>　</td>
+<td>回答登録(部署全体の行政確定登録内容登録（事前協議のみ）)ログのheader カンマ区切り</td>
+<td>\u30a2\u30af\u30bb\u30b9ID,\u767b\u9332\u65e5\u6642,\u64cd\u4f5c\u30e6\u30fc\u30b6,\u64cd\u4f5c\u30e6\u30fc\u30b6\u6240\u5c5e\u90e8\u7f72,\u7533\u8acbID,\u7533\u8acb\u7a2e\u985e,\u7533\u8acb\u6bb5\u968e,\u7248\u60c5\u5831,\u90e8\u7f72\u56de\u7b54ID,\u56de\u7b54\u5bfe\u8c61\u90e8\u7f72,\u66f4\u65b0\u3057\u305f\u884c\u653f\u78ba\u8a8d\u767b\u9332\u30b9\u30c6\u30fc\u30bf\u30b9,\u66f4\u65b0\u3057\u305f\u884c\u653f\u78ba\u8a8d\u767b\u9332\u65e5\u6642,\u66f4\u65b0\u3057\u305f\u884c\u653f\u78ba\u8a8d\u767b\u9332\u30b3\u30e1\u30f3\u30c8</td>
+</tr>
+<tr>
+<td>app.answer.deadlineXDaysAgo</td>
+<td>　</td>
+<td>〇</td>
+<td>回答.期日X日前</td>
+<td>3</td>
+</tr>
+<tr>
+<td>app.answer.bufferDays</td>
+<td>　</td>
+<td>〇</td>
+<td>回答.回答予定のバッファ日数</td>
+<td>1</td>
+</tr>
+<tr>
+<td>app.answer.bussinesStatusDays</td>
+<td>　</td>
+<td>〇</td>
+<td>回答.事業者へ合意登録日時の日数</td>
+<td>3</td>
+</tr>
+<tr>
+<td>app.answer.bussinesRegisterDays</td>
+<td>　</td>
+<td>〇</td>
+<td>回答.事業者合意登録日時のZ日前</td>
+<td>3</td>
+</tr>
+<tr>
+<td>app.reminder.mail.enabledTypes</td>
+<td>　</td>
+<td>〇</td>
+<td>リマインド通知の有効対象</td>
+<td>1,2,3,4,5,6</td>
+</tr>
+<tr>
+<td>app.exclude.select.departments</td>
+<td>　</td>
+<td>〇</td>
+<td>リマインド通知除外選択部署(部署IDカンマ区切り)</td>
+<td>1099</td>
+</tr>
+<tr>
+<td>app.ledger.output.detail.ledgerId.list</td>
+<td>　</td>
+<td>〇</td>
+<td>条項詳細出力を行う帳票IDリスト（カンマ区切り）</td>
+<td>1001,2002</td>
+</tr>
+<tr>
+<td>app.ledger.properties</td>
+<td>　</td>
+<td>〇</td>
+<td>帳票プロパティ定義</td>
+<td>[帳票ID：{key:value}]の形式<br>プロパティは<a href="#sec1703">17-3.帳票プロパティ定義</a>の形式で指定可能</td>
+</tr>
+<tr>
 <td>tomcat.util.scan.StandardJarScanFilter.jarsToSkip</td>
 <td>　</td>
 <td>　</td>
 <td>　</td>
 <td>*-*.jar</td>
 </tr>
-<tr class="even">
+<tr>
 <td>spring.mvc.hiddenmethod.filter.enabled</td>
 <td>　</td>
 <td>　</td>
 <td>　</td>
 <td>TRUE</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>spring.webflux.hiddenmethod.filter.enabled</td>
 <td>　</td>
 <td>　</td>
 <td>　</td>
 <td>TRUE</td>
 </tr>
-<tr class="even">
+<tr>
 <td>spring.mvc.pathmatch.matching-strategy</td>
 <td>　</td>
 <td>　</td>
@@ -7122,6 +8497,22 @@ https://[domain name of the environment]/plateau/login/
 <td>申請受付通知(行政向け)　本文</td>
 </tr>
 <tr class="odd">
+<td>mail.application.accept.body.accept.content</td>
+<td>申請受付通知(行政向け)　本文 -コメント文言（統括部署管理者の受付通知案内）</td>
+</tr>
+<tr class="even">
+<td>mail.application.accept.body.application.file.changed.content</td>
+<td>申請受付通知(行政向け)　本文 -コメント文言（申請ファイル差し替え案内）</td>
+</tr>
+<tr class="odd">
+<td>mail.application.file.change.subject</td>
+<td>申請提出書類変更通知(行政向け)　件名</td>
+</tr>
+<tr class="even">
+<td>mail.application.file.change.body</td>
+<td>申請提出書類変更通知(行政向け)　本文</td>
+</tr>
+<tr class="odd">
 <td>mail.bussiness.answer.finish.subject</td>
 <td>回答完了通知(事業者向け)　件名</td>
 </tr>
@@ -7130,84 +8521,264 @@ https://[domain name of the environment]/plateau/login/
 <td>回答完了通知(事業者向け)　本文</td>
 </tr>
 <tr class="odd">
-<td>mail.answer.update.subject</td>
-<td>回答更新通知(行政向け)　件名</td>
+<td>mail.bussiness.answer.finish.body.comment.reapplication</td>
+<td>回答完了通知(事業者向け)　本文 -コメント文言（再申請案内）</td>
 </tr>
 <tr class="even">
-<td>mail.answer.update.body</td>
-<td>回答更新通知(行政向け)　本文</td>
+<td>mail.bussiness.answer.finish.body.comment.agreement.registration</td>
+<td>回答完了通知(事業者向け)　本文 -コメント文言（事業者合意登録案内）</td>
 </tr>
 <tr class="odd">
+<td>mail.bussiness.answer.finish.body.comment.next.step</td>
+<td>回答完了通知(事業者向け)　本文 -コメント文言（次の申請段階への再申請案内）</td>
+</tr>
+<tr class="even">
+<td>mail.answer.update.subject</td>
+<td>廃止_回答更新通知(行政向け)　件名</td>
+</tr>
+<tr class="odd">
+<td>mail.answer.update.body</td>
+<td>廃止_回答更新通知(行政向け)　本文</td>
+</tr>
+<tr class="even">
 <td>mail.answer.finish.subject</td>
 <td>全部署回答完了通知(行政向け)　件名</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>mail.answer.finish.body</td>
 <td>全部署回答完了通知(行政向け)　本文</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>mail.inquiry.from.bussiness.subject</td>
 <td>事業者からの問合せ通知(行政向け)　件名</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>mail.inquiry.from.bussiness.body</td>
 <td>事業者から問合せ通知(行政向け)　本文</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>mail.inquiry.from.government.subject</td>
 <td>行政からの問合せ通知(行政向け)　件名</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>mail.inquiry.from.government.body</td>
 <td>行政からの問合せ通知(行政向け)　本文</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>mail.bussiness.inquiry.subject</td>
 <td>問合せ回答通知(事業者向け)　件名</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>mail.bussiness.inquiry.body</td>
 <td>問合せ回答通知(事業者向け)　本文</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>mail.reapplication.accept.subject</td>
-<td>再申請受付通知(行政向け)　件名</td>
+<td>廃止_再申請受付通知(行政向け)　件名</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>mail.reapplication.accept.body</td>
-<td>再申請受付通知(行政向け)　本文</td>
-</tr>
-<tr class="odd">
-<td>mail.reapplication.accept.notification.subject</td>
-<td>再申請受付通知(行政・回答通知担当課向け)　件名</td>
+<td>廃止_再申請受付通知(行政向け)　本文</td>
 </tr>
 <tr class="even">
-<td>mail.reapplication.accept.notification.body</td>
-<td>再申請受付通知(行政・回答通知担当課向け)　本文</td>
+<td>mail.reapplication.accept.notification.subject</td>
+<td>廃止_再申請受付通知(行政・回答通知担当課向け)　件名</td>
 </tr>
 <tr class="odd">
+<td>mail.reapplication.accept.notification.body</td>
+<td>廃止_再申請受付通知(行政・回答通知担当課向け)　本文</td>
+</tr>
+<tr class="even">
 <td>mail.application.accept.notification.subject</td>
 <td>申請受付通知(行政・回答通知担当課向け)　件名</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>mail.application.accept.notification.body</td>
 <td>申請受付通知(行政・回答通知担当課向け)　本文</td>
 </tr>
+<tr class="even">
+<td>mail.application.accept.notification.negotiation.additional.comment</td>
+<td>申請受付通知(行政・回答通知担当課向け)　本文 -コメント文言（事前協議回答受付案内）</td>
+</tr>
 <tr class="odd">
 <td>mail.bussiness.reapplication.answer.finish.subject</td>
-<td>回答完了（再申請）通知(事業者向け)　件名</td>
+<td>廃止_回答完了（再申請）通知(事業者向け)　件名</td>
 </tr>
 <tr class="even">
 <td>mail.bussiness.reapplication.answer.finish.body</td>
-<td>回答完了（再申請）通知(事業者向け)　本文</td>
+<td>廃止_回答完了（再申請）通知(事業者向け)　本文</td>
 </tr>
 <tr class="odd">
 <td>mail.bussiness.reapplication.accept.subject</td>
-<td>再申請受付通知(事業者向け)　件名</td>
+<td>廃止_再申請受付通知(事業者向け)　件名</td>
 </tr>
 <tr class="even">
 <td>mail.bussiness.reapplication.accept.body</td>
-<td>再申請受付通知(事業者向け)　本文</td>
+<td>廃止_再申請受付通知(事業者向け)　本文</td>
+</tr>
+<tr class="odd">
+<td>mail.application.remand.subject</td>
+<td>事前協議差戻通知(事業者向け) 件名</td>
+</tr>
+<tr class="even">
+<td>mail.application.remand.body</td>
+<td>事前協議差戻通知(事業者向け) 本文</td>
+</tr>
+<tr class="odd">
+<td>mail.response.approval.subject</td>
+<td>回答許可通知(行政（統括部署管理者）向け) 件名</td>
+</tr>
+<tr class="even">
+<td>mail.response.approval.body</td>
+<td>回答許可通知(行政（統括部署管理者）向け) 本文</td>
+</tr>
+<tr class="odd">
+<td>mail.consent.denial.notification.subject</td>
+<td>同意項目否認通知(行政（回答担当課）向け) 件名</td>
+</tr>
+<tr class="even">
+<td>mail.consent.denial.notification.body</td>
+<td>同意項目否認通知(行政（回答担当課）向け) 本文</td>
+</tr>
+<tr class="odd">
+<td>mail.consent.regist.notification.subject</td>
+<td>同意項目登録通知（行政（回答担当課）） 件名</td>
+</tr>
+<tr class="even">
+<td>mail.consent.regist.notification.body</td>
+<td>同意項目登録通知（行政（回答担当課）） 本文</td>
+</tr>
+<tr class="odd">
+<td>mail.consent.regist.notification.body.comment.consent.completed</td>
+<td>同意項目登録通知（行政（回答担当課）） 本文-コメント文言（事業者側で同意項目登録完了）</td>
+</tr>
+<tr class="even">
+<td>mail.negotiation.confirmed.notification.subject</td>
+<td>事前協議行政確定登録完了通知(行政（回答担当課管理者）向け) 件名</td>
+</tr>
+<tr class="odd">
+<td>mail.negotiation.confirmed.notification.body</td>
+<td>事前協議行政確定登録完了通知(行政（回答担当課管理者）向け) 本文</td>
+</tr>
+<tr class="even">
+<td>mail.negotiation.confirmed.approval.notification.subject</td>
+<td>事前協議行政確定登録許可通知（行政（統括部署管理者）向け） 件名</td>
+</tr>
+<tr class="odd">
+<td>mail.negotiation.confirmed.approval.notification.body</td>
+<td>事前協議行政確定登録許可通知（行政（統括部署管理者）向け） 本文</td>
+</tr>
+<tr class="even">
+<td>mail.answer.remind.notification.subject</td>
+<td>回答リマインド通知（行政（回答担当課）向け） 件名</td>
+</tr>
+<tr class="odd">
+<td>mail.answer.remind.notification.body</td>
+<td>回答リマインド通知（行政（回答担当課）向け） 本文</td>
+</tr>
+<tr class="even">
+<td>mail.negotiation.answer.remind.notification.subject</td>
+<td>事前協議回答リマインド通知（事業者） 件名</td>
+</tr>
+<tr class="odd">
+<td>mail.negotiation.answer.remind.notification.body</td>
+<td>事前協議回答リマインド通知（事業者） 本文</td>
+</tr>
+<tr class="even">
+<td>mail.answer.notification.remind.notification.subject</td>
+<td>回答通知リマインド通知（行政（回答通知課）事前相談：回答通知担当、事前協議：①統括部署管理者、②各部署管理者、許可判定：許可判定通知担当課管理者） 件名</td>
+</tr>
+<tr class="odd">
+<td>mail.answer.notification.remind.notification.body</td>
+<td>回答通知リマインド通知（行政（回答通知課）事前相談：回答通知担当、事前協議：①統括部署管理者、②各部署管理者、許可判定：許可判定通知担当課管理者） 本文</td>
+</tr>
+<tr class="even">
+<td>mail.negotiation.confirm.remind.notification.subject</td>
+<td>行政確定登録リマインド通知（行政　事前協議：①統括部署管理者、②各部署管理者、③各部署担当者） 件名</td>
+</tr>
+<tr class="odd">
+<td>mail.negotiation.confirm.remind.notification.body</td>
+<td>行政確定登録リマインド通知（行政　事前協議：①統括部署管理者、②各部署管理者、③各部署担当者） 本文</td>
+</tr>
+<tr class="even">
+<td>mail.inquiry.remind.notification.subject</td>
+<td>問合せリマインド通知（行政　回答担当課） 件名</td>
+</tr>
+<tr class="odd">
+<td>mail.inquiry.remind.notification.body</td>
+<td>問合せリマインド通知（行政　回答担当課） 本文</td>
+</tr>
+<tr class="even">
+<td>mail.report.receipt.notification.subject</td>
+<td>帳票受領通知（行政（許可判定・事前協議回答権限部署管理者）） 件名</td>
+</tr>
+<tr class="odd">
+<td>mail.report.receipt.notification.body</td>
+<td>帳票受領通知（行政（許可判定・事前協議回答権限部署管理者）） 本文</td>
+</tr>
+<tr class="even">
+<td>mail.answer.all.remind.subject</td>
+<td>リマインド通知(行政向け) 件名</td>
+</tr>
+<tr class="odd">
+<td>mail.answer.all.remind.deadline.body</td>
+<td>リマインド通知(行政向け) 本文(回答期限)</td>
+</tr>
+<tr class="even">
+<td>mail.answer.all.remind.notification.body</td>
+<td>リマインド通知(行政向け) 本文(回答通知)</td>
+</tr>
+<tr class="odd">
+<td>mail.answer.all.remind.notification.registered.body</td>
+<td>リマインド通知(行政向け) 本文(行政確定未登録)</td>
+</tr>
+<tr class="even">
+<td>mail.answer.all.remind.chat.registered.body</td>
+<td>リマインド通知(行政向け) 本文(問い合わせ未回答)</td>
+</tr>
+<tr class="odd">
+<td>mail.answer.all.remind.notification.step.body</td>
+<td>リマインド通知(行政向け) 本文(申請段階)</td>
+</tr>
+<tr class="even">
+<td>mail.answer.all.remind.notification.step.overdue.body</td>
+<td>リマインド通知(行政向け) 本文(期限超過)</td>
+</tr>
+<tr class="odd">
+<td>mail.answer.all.remind.notification.step.xDaysBeforeDueDate.body</td>
+<td>リマインド通知(行政向け) 本文(期限まで少し)</td>
+</tr>
+<tr class="even">
+<td>mail.answer.all.remind.chat.body</td>
+<td>リマインド通知(行政向け) 本文(期限超過・問い合わせ)</td>
+</tr>
+<tr class="odd">
+<td>mail.answer.all.remind.end.body</td>
+<td>リマインド通知(行政向け) 本文(末尾・リマインド)</td>
+</tr>
+<tr class="even">
+<td>mail.answer.all.remind.business.subject</td>
+<td>リマインド通知(事業者向け) 件名</td>
+</tr>
+<tr class="odd">
+<td>mail.answer.all.remind.business.title.body</td>
+<td>リマインド通知(事業者向け) 本文(タイトル)</td>
+</tr>
+<tr class="even">
+<td>mail.answer.all.remind.business.body</td>
+<td>リマインド通知(事業者向け) 本文</td>
+</tr>
+<tr class="odd">
+<td>mail.answer.all.remind.business.end.body</td>
+<td>リマインド通知(事業者向け) 本文(末尾)</td>
+</tr>
+<tr class="even">
+<td>mail.application.accept.notification.login.info.subject</td>
+<td>初回申請受付時、申請受付通知(回答通知担当課向け)（照合ID・パスワードを含む） 件名</td>
+</tr>
+<tr class="odd">
+<td>mail.application.accept.notification.login.info.body</td>
+<td>初回申請受付時、申請受付通知(回答通知担当課向け)（照合ID・パスワードを含む） 本文</td>
 </tr>
 </tbody>
 </table>
@@ -7285,6 +8856,66 @@ https://[domain name of the environment]/plateau/login/
 <td>${回答内容}</td>
 <td>問合せ回答内容</td>
 </tr>
+<tr class="even">
+<td>${申請種類}</td>
+<td>申請種類</td>
+</tr>
+<tr class="odd">
+<td>${申請段階}</td>
+<td>申請段階 事前相談,事前協議,許可判定</td>
+</tr>
+<tr class="even">
+<td>${版番号}</td>
+<td>申請版番号</td>
+</tr>
+<tr class="odd">
+<td>${申請ID}</td>
+<td>申請ID</td>
+</tr>
+<tr class="even">
+<td>${統括部署管理者の受付確認コメント}</td>
+<td>統括部署管理者の受付確認コメント(メール本文)</td>
+</tr>
+<tr class="odd">
+<td>${申請ファイル変更案内}</td>
+<td>差し替えた申請ファイルの案内文</td>
+</tr>
+<tr class="even">
+<td>${コメント}</td>
+<td>統括部署管理者の受付確認コメント</td>
+</tr>
+<tr class="odd">
+<td>${申請ファイル名}</td>
+<td>申請ファイル名</td>
+</tr>
+<tr class="even">
+<td>${指示元担当課}</td>
+<td>申請ファイル 指示元担当課名</td>
+</tr>
+<tr class="odd">
+<td>${修正内容}</td>
+<td>申請ファイル 修正内容</td>
+</tr>
+<tr class="even">
+<td>${コメント１}</td>
+<td>メールに付与するコメント</td>
+</tr>
+<tr class="odd">
+<td>${合意内容}</td>
+<td>事前協議事業者合意内容</td>
+</tr>
+<tr class="even">
+<td>${合意日付}</td>
+<td>事前協議事業者合意日付</td>
+</tr>
+<tr class="odd">
+<td>${回答期限}</td>
+<td>回答期限日</td>
+</tr>
+<tr class="even">
+<td>${帳票名}</td>
+<td>事業者が受領した帳票名</td>
+</tr>
 </tbody>
 </table>
 
@@ -7337,12 +8968,185 @@ $rep\[\
 
 \]$rep\
 ```
+<a id="sec1703"></a>
+
+## 17-3. 帳票プロパティ定義
+
+application.propertiesのapp.ledger.propertiesで指定可能なプロパティの一覧を以下に示します。
+
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 8%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>キー</strong></th>
+<th><strong>必須</strong></th>
+<th><strong>説明</strong></th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+<td>fontName</td>
+<td></td>
+<td>フォント名<br/>（※設定しない場合、帳票テンプレートのフォントで印字する）</td>
+</tr>
+<tr>
+<td>editSrartRow</td>
+<td></td>
+<td>編集開始行<br/>（※設定しない場合、帳票テンプレートの最終行の次行から印字する）</td>
+</tr>
+<tr>
+<td>firstPageMaxRow</td>
+<td>〇</td>
+<td>編集開始の１ページ目に、印字可能の最大行数<br/>（※次ページの最大行数とは違う）</td>
+</tr>
+<tr>
+<td>pageMaxRow</td>
+<td>〇</td>
+<td>編集開始の2ページ目に、印字可能の最大行数</td>
+</tr>
+<tr>
+<td>printAreaStartCol</td>
+<td></td>
+<td>印刷範囲の開始列<br/>（※0から設定（例：A列　＝　0）、※設定しない場合、テンプレートの印刷範囲のまま）</td>
+</tr>
+<tr>
+<td>printAreaEndCol</td>
+<td></td>
+<td>印刷範囲の終了列<br/>（※0から設定（例：A列　＝　0）、※設定しない場合、テンプレートの印刷範囲のまま）</td>
+</tr>
+<tr>
+<td>departmentNameStartCol</td>
+<td></td>
+<td>印字開始列<br/>（※設定しない場合、課名を印字しない）</td>
+</tr>
+<tr>
+<td>departmentNameFontSize</td>
+<td></td>
+<td>フォントサイズ<br/>（※設定しない場合、テンプレートファイルのデフォルトフォントサイズで印字する）</td>
+</tr>
+<tr>
+<td>departmentNameRowMaxCharacter</td>
+<td></td>
+<td>行当たりの最大文字数<br/>（※設定しない、または、0で設定する場合、改行文字が有っても、改行しないで印字する）</td>
+</tr>
+<tr>
+<td>departmentNameParagraph</td>
+<td></td>
+<td>段階番号をつけるかフラグ【"true":番号あり、"false":番号なし】<br/>（※設定しない場合、番号なしとする）</td>
+</tr>
+<tr>
+<td>departmentNameParagraphWithinText</td>
+<td></td>
+<td>段階番号が文字列と同じセルに印字するかフラグ【"true":同じセルに印字、"false":（印字開始列-1）に印字する】<br/>（※設定しない場合、同じセルに印字とする）</td>
+</tr>
+<tr>
+<td>departmentNameParagraphCharacter</td>
+<td></td>
+<td>段階番号の書式文字列<br/>（※設定しない場合、空文とする）</td>
+</tr>
+<tr>
+<td>departmentNameParagraphType</td>
+<td></td>
+<td>段階番号の採番種類【0：レコード全件で採番、1：課ごとに採番】<br/>（※設定しない場合、【1：課ごとに採番】とする）</td>
+</tr>
+<tr>
+<td>departmentNameInsertBlankLine</td>
+<td></td>
+<td>空白行を挿入するかフラグ【"before"：上に１行を挿入、"after"：下に１行を挿入】<br/>（※設定しない場合、空白を挿入しない）</td>
+</tr>
+<tr>
+<td>judgementTitleStartCol</td>
+<td></td>
+<td>印字開始列<br/>（※設定しない場合、課名を印字しない）</td>
+</tr>
+<tr>
+<td>judgementTitleFontSize</td>
+<td></td>
+<td>フォントサイズ<br/>（※設定しない場合、テンプレートファイルのデフォルトフォントサイズで印字する）</td>
+</tr>
+<tr>
+<td>judgementTitleRowMaxCharacter</td>
+<td></td>
+<td>行当たりの最大文字数<br/>（※設定しない、または、0で設定する場合、改行文字が有っても、改行しないで印字する）</td>
+</tr>
+<tr>
+<td>judgementTitleParagraph</td>
+<td></td>
+<td>段階番号をつけるかフラグ【"true":番号あり、"false":番号なし】<br/>（※設定しない場合、番号なしとする）</td>
+</tr>
+<tr>
+<td>judgementTitleParagraphWithinText</td>
+<td></td>
+<td>段階番号が文字列と同じセルに印字するかフラグ【"true":同じセルに印字、"false":（印字開始列-1）に印字する】<br/>（※設定しない場合、同じセルに印字とする）</td>
+</tr>
+<tr>
+<td>judgementTitleParagraphCharacter</td>
+<td></td>
+<td>段階番号の書式文字列<br/>（※設定しない場合、空文とする）</td>
+</tr>
+<tr>
+<td>judgementTitleParagraphType</td>
+<td></td>
+<td>段階番号の採番種類【0：レコード全件で採番、1：課ごとに採番】<br/>（※設定しない場合、【1：課ごとに採番】とする）</td>
+</tr>
+<tr>
+<td>judgementTitleInsertBlankLine</td>
+<td></td>
+<td>空白行を挿入するかフラグ【"before"：上に１行を挿入、"after"：下に１行を挿入】<br/>（※設定しない場合、空白を挿入しない）</td>
+</tr>
+<tr>
+<td>answerContentStartCol</td>
+<td></td>
+<td>印字開始列<br/>（※設定しない場合、課名を印字しない）</td>
+</tr>
+<tr>
+<td>answerContentFontSize</td>
+<td></td>
+<td>フォントサイズ<br/>（※設定しない場合、テンプレートファイルのデフォルトフォントサイズで印字する）</td>
+</tr>
+<tr>
+<td>answerContentRowMaxCharacter</td>
+<td></td>
+<td>行当たりの最大文字数<br/>（※設定しない、または、0で設定する場合、改行文字が有っても、改行しないで印字する）</td>
+</tr>
+<tr>
+<td>answerContentParagraph</td>
+<td></td>
+<td>段階番号をつけるかフラグ【"true":番号あり、"false":番号なし】<br/>（※設定しない場合、番号なしとする）</td>
+</tr>
+<tr>
+<td>answerContentParagraphWithinText</td>
+<td></td>
+<td>段階番号が文字列と同じセルに印字するかフラグ【"true":同じセルに印字、"false":（印字開始列-1）に印字する】<br/>（※設定しない場合、同じセルに印字とする）</td>
+</tr>
+<tr>
+<td>answerContentParagraphCharacter</td>
+<td></td>
+<td>段階番号の書式文字列<br/>（※設定しない場合、空文とする）</td>
+</tr>
+<tr>
+<td>answerContentParagraphType</td>
+<td></td>
+<td>段階番号の採番種類【0：レコード全件で採番、1：課ごとに採番】<br/>（※設定しない場合、【1：課ごとに採番】とする）</td>
+</tr>
+<tr>
+<td>answerContentInsertBlankLine</td>
+<td></td>
+<td>空白行を挿入するかフラグ【"before"：上に１行を挿入、"after"：下に１行を挿入】<br/>（※設定しない場合、空白を挿入しない）</td>
+</tr>
+</tbody>
+</table>
 
 <a id="sec1800"></a>
 
 # 18 アプリケーションデプロイ（3DViewer）
 
-確認済みサーバ環境：CentOS 8 Stream
+確認済みサーバ環境：CentOS Stream 9
 
 確認済み作業PC環境 ：Windows 10 Pro
 
@@ -7352,15 +9156,15 @@ $rep\[\
 
 ※作業PC上にて行う
 
-1.	Node.js v10.0 以降、npm v6.0 以降のインストールを行ってください。
+1.	Node.js v16.16.0、npm v8.11.0のインストールを行ってください。
 
 	<https://nodejs.org/ja/download/>
 
 	※インストール方法の参考サイト：
 
-	<https://qiita.com/echolimitless/items/83f8658cf855de04b9ce>
+	<https://zenn.dev/y_2_k/articles/e419bcf729e82d>
 
-2.	コマンドでyarn v1.19.0 以降のインストールを行ってください。
+2.	コマンドでyarnのインストールを行ってください。
 
 	```Text 
 	npm install -g yarn
@@ -7384,7 +9188,7 @@ $rep\[\
 
 ※作業PC上にて行う
 
-1.	**/development-permission/SRC/3dview** からソースコードを入手し、Git Bashからプロジェクトフォルダ直下に移動してください。
+1.	**/SRC/3dview** からソースコードを入手し、Git Bashからプロジェクトフォルダ直下に移動してください。
 
 	```Text 
 	cd developpermision-3dview
@@ -7435,64 +9239,27 @@ $rep\[\
 1.  デプロイ先の作成を行います。フォルダ名の指定は自由です。
 
 	```Text 
-	mkdir /opt/DEVELOPMENT_PERMISSION_PLATEAU_VIEW
+	sudo mkdir -p /var/www/html/plateau/
 	```
 
-2.	適当な場所にプロジェクト直下のwwwroot,node\_modules,ecosystem.config.js,ecosystem-production.config.js,productionserverconfig.jsonをアップロードしてください。
+2.	適当な場所にプロジェクト直下のwwwrootをアップロードしてください。
 
-3.	wwwroot,node\_modules,ecosystem.config.js,ecosystem-production.config.js,
-productionserverconfig.jsonをデプロイ先直下へ配置してください。
+3.	wwwrootをapache直下へ配置してください。尚、SELinuxが有効な場合、ドキュメントルートに適切なコンテキストを設定します。
 
 	```Text 
 	cd /home/upload/
 
-	mv wwwroot /opt/DEVELOPMENT_PERMISSION_PLATEAU_VIEW/
+	sudo mv ./wwwroot/* /var/www/html/plateau/
 
-	mv node_modules /opt/DEVELOPMENT_PERMISSION_PLATEAU_VIEW/
+	sudo chown -R apache:apache /var/www/html
 
-	mv ecosystem.config.js /opt/DEVELOPMENT_PERMISSION_PLATEAU_VIEW/
+	sudo restorecon -Rv /var/www/html
 
-	mv ecosystem-production.config.js /opt/DEVELOPMENT_PERMISSION_PLATEAU_VIEW/
-
-	mv productionserverconfig.json /opt/DEVELOPMENT_PERMISSION_PLATEAU_VIEW/
-
-	```
-
-4.	デプロイ先に移動し、PlateauViewを起動します。
-
-	```Text
-	cd /opt/DEVELOPMENT_PERMISSION_PLATEAU_VIEW
-
-	./node_modules/.bin/pm2 start ecosystem-production.config.js --update-env --env production
 	```
 
 <a id="sec1806"></a>
 
-## 18-6. Apacheの設定
-
-1.	httpd.conf を編集します。
-
-	```Text 
-	vi /etc/httpd/conf/httpd.conf
-	```
-
-	最終行に以下の内容を追記して保存します。
-
-	```Text
-	ProxyPass /plateau http://localhost:3001/
-
-	ProxyPassReverse /plateau http://localhost:3001/
-	```
-
-2.	設定を反映する為、apacheの再起動を行います。
-
-	```Text 
-	systemctl restart httpd.service
-	```
-
-<a id="sec1807"></a>
-
-## 18-7. PDF.jsの配置
+## 18-6. PDF.jsの配置
 
 本システムでは、PDFビューワとしてオープンソースライブラリであるPDFjsを使用します。
 
@@ -7505,7 +9272,7 @@ productionserverconfig.jsonをデプロイ先直下へ配置してください�
 
 2.	ダウンロードしたzipファイルをフォルダ名「pdfjs」として展開し、フォルダを開きます。
 
-3.	展開したフォルダ内のweb/viewer.css を **/development-permission/SRC/pdfjs/vewer.cssと置き換えます。
+3.	展開したフォルダ内のweb/viewer.css を **/SRC/pdfjs/vewer.cssと置き換えます。
 
 	<img src="../resources/environment/image175_2.png" style="width:5.90556in;height:2.831062in" />
 
@@ -7516,14 +9283,14 @@ productionserverconfig.jsonをデプロイ先直下へ配置してください�
 	Apacheのドキュメントルートの設定手順については [11-1. ファイルサーバ連携設定](#sec1101)を参照してください。
 
 	```Text 
-	mv pdfjs /var/www/html/
+	sudo mv pdfjs /var/www/html/
 	```
 
 	本手順完了後はApacheの再起動は不要です。
 
-<a id="sec1808"></a>
+<a id="sec1807"></a>
 
-## 18-8. デプロイ後の確認
+## 18-7. デプロイ後の確認
 
 1.	http://&lt;サーバマシンのIPアドレス&gt;/plateau/ にアクセス
 
@@ -7744,219 +9511,431 @@ productionserverconfig.jsonをデプロイ先直下へ配置してください�
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td rowspan="10">config</td>
+<tr>
+<td rowspan="17">config</td>
 <td>apiUrl</td>
 <td>APIのルートパス</td>
 <td>/api</td>
 </tr>
-<tr class="even">
+<tr>
+<td>simulatorApiUrl</td>
+<td>シミュレータAPIのルートパス</td>
+<td>/simulatorapi</td>
+</tr>
+<tr>
 <td>pdfViewerUrl</td>
-<td>pdfjsのベースURL</td>
+<td>pdfjsのルートパス</td>
 <td>/pdfjs</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>geoserverUrl</td>
-<td>GeoServerのURL</td>
+<td>GeoServerのベースパス(wms)</td>
 <td>/geoserver/devps/wms</td>
 </tr>
-<tr class="even">
+<tr>
 <td>geoserverWfsUrl</td>
-<td>WFSレイヤのGeoServer問い合わせのURL</td>
+<td>GeoServerのベースパス(wfs)</td>
 <td>/geoserver/devps/ows</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>landmarkUrl</td>
-<td>ランドマークデータのURL</td>
+<td>ランドマークデータのURL(czml)</td>
 <td>/gis/landmark/landmark.czml</td>
 </tr>
-<tr class="even">
+<tr>
 <td>maxFileSize</td>
 <td>アップロードファイル1つの最大サイズ(MB)</td>
 <td>50</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>maxRequestFileSize</td>
 <td>アップロードファイル全体の最大サイズ(MB)</td>
 <td>100</td>
 </tr>
-<tr class="even">
+<tr>
 <td>answerReportName</td>
 <td>回答レポートの出力ファイル名の接頭句</td>
 <td>行政回答レポート</td>
 </tr>
-<tr class="odd">
+<tr>
+<tr>
+<td>applicationSearchResultFileName</td>
+<td>申請情報検索結果の出力ファイル名</td>
+<td>申請情報検索結果</td>
+</tr>
+<tr>
+<td>inquirySearchResultFileName</td>
+<td>問い合わせ情報検索結果の出力ファイル名</td>
+<td>問い合わせ情報検索結果</td>
+</tr>
+<tr>
+<td>governmentAddAnswerTitle</td>
+<td>行政 事前協議 追加回答タイトル</td>
+<td>その他</td>
+</tr>
+<tr>
+<td>answerContentUpdatingInfoText</td>
+<td>行政 事前協議 回答精査中表示文言</td>
+<td>行政担当者で回答修正中</td>
+</tr>
+<tr>
+<td>topButtonUrl</td>
+<td>トップ画面URL</td>
+<td>https://example.com</td>
+</tr>
+<tr>
 <td>questionnaireUrlForBusiness</td>
 <td>事業者向けアンケート画面のURL</td>
 <td>https://path.to.questinnaire/for/business</td>
 </tr>
-<tr class="even">
+<tr>
 <td>questionnaireUrlForGoverment</td>
-<td><p>行政向けアンケート画面のURL</p>
-<p style="color: red;">/SRC/3dview/wwwroot/login/index.htmlの175行目のリンク（以下）もそろえて修正してください。</p>
-<p>let url = "https://path.to.questinnaire/for/government";</p>
+<td>行政向けアンケート画面のURL</td>
+<td>
+<p>https://path.to.questinnaire/for/government</p>
 </td>
-<td>https://path.to.questinnaire/for/government</td>
 </tr>
 
-<tr class="odd">
-<td rowspan="19">layer</td>
+<tr>
+<td rowspan="22">layer</td>
 <td>lotnumberSearchLayerNameForGoverment</td>
 <td>地番検索結果（行政）のGeoServer上のレイヤ名</td>
 <td>devps:地番検索結果（行政）</td>
 </tr>
-<tr class="even">
+<tr>
 <td>lotnumberSearchLayerDisplayNameForGoverment</td>
 <td>地番検索結果（行政）レイヤの表示名称</td>
 <td>地番検索結果（行政）</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>lotnumberSearchViewParamNameForGoverment</td>
 <td>地番検索結果（行政）のGeoServer問い合わせクエリパラメータ</td>
 <td>lot_numbers:</td>
 </tr>
-<tr class="even">
+<tr>
 <td>lotnumberSearchLayerNameForBusiness</td>
 <td>地番検索結果（事業者）のGeoServer上のレイヤ名</td>
 <td>devps:地番検索結果（事業者）</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>lotnumberSearchLayerDisplayNameForBusiness</td>
 <td>地番検索結果（事業者）レイヤの表示名称</td>
 <td>地番検索結果（事業者）</td>
 </tr>
-<tr class="even">
+<tr>
 <td>lotnumberSearchViewParamNameForBusiness</td>
 <td>地番検索結果（事業者）のGeoServer問い合わせクエリパラメータ</td>
 <td>lot_numbers:</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>lotnumberSearchLayerNameForSelected</td>
 <td>選択中地番のGeoServer上のレイヤ名</td>
 <td>devps:選択中地番</td>
 </tr>
-<tr class="even">
+<tr>
 <td>lotnumberSearchLayerDisplayNameForSelected</td>
 <td>選択中地番レイヤの表示名称</td>
 <td>選択中地番</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>lotnumberSearchViewParamNameForSelected</td>
 <td>選択中地番のGeoServer問い合わせクエリパラメータ</td>
 <td>lot_numbers:</td>
 </tr>
-<tr class="even">
+<tr>
 <td>lotnumberSearchLayerNameForApplicationTarget</td>
 <td>申請対象地番のGeoServer上のレイヤ名</td>
 <td>devps:申請対象地番</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>lotnumberSearchLayerDisplayNameForApplicationTarget</td>
 <td>申請対象地番レイヤの表示名称</td>
 <td>申請対象地番</td>
 </tr>
-<tr class="even">
+<tr>
 <td>lotnumberSearchViewParamNameForApplicationTarget</td>
 <td>申請対象地番のGeoServer問い合わせクエリパラメータ</td>
 <td>lot_numbers:</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>lotnumberSearchLayerNameForApplying</td>
 <td>申請中地番のGeoServer上のレイヤ名</td>
 <td>devps:申請中地番</td>
 </tr>
-<tr class="even">
+<tr>
 <td>lotnumberSearchLayerDisplayNameForApplying</td>
 <td>申請中地番レイヤの表示名称</td>
 <td>申請中地番</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>lotnumberSearchLayerNameForAll</td>
 <td>申請中地番のGeoServer問い合わせクエリパラメータ</td>
 <td>devps:全地番</td>
 </tr>
-<tr class="even">
+<tr>
 <td>lotnumberSearchLayerDisplayNameForAll</td>
 <td>全地番レイヤの表示名称</td>
 <td>筆界</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>lotnumberSearchLayerNameForApplicationSearchTarget</td>
-<td>申請情報表示地番のGeoServer問い合わせクエリパラメータ</td>
+<td>申請情報表示地番のGeoServer上のレイヤ名</td>
 <td>devps:申請情報表示地番</td>
 </tr>
-<tr class="even">
+<tr>
 <td>lotnumberSearchLayerDisplayNameForApplicationSearchTarget</td>
 <td>申請情報表示地番レイヤの表示名称</td>
 <td>申請情報表示地番</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>lotnumberSearchViewParamNameForApplicationSearchTarget</td>
 <td>申請情報表示地番のGeoServer問い合わせクエリパラメータ</td>
 <td>lot_numbers:</td>
 </tr>
-<tr class="even">
+<tr>
+<td>lotnumberSearchLayerNameForSelectedFullFlag</td>
+<td>全筆対象外地番のGeoServer上のレイヤ名</td>
+<td>devps:全筆かからない筆選択地番</td>
+</tr>
+<tr>
+<td>lotnumberSearchLayerDisplayNameForSelectedFullFlag</td>
+<td>全筆対象外地番レイヤの表示名称</td>
+<td>全筆かからない筆</td>
+</tr>
+<tr>
+<td>lotnumberSearchViewParamNameForSelectedFullFlag</td>
+<td>全筆対象外地番のGeoServer問い合わせクエリパラメータ</td>
+<td>lot_numbers:</td>
+</tr>
+
+<tr>
 <td rowspan="2">landMark</td>
 <td>id</td>
 <td><p>ランドマークレイヤのID</p>
 <p>※<a href="#sec1902">19-2</a>の手順4で設定したIDになります。</p></td>
 <td>//データセット/ランドマーク</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>displayName</td>
 <td>申請地選択画面でのランドマークレイヤの表示名称</td>
 <td>ランドマーク</td>
 </tr>
-<tr class="even">
+
+<tr>
 <td>buildingModel</td>
 <td>id</td>
-<td><p>建物モデルのID</p>
+<td><p>3D建物モデルのID</p>
 <p>※<a href="#sec1902">19-2</a>の手順3で設定したIDになります。</p>
 <p>建物モデルを搭載しない場合、空文字としてください。</p></td>
 <td>//データセット/建物モデル</td>
 </tr>
 
-<tr class="odd">
+<tr>
+<td>buildingModelFor2d</td>
+<td>id</td>
+<td><p>2D建物モデルのID</p>
+<p>※別途2D用の建物モデルを使用している場合使用ください（WMSやMVT等）</p>
+<p>2D用の建物モデルを搭載しない場合、空文字としてください。</p></td>
+<td>//データセット/2D建物モデル</td>
+</tr>
+
+<tr>
 <td rowspan="3">wfs</td>
 <td>identify_text</td>
 <td>WFSレイヤの識別テキスト</td>
 <td>@wfs</td>
 </tr>
-<tr class="even">
+<tr>
 <td>road_width_identify_text</td>
 <td>道路幅員判定レイヤの識別テキスト</td>
 <td>{widthText}</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>czmlTemplate</td>
 <td><p>道路幅員ラベルのCZML表示設定</p>
 <p>設定を変更する際は<a href="https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CZML-Guide">CZMLガイド</a>を参照。</p>
 </td>
 <td>"road_width": {(省略)}</td>
 </tr>
-<tr class="even">
+
+<tr>
 <td>NotDraggableItem</td>
 <td>　</td>
 <td>レイヤ一覧にドラッグ＆トラック不可のレイヤリスト</td>
 <td><p>//ランドマーク</p>
-    <p>//3D都市モデル</p></td>
+	<p>//3D都市モデル</p></td>
 </tr>
-<tr class="odd">
+
+<tr>
 <td rowspan="3">QuestionaryActived</td>
 <td>UserAgreementView</td>
 <td>利用規約画面からアンケート画面開くか否か</td>
 <td>FALSE</td>
 </tr>
-<tr class="even">
+<tr>
 <td>GeneralConditionDiagnosisView</td>
 <td>概要診断結果レポート出力画面からアンケート画面開くか否か</td>
 <td>TRUE</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>ApplyCompletedView</td>
 <td>申請完了画面からアンケート画面開くか否か</td>
 <td>TRUE</td>
 </tr>
+
+<tr>
+<td rowspan="8">focusCameraSettings</td>
+<td>cesium.focusCameraDirectionX</td>
+<td>3D自動フォーカス時のカメラ視線方向 （Cesium.Cartesian3.x）</td>
+<td>0.6984744646088341</td>
+</tr>
+<tr>
+<td>cesium.focusCameraDirectionY</td>
+<td>3D自動フォーカス時のカメラ視線方向 （Cesium.Cartesian3.y）※固定変更幅あり（-1.0）</td>
+<td>-0.6617056496661655</td>
+</tr>
+<tr>
+<td>cesium.focusCameraDirectionZ</td>
+<td>3D自動フォーカス時のカメラ視線方向 （Cesium.Cartesian3.z）</td>
+<td>0.2725418417221117</td>
+</tr>
+<tr>
+<td>cesium.focusCameraUpX</td>
+<td>3D自動フォーカス時のカメラ上方向 （Cesium.Cartesian3.x）</td>
+<td>-0.21791222301017105</td>
+</tr>
+<tr>
+<td>cesium.focusCameraUpY</td>
+<td>3D自動フォーカス時のカメラ上方向 （Cesium.Cartesian3.y）</td>
+<td>0.1660947782238842</td>
+</tr>
+<tr>
+<td>cesium.focusCameraUpZ</td>
+<td>3D自動フォーカス時のカメラ上方向 （Cesium.Cartesian3.z）</td>
+<td>0.9617311410729739</td>
+</tr>
+<tr>
+<td>cesium.adjust.latitudeHeightAdjustmentFactor</td>
+<td>最小・最大緯度差に基づくカメラ高さの補正値</td>
+<td>400000</td>
+</tr>
+<tr>
+<td>cesium.adjust.baseHeightOffset</td>
+<td>カメラ高さのベース加算値</td>
+<td>100</td>
+</tr>
+
+<tr>
+<td rowspan="2">defaultViewermode</td>
+<td>goverment</td>
+<td>行政側初期表示Viewer</td>
+<td>2d</td>
+</tr>
+<tr>
+<td>business</td>
+<td>事業者側初期表示Viewer</td>
+<td>3d</td>
+</tr>
+
+<tr>
+<td rowspan="2">persistViewerMode</td>
+<td>goverment</td>
+<td>行政側Viewerモードの永続化</td>
+<td>FALSE</td>
+</tr>
+<tr>
+<td>business</td>
+<td>事業者側Viewerモードの永続化</td>
+<td>TRUE</td>
+</tr>
+
+<tr>
+<td>captureRequiredJudgement</td>
+<td>　</td>
+<td>
+<p>
+概況診断レポート キャプチャ必須の概況診断タイプ<br/>
+<span style="color:red">
+概況診断レポートでキャプチャ機能を使用する場合、<a href="#sec2100">21. シミュレータAPIのデプロイ（Spring Boot）</a> の構築作業が別途必要となります。
+</span>
+</p>
+</td>
+<td>0,1</td>
+</tr>
+
+<tr>
+<td>notifications</td>
+<td>　</td>
+<td>地図画面下に表示する通知メッセージ</td>
+<td>
+<p>
+以下の形式で指定可能
+
+{
+
+	"tag":"タグ",
+	
+	"title":"タイトル",
+	
+	"message":"メッセージ部分<br>メッセージ部分<br>メッセージ部分<br>メッセージ部分"
+
+}
+</p>
+</td>
+</tr>
+
+<tr>
+<td rowspan="2">extension</td>
+<td>answerFile</td>
+<td>アップロード可能な回答ファイルの拡張子</td>
+<td><p>pdf,tiff,jpeg,png,dxf,dwg</p><p>※拡張子チェックに、大文字・小文字を区別する</p></td>
+</tr>
+<tr>
+<td>inquiryFile</td>
+<td>添付可能の問合せファイルの拡張</td>
+<td><p>pdf,tiff,jpeg,png,cad</p><p>※拡張子チェックに、大文字・小文字を区別する</p></td>
+</tr>
+
+<tr>
+<td rowspan="5">inputMaxLength</td>
+<td>answerContent</td>
+<td>回答内容に入力できる文字数上限</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>applicantInfo</td>
+<td>
+<p>申請者情報と申請追加情報にできる文字数上限</p>
+<p>text:一行のみ入力可能のテキスト</p>
+<p>textarea:複数行入力可能のテキストエリア</p></td>
+<td>
+<p>
+初期値は以下で設定されています。
+
+{
+
+	"text":150,
+	
+	"textarea":1000,
+
+}
+</p>
+</td>
+</tr>
+<tr>
+<td>chatMsg</td>
+<td>問合せメッセージに入力できる文字数上限</td>
+<td>1000</td>
+<tr>
+<td>reviseContent</td>
+<td>再申請の申請ファイルアップロード画面の修正内容に入力できる文字数上限</td>
+<td>1000</td>
+<tr>
+<td>notifyComment</td>
+<td>事前協議の申請を受付する際に、受付・差戻通知コメントに入力できる文字数上限</td>
+<td>1000</td>
+</tr>
+
 </tbody>
 </table>
 
@@ -7970,7 +9949,7 @@ productionserverconfig.jsonをデプロイ先直下へ配置してください�
 
 1. index.htmlを開き、スタイル「.bg 」のbackground-colorを設定します。
 
-	※ソースコードコードパス（**/development-permission/SRC/3dview/wwwroot/login/index.html**）
+	※ソースコードコードパス（**/SRC/3dview/wwwroot/login/index.html**）
 
 	<img src="../resources/environment/image184.png"　style="width:4.43105in;height:2.12792in" >
 
@@ -7980,7 +9959,7 @@ productionserverconfig.jsonをデプロイ先直下へ配置してください�
 
 2. variables.scssを開き、プロパティを設定します。
 
-	※ソースコードパス（**/development-permission/SRC/3dview/lib/Styles/variables.scss**）
+	※ソースコードパス（**/SRC/3dview/lib/Styles/variables.scss**）
 
 	<img src="../resources/environment/image186.png"　style="width:4.43105in;height:2.12792in">
 
@@ -8021,3 +10000,380 @@ productionserverconfig.jsonをデプロイ先直下へ配置してください�
 	以下が表示イメージです。
 
 	<img src="../resources/environment/image187.png">
+
+<!--シミュレータ構築手順-->
+<a id="sec2100"></a>
+# 21 シミュレータAPIのデプロイ（Spring Boot）
+
+[19-3. customconfig.json](#sec1903) でキャプチャありの概況診断レポート出力を設定する場合シミュレータAPIの構築が別途必須となります。
+
+仮想ブラウザをシミュレートして実行するため、多くのリソースを消費します。
+
+<span style="color:red">必ず申請アプリとは別サーバ上で稼働させてください。</span>
+
+<img src="../resources/environment/image188.png" style="width:300px;" />
+
+確認済みサーバ環境：CentOS Stream 9
+-   必要なMW/SW：
+
+	-	Chrome Version 126.x
+
+	-	Chrome Driver Version 126.x
+
+	-   Apache Tomcat Version 9.0.65
+
+	-   Java Version 17.0.6
+
+	※MWのインストール方法については[5 稼働環境構築（MW,SW）](#sec401) を参照してください。
+	
+	※Java Versionは17.0.6となりますので注意してください。
+
+	※Chrome及びChrome Driverは<a href="https://developer.chrome.com/docs/chromedriver?hl=ja" target="_blank">Google公式</a>の導入方法を参照してください。
+
+確認済み作業PC環境 ：Windows 10 Pro
+
+<a id="sec2101"></a>
+
+## 21-1. 必要ツールのインストール
+
+※作業PC上にて行う
+
+1.  Spring Tool Suite 4のインストールを行ってください。
+
+	<https://spring.io/tools>
+
+	※インストール方法の参考サイト：
+
+	<https://qiita.com/t-shin0hara/items/d60116ab299a4dc8a9d0>
+
+2.  lombokのインストールを行ってください。
+
+	<https://projectlombok.org/download>
+
+	※インストール方法の参考サイト：
+
+	<https://qiita.com/r_saiki/items/82231ded1450f5ed5671>
+
+<a id="sec2102"></a>
+
+## 21-2. warの作成準備
+
+※作業PC上にて行う
+
+1.	**/SRC/simulator_api**からソースコードを入手し、適当な場所にworkspaceを作成してプロジェクトを配置してください。
+
+	<img src="../resources/environment/image165.png" style="width:5.90556in;height:2.88056in" />
+
+2.	Spring Tool Suite 4を起動して、1. で作成したworkspaceをlaunchしてください。
+
+	<img src="../resources/environment/image166.png" style="width:4.73378in;height:2.37468in" />
+
+3.	プロジェクトのインポートを行います。
+
+	Import projects .. &gt; Maven &gt; Existing Maven Projectsを選択してください。
+
+	<img src="../resources/environment/image167.png" style="width:5.90556in;height:4.54722in" />
+
+	Root Directoryにworkspace内に配置したproject folderを指定します。
+
+	<img src="../resources/environment/image168.png" style="width:3.59984in;height:2.77396in" />
+
+4.	Mavenの更新を行います。
+
+	プロジェクト右クリック&gt; Maven &gt; Update Projectを選択してください。
+
+	<img src="../resources/environment/image169.png" style="width:4.17708in;height:4.76258in" />
+
+	更新画面でOKを選択すると、Mavenの更新が始まります。
+
+	<img src="../resources/environment/image170.png" style="width:3.86389in;height:4.34188in" />
+
+5.	src/main/resources/application.propertiesの編集を行ってください。
+
+	プロパティ一覧と、編集を行う箇所は次章を参照してください。
+
+	変更が必要な設定箇所は以下になります。
+
+	-	データベースとの接続情報 ※申請アプリと同様
+	-	CORS許可オリジン ※申請アプリと同様
+	-	JWTの秘密鍵 ※申請アプリと同様
+	-	ChromeDriverのパス
+	-	PLATEAU VIEWのURL
+
+	<span style="color: red; ">
+	※application.propertiesが文字化けする場合は、application.propertiesを右クリック&gt;properties&gt;Resource&gt;Text file encodingをUTF-8へ変更してください。
+	</span>
+
+	<img src="../resources/environment/image172.png" style="width:5.12795in;height:3.68393in" />
+
+<a id="sec2103"></a>
+
+## 21-3. warの作成　
+
+※作業PC上にて行う
+
+1.	プロジェクト右クリック&gt; Run As &gt; Maven buildを選択してください。
+
+	<img src="../resources/environment/image173.png" style="width:3.625in;height:4.29808in" />
+
+2.	Goalsに「package」を入力し、Runボタンを押下します。
+
+	<img src="../resources/environment/image174.png" style="width:3.52895in;height:3.83603in" />
+
+3.	targetフォルダにsimulatorapi-0.0.1-SNAPSHOT.warが作られていることを確認してください。
+
+<a id="sec2104"></a>
+
+## 21-4. warのデプロイ（シミュレータサーバ側）
+
+1.	シミュレータサーバの適当な場所にsimulatorapi-0.0.1-SNAPSHOT.warをアップロードしてください。ここでは /home/upload/ に転送する事としています。
+
+2.	tomcatに配備します。
+
+	※配備の際、simulatorapi-0.0.1-SNAPSHOT.war から<span style="color: red; ">simulatorapi.war</span>に名前を変更してください。
+
+	```Text
+	cd /home/upload/
+
+	sudo mv simulatorapi-0.0.1-SNAPSHOT.war /opt/apache-tomcat/webapps/simulatorapi.war
+	```
+
+	※配備後にapplication.propertiesを編集する場合は下記のように行います。編集後、保存して再起動を行ってください。
+	```Text
+	sudo vi /opt/apache-tomcat/webapps/simulatorapi/WEB-INF/classes/application.properties
+
+	sudo systemctl restart tomcat
+	```
+## 21-5. application.properties
+
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 6%" />
+<col style="width: 6%" />
+<col style="width: 25%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th rowspan="2"><strong>プロパティ名</strong></th>
+<th colspan="2"><strong>環境設定</strong></th>
+<th rowspan="2"><strong>内容</strong></th>
+<th rowspan="2"><strong>設定値</strong></th>
+</tr>
+<tr>
+<th><strong>必須</strong></th>
+<th><strong>任意</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>spring.jpa.database</td>
+<td>　</td>
+<td>　</td>
+<td>データベース種類</td>
+<td>POSTGRESQL</td>
+</tr>
+<tr>
+<td>spring.datasource.url</td>
+<td>○</td>
+<td>　</td>
+<td>データベース接続情報</td>
+<td>
+<p>
+jdbc:postgresql://[DBサーバのIPアドレス]:[DBサーバのポート番号]/[データベース名]
+
+<span style="color: red; ">※申請アプリと同様</span>
+</p>
+</td>
+</tr>
+<tr>
+<td>spring.datasource.username</td>
+<td>○</td>
+<td>　</td>
+<td>データベースアクセスに使用するユーザ名</td>
+<td>postgres</td>
+</tr>
+<tr>
+<td>spring.datasource.password</td>
+<td>○</td>
+<td>　</td>
+<td>データベースアクセスに使用するパスワード</td>
+<td>（省略）</td>
+</tr>
+<tr>
+<td>app.cors.allowed.origins</td>
+<td>○</td>
+<td></td>
+<td>CORS許可オリジン</td>
+<td>
+<p><span style="color: red; ">本API実行を許可するoriginを指定</span>
+<br>
+例）https://example.com
+
+<span style="color: red; ">※申請アプリと同様</span>
+</p>
+</td>
+</tr>
+<tr>
+<td>app.filter.ignore</td>
+<td>　</td>
+<td>　</td>
+<td>フィルタの例外パス</td>
+<td>（省略）</td>
+</tr>
+<tr>
+<td>app.filter.goverment</td>
+<td>　</td>
+<td>　</td>
+<td>フィルタの行政のみ許可するパス</td>
+<td>（省略）</td>
+</tr>
+<tr>
+<td>app.filter.unable</td>
+<td>　</td>
+<td>　</td>
+<td>アクセス不能パス</td>
+<td>（省略）</td>
+</tr>
+<tr>
+<td>app.jwt.token.secretkey</td>
+<td>○</td>
+<td></td>
+<td><p>JWTの秘密鍵</p>
+<p></p>
+<p><span style="color: red; ">※tokenの検証や署名で使用</span></p></td>
+<td>
+<p>
+[自治体固有のsecretKey]
+
+<span style="color: red; ">※申請アプリと同様</span>
+</p>
+</td>
+</tr>
+
+<tr>
+<td>app.simulation.task.limit</td>
+<td></td>
+<td></td>
+<td>
+<p>シミュレート実行の同時実行数上限</p>
+</td>
+<td>5</td>
+</tr>
+<tr>
+<td>app.simulation.task.timeout.max.seconds</td>
+<td></td>
+<td></td>
+<td>
+<p>シミュレート実行の最大待ち時間(秒)</p>
+</td>
+<td>1200</td>
+</tr>
+<tr>
+<td>logging.file.nam</td>
+<td></td>
+<td></td>
+<td>
+<p>ログ出力定義</p>
+</td>
+<td>/opt/apache-tomcat/logs/simulatorapi/simulatorapi.log</td>
+</tr>
+<tr>
+<td>webdriver.chrome.driver</td>
+<td>〇</td>
+<td></td>
+<td>
+<p>ChromeDriverのパス</p>
+</td>
+<td>/opt/apache-tomcat/chrome/chromedriver</td>
+</tr>
+<tr>
+<td>webdriver.chrome.driver.log</td>
+<td></td>
+<td></td>
+<td>
+<p>ChromeDriverのログパス</p>
+</td>
+<td>/opt/apache-tomcat/chrome/log/chromedriver.log</td>
+</tr>
+<tr>
+<td>app.plateau.url</td>
+<td>〇</td>
+<td></td>
+<td>
+<p>PLATEAU VIEWのURL</p>
+</td>
+<td>
+<p>
+https://example.com/plateau
+
+<span style="color: red; ">※3DViewerのURL</span>
+</p>
+</td>
+</tr>
+<td>tomcat.util.scan.StandardJarScanFilter.jarsToSkip</td>
+<td>　</td>
+<td>　</td>
+<td>　</td>
+<td>*-*.jar</td>
+</tr>
+<tr>
+<td>spring.mvc.hiddenmethod.filter.enabled</td>
+<td>　</td>
+<td>　</td>
+<td>　</td>
+<td>TRUE</td>
+</tr>
+<tr>
+<td>spring.webflux.hiddenmethod.filter.enabled</td>
+<td>　</td>
+<td>　</td>
+<td>　</td>
+<td>TRUE</td>
+</tr>
+<tr>
+<td>spring.mvc.pathmatch.matching-strategy</td>
+<td>　</td>
+<td>　</td>
+<td>　</td>
+<td>ANT_PATH_MATCHER</td>
+</tr>
+<tr>
+<td>logging.level.org.springframework.web</td>
+<td>　</td>
+<td>○</td>
+<td>アプリケーションログ出力レベル設定</td>
+<td>INFO</td>
+</tr>
+<tr>
+<td>logging.level.developmentpermission</td>
+<td>　</td>
+<td>○</td>
+<td>アプリケーションログ出力レベル設定</td>
+<td>DEBUG</td>
+</tr>
+</tbody>
+</table>
+
+## 21-6. Apacheの設定(申請アプリ側)
+
+1.	httpd.conf を編集します。
+
+	```Text 
+	sudo vi /etc/httpd/conf/httpd.conf
+	```
+
+	最終行に以下の内容を追記して保存します。
+
+	```Text
+	ProxyPass /simulatorapi http://<シミュレータサーバのIPアドレス>:8080/simulatorapi
+
+	ProxyPassReverse /simulatorapi http://<シミュレータサーバのIPアドレス>:8080/simulatorapi
+	```
+
+2.	設定を反映する為、apacheの再起動を行います。
+
+	```Text 
+	sudo systemctl restart httpd
+	```
