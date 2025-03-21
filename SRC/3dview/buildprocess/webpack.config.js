@@ -104,6 +104,11 @@ module.exports = function(devMode, hot) {
                     loader: ['style-loader', 'css-loader']
                 },
                 {
+                    test: /\.css$/,
+                    include: [path.resolve(__dirname, '..','node_modules','@ag-grid-community','styles')],
+                    loader: ['style-loader', 'css-loader']
+                },
+                {
                     test: /\.scss$/,
                     include: [path.resolve(__dirname, '..', 'lib')],
                     loader: hot ? [

@@ -15,9 +15,11 @@ import org.springframework.web.server.ResponseStatusException;
 import developmentpermission.Application;
 import developmentpermission.controller.LotNumberApiController;
 import developmentpermission.dao.LotNumberDao;
+import developmentpermission.entity.ApplyLotNumber;
 import developmentpermission.entity.District;
 import developmentpermission.entity.LotNumberAndDistrict;
 import developmentpermission.entity.LotNumberSearchResultDefinition;
+import developmentpermission.form.ApplyLotNumberForm;
 import developmentpermission.form.DistrictNameForm;
 import developmentpermission.form.LotNumberForm;
 import developmentpermission.form.LotNumberSearchConditionForm;
@@ -101,8 +103,15 @@ public class LotNumberService extends AbstractService {
 	 * @param latitude  緯度
 	 * @return 地番一覧
 	 */
-	public List<LotNumberForm> searchApplyingLotNumberFromLonlat(String longitude, String latitude) {
-		return searchLotNumberFromLonlat(longitude, latitude, true);
+	public List<ApplyLotNumberForm> searchApplyingLotNumberFromLonlat(String longitude, String latitude) {
+		List<ApplyLotNumberForm> formList = new ArrayList<ApplyLotNumberForm>();
+
+		LotNumberDao dao = new LotNumberDao(emf);
+		List<ApplyLotNumber> lotNumberList = dao.searchApplyingLotNumberList(longitude, latitude, epsg, lonlatEpsg);
+		for (ApplyLotNumber lotNumber : lotNumberList) {
+			formList.add(getApplyingLotNumberFormFromEntity(lotNumber));
+		}
+		return formList;
 	}
 
 	/**
@@ -113,7 +122,17 @@ public class LotNumberService extends AbstractService {
 	 * @return 地番一覧
 	 */
 	public List<LotNumberForm> searchLotNumberFromLonlat(String longitude, String latitude) {
-		return searchLotNumberFromLonlat(longitude, latitude, false);
+		List<LotNumberForm> formList = new ArrayList<LotNumberForm>();
+
+		List<LotNumberSearchResultDefinition> lotNumberSearchResultDefinitionList = lotNumberSearchResultDefinitionRepository
+				.getLotNumberSearchResultDefinitionList();
+
+		LotNumberDao dao = new LotNumberDao(emf);
+		List<LotNumberAndDistrict> lotNumberList = dao.searchLotNumberList(longitude, latitude, epsg, lonlatEpsg);
+		for (LotNumberAndDistrict lotNumber : lotNumberList) {
+			formList.add(getLotNumberFormFromEntity(lotNumber, lotNumberSearchResultDefinitionList));
+		}
+		return formList;
 	}
 
 	/**
@@ -163,29 +182,6 @@ public class LotNumberService extends AbstractService {
 		LotNumberDao dao = new LotNumberDao(emf);
 		List<LotNumberAndDistrict> lotNumberList = dao.searchLotNumberList(lotNumberSearchConditionForm.getDistrictId(),
 				lotNumberSearchConditionForm.getChiban(), lonlatEpsg, isGoverment);
-		for (LotNumberAndDistrict lotNumber : lotNumberList) {
-			formList.add(getLotNumberFormFromEntity(lotNumber, lotNumberSearchResultDefinitionList));
-		}
-		return formList;
-	}
-
-	/**
-	 * 地番検索
-	 * 
-	 * @param longitude   経度
-	 * @param latitude    緯度
-	 * @param isGoverment 行政かどうか
-	 * @return 地番一覧
-	 */
-	private List<LotNumberForm> searchLotNumberFromLonlat(String longitude, String latitude, boolean isGoverment) {
-		List<LotNumberForm> formList = new ArrayList<LotNumberForm>();
-
-		List<LotNumberSearchResultDefinition> lotNumberSearchResultDefinitionList = lotNumberSearchResultDefinitionRepository
-				.getLotNumberSearchResultDefinitionList();
-
-		LotNumberDao dao = new LotNumberDao(emf);
-		List<LotNumberAndDistrict> lotNumberList = dao.searchLotNumberList(longitude, latitude, epsg, lonlatEpsg,
-				isGoverment);
 		for (LotNumberAndDistrict lotNumber : lotNumberList) {
 			formList.add(getLotNumberFormFromEntity(lotNumber, lotNumberSearchResultDefinitionList));
 		}

@@ -63,6 +63,10 @@
     width: 100%;
 }
 
+.result_table tr th {
+  position: relative;
+}
+
 .result_table thead tr {
     background: #d3d3d3 !important;
     height: 1.5em;
@@ -74,7 +78,7 @@
 }
 
 .result_table tr:nth-child(2n) {
-    background: #d3d3d3 !important;
+    background: #d3d3d3;
 }
 
 .button_in_header,.clear_button_in_header {

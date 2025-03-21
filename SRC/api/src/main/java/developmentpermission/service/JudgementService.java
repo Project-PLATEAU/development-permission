@@ -1,12 +1,15 @@
 package developmentpermission.service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -16,27 +19,41 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringJoiner;
-import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
-import org.apache.commons.collections4.ListUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import developmentpermission.dao.ApplicationDao;
 import developmentpermission.dao.CategoryJudgementDao;
 import developmentpermission.dao.JudgementLayerDao;
 import developmentpermission.dao.LayerDao;
-import developmentpermission.entity.CategoryJudgement;
+import developmentpermission.dao.LotNumberDao;
+import developmentpermission.entity.Answer;
+import developmentpermission.entity.ApplicationCategoryJudgement;
+import developmentpermission.entity.ApplicationCategorySelectionView;
+import developmentpermission.entity.ApplicationFile;
+import developmentpermission.entity.ApplicationVersionInformation;
+import developmentpermission.entity.CategoryJudgementAndResult;
 import developmentpermission.entity.ColumnValue;
+import developmentpermission.entity.DepartmentAnswer;
 import developmentpermission.entity.Distance;
 import developmentpermission.entity.Layer;
+import developmentpermission.entity.LotNumber;
 import developmentpermission.entity.Oid;
 import developmentpermission.entity.RoadCenterLinePosition;
 import developmentpermission.entity.RoadJudgeLabel;
@@ -44,14 +61,22 @@ import developmentpermission.entity.RoadLod2;
 import developmentpermission.entity.SpiltLineExtent;
 import developmentpermission.entity.SplitLine;
 import developmentpermission.entity.SplitRoadCenterLine;
+import developmentpermission.form.AnswerConfirmLoginForm;
 import developmentpermission.form.ApplicationCategoryForm;
 import developmentpermission.form.ApplicationCategorySelectionViewForm;
+import developmentpermission.form.GeneralConditionDiagnosisReportProgressForm;
 import developmentpermission.form.GeneralConditionDiagnosisReportRequestForm;
 import developmentpermission.form.GeneralConditionDiagnosisRequestForm;
 import developmentpermission.form.GeneralConditionDiagnosisResultForm;
 import developmentpermission.form.LayerForm;
 import developmentpermission.form.LotNumberForm;
+import developmentpermission.form.UploadApplicationFileForm;
 import developmentpermission.form.UploadForGeneralConditionDiagnosisForm;
+import developmentpermission.repository.AnswerRepository;
+import developmentpermission.repository.ApplicationCategoryJudgementRepository;
+import developmentpermission.repository.ApplicationVersionInformationRepository;
+import developmentpermission.repository.CategorySelectionViewRepository;
+import developmentpermission.repository.DepartmentAnswerRepository;
 import developmentpermission.repository.RoadJudgeLabelRepository;
 import developmentpermission.repository.jdbc.JudgementJdbc;
 import developmentpermission.util.AuthUtil;
@@ -71,6 +96,22 @@ public class JudgementService extends AbstractJudgementService {
 	/** M_道路判定ラベルRepositoryインスタンス */
 	@Autowired
 	private RoadJudgeLabelRepository roadJudgeLabelRepository;
+
+	/** M_画面インスタンス */
+	@Autowired
+	private CategorySelectionViewRepository categorySelectionViewRepository;
+
+	/** M_カテゴリ判定インスタンス */
+	@Autowired
+	private ApplicationCategoryJudgementRepository applicationCategoryJudgementRepository;
+
+	/** O_回答Repositoryインスタンス */
+	@Autowired
+	private AnswerRepository answerRepository;
+
+	/** O_部署回答Repositoryインスタンス */
+	@Autowired
+	private DepartmentAnswerRepository departmentAnswerRepository;
 
 	/** GIS判定:判定無し */
 	public static final String GIS_JUDGEMENT_0 = "0";
@@ -147,6 +188,10 @@ public class JudgementService extends AbstractJudgementService {
 	/** 重なり属性表示フラグが1の場合の属性区切り文字 */
 	@Value("${app.category.judgement.attribute.joint}")
 	private String descriptionJointCharacter;
+
+	/** 属性NULL時表示文字 */
+	@Value("${app.category.judgement.attribute.nullValue}")
+	private String attributeNullValue;
 
 	/** 道路判定分割道路中心線取得バッファ(m) */
 	@Value("${app.roadjudge.splitcenterline.buffer}")
@@ -264,14 +309,34 @@ public class JudgementService extends AbstractJudgementService {
 	/** 道路判定 道路判定 道路種別不明値 */
 	@Value("${app.roadjudge.roadtype.unknown.value}")
 	private String roadtypeUnknownValue;
+
+	/** 申請登録時の概況診断レポート接尾句(日付フォーマット) */
+	@Value("${app.application.report.filename.footer}")
+	protected String applicationReportFileNameFooter;
+
+	/** 申請登録時の概況診断レポート接頭句 */
+	@Value("${app.application.report.filename.header}")
+	protected String applicationReportFileNameHeader;
+
+	/** 申請登録時の概況診断レポートのファイルID */
+	@Value("${app.application.report.fileid}")
+	protected String applicationReportFileId;
 	/**
-	 * /** 判定JDBCインスタンス
+	 * 判定JDBCインスタンス
 	 */
 	@Autowired
 	private JudgementJdbc judgementJdbc;
 
 	/** int型最大値 */
 	private int MAX_INT = 2147483647;
+
+	/** 申請Serviceインスタンス */
+	@Autowired
+	private ApplicationService applicationService;
+
+	/** o_申請版情報Repositoryインスタンス */
+	@Autowired
+	private ApplicationVersionInformationRepository applicationVersionInformationRepository;
 
 	/**
 	 * 概況診断結果取得
@@ -290,17 +355,13 @@ public class JudgementService extends AbstractJudgementService {
 
 			// 選択区分集約
 			Map<String, Set<String>> categoryMap = new HashMap<String, Set<String>>();
+			List<ApplicationCategorySelectionView> viewList = categorySelectionViewRepository
+					.getCategorySelectionViewList();
+
 			// 各区分単位で初期化
-			categoryMap.put(CATEGORY_1, new HashSet<String>());
-			categoryMap.put(CATEGORY_2, new HashSet<String>());
-			categoryMap.put(CATEGORY_3, new HashSet<String>());
-			categoryMap.put(CATEGORY_4, new HashSet<String>());
-			categoryMap.put(CATEGORY_5, new HashSet<String>());
-			categoryMap.put(CATEGORY_6, new HashSet<String>());
-			categoryMap.put(CATEGORY_7, new HashSet<String>());
-			categoryMap.put(CATEGORY_8, new HashSet<String>());
-			categoryMap.put(CATEGORY_9, new HashSet<String>());
-			categoryMap.put(CATEGORY_10, new HashSet<String>());
+			for (ApplicationCategorySelectionView view : viewList) {
+				categoryMap.put(view.getViewId(), new HashSet<String>());
+			}
 
 			if (generalConditionDiagnosisRequestFrom.getApplicationCategories() != null) {
 				for (ApplicationCategorySelectionViewForm viewForm : generalConditionDiagnosisRequestFrom
@@ -310,13 +371,11 @@ public class JudgementService extends AbstractJudgementService {
 							String tmpCategoryId = categoryForm.getId();
 							String screenId = categoryForm.getScreenId();
 							if (!EMPTY.equals(screenId)) {
-								// 区分判定(画面IDの末尾1文字(0～9)で区分を振り分け)
-								String c = screenId.substring(screenId.length() - 1);
-								Set<String> categorySet = categoryMap.get(c);
+								Set<String> categorySet = categoryMap.get(screenId);
 								// checkedの確認は不要
 								if (/* categoryForm.getChecked() && */tmpCategoryId != null
 										&& !EMPTY.equals(tmpCategoryId) && !categorySet.contains(tmpCategoryId)) {
-									// checkedのIDのみを集約
+									// checkedのIDのみを集約, categorySetはアドレスであるため
 									categorySet.add(tmpCategoryId);
 								}
 							}
@@ -324,9 +383,11 @@ public class JudgementService extends AbstractJudgementService {
 					}
 				}
 			}
-			// 地番IDリストを取得
+			// 申請ID
+			Integer applicationId = generalConditionDiagnosisRequestFrom.getApplicationId();
+			// 初回申請の場合、地番IDリストを取得
 			List<Integer> lotNumberList = new ArrayList<Integer>();
-			if (generalConditionDiagnosisRequestFrom.getLotNumbers() != null) {
+			if (generalConditionDiagnosisRequestFrom.getLotNumbers() != null && applicationId == null) {
 				for (LotNumberForm lotNumberForm : generalConditionDiagnosisRequestFrom.getLotNumbers()) {
 					int tmpLotNumber = lotNumberForm.getChibanId();
 					if (!lotNumberList.contains(tmpLotNumber)) {
@@ -334,20 +395,27 @@ public class JudgementService extends AbstractJudgementService {
 					}
 				}
 			}
+			// 申請種類ID
+			Integer applicationTypeId = generalConditionDiagnosisRequestFrom.getApplicationTypeId();
+			// 申請段階ID
+			Integer applicationStepId = generalConditionDiagnosisRequestFrom.getApplicationStepId();
 			// 区分判定リスト取得categoryJudgementDao
-			List<CategoryJudgement> categoryJudgementList = categoryJudgementDao.getCategoryJudgementList();
+			List<CategoryJudgementAndResult> categoryJudgementList = categoryJudgementDao
+					.getCategoryJudgementList(applicationTypeId, applicationStepId);
 			// 判定結果IDを採番
 			int generalConditionDiagnosisId = judgementJdbc.generateGeneralConditionDiagnosisId();
-			// categoryJudgementListで取得を実行すると、何故か処理の先でUPDATE文が実行されてエラーになるので、DAOで実行する
-			// List<CategoryJudgement> categoryJudgementList =
-			// categoryJudgementRepository.getCategoryJudgementList();
 
 			// 判定結果項目ID
 			int judgeResultItemId = 1;
-			for (CategoryJudgement categoryJudgement : categoryJudgementList) {
+			for (CategoryJudgementAndResult categoryJudgement : categoryJudgementList) {
 				LOGGER.debug("概況診断判定実行開始 区分判定ID=" + categoryJudgement.getJudgementItemId());
 				// 判定結果
 				boolean judgeResult = false;
+
+				// 前回の申請で登録されるかフラグ
+				boolean isRegistedJudgementItem = false;
+				// 今回登録予定フラグ
+				boolean isnNewJudgementItem = false;
 
 				// 重なり属性表示フラグ
 				String displayAttributeFlag = categoryJudgement.getDisplayAttributeFlag();
@@ -373,19 +441,32 @@ public class JudgementService extends AbstractJudgementService {
 				// 道路判定結果リスト
 				final List<RoadJudgeResult> roadJudgeResultList = new ArrayList<RoadJudgeResult>();
 
-				if (lotNumberList.size() > 0) {
+				if (lotNumberList.size() > 0 || applicationId != null) {
 					// 区分判定結果
 					boolean categoryJudgeResult = false;
 					// GIS判定結果
 					boolean gisJudgeResult = true;
 					// 区分判定有無
-					boolean isCatagoryJudgeExists = isCategoryJudgeExists(categoryJudgement);
+					boolean isCatagoryJudgeExists = isCategoryJudgeExists(categoryJudgement, applicationStepId);
 					// GIS判定有無
 					String gisJudgement = categoryJudgement.getGisJudgement();
 					boolean gisJudgeExists = (gisJudgement != null && !GIS_JUDGEMENT_0.equals(gisJudgement));
+					// 前回の申請で登録されるかフラグ
+					isRegistedJudgementItem = isReapplicationJudgementItem(categoryJudgement,
+							generalConditionDiagnosisRequestFrom);
+
+					boolean executeCategoryJudgement = executeCategoryJudgement(categoryMap, categoryJudgement);
 					// 区分判定を実施
-					if (isCatagoryJudgeExists && executeCategoryJudgement(categoryMap, categoryJudgement)) {
-						categoryJudgeResult = true;
+					if (generalConditionDiagnosisRequestFrom.getApplicationId() == null) {
+						// 初回申請
+						if (isCatagoryJudgeExists && executeCategoryJudgement) {
+							categoryJudgeResult = true;
+						}
+					} else {
+						// 再申請の場合、条項は前回の申請にある場合も、区分判定実施対象とする
+						if (isCatagoryJudgeExists && (executeCategoryJudgement || isRegistedJudgementItem)) {
+							categoryJudgeResult = true;
+						}
 					}
 					// GIS判定を実施
 					if (gisJudgeExists) {
@@ -393,8 +474,8 @@ public class JudgementService extends AbstractJudgementService {
 							// 道路判定
 							LOGGER.debug("道路判定開始 区分判定ID=" + categoryJudgement.getJudgementItemId());
 							// A1: 道路LOD2レイヤに重なるか判定
-							List<RoadLod2> roadLod2List = judgementLayerDao.getIntersectsRoadLod2(lotNumberList, epsg,
-									categoryJudgement.getBuffer());
+							List<RoadLod2> roadLod2List = judgementLayerDao.getIntersectsRoadLod2(lotNumberList,
+									applicationId, epsg, categoryJudgement.getBuffer());
 							// 同一路線番号の判定結果を集約する
 							roadLod2List = aggregateRoadLod2Result(roadLod2List);
 							if (roadLod2List.size() > 0) {
@@ -407,8 +488,8 @@ public class JudgementService extends AbstractJudgementService {
 									try {
 										// A2: 申請地番+バッファ及び道路LOD2と重なる区割り線フィーチャを取得
 										final List<SplitLine> bufferIntersectSplitLines = judgementLayerDao
-												.getSplitLineFromLotNumberAndRoadLod2(lotNumberList, epsg,
-														categoryJudgement.getBuffer() + (lod2.getWidth() / 2.0),
+												.getSplitLineFromLotNumberAndRoadLod2(lotNumberList, applicationId,
+														epsg, categoryJudgement.getBuffer() + (lod2.getWidth() / 2.0),
 														lod2.getObjectId(), lod2.getLineNumber());
 
 										final List<String> objectIdString = new ArrayList<String>();
@@ -419,13 +500,15 @@ public class JudgementService extends AbstractJudgementService {
 										// B1-B2: 申請地番の重心位置から最近接の道路中心位置と道路中心線フィーチャを取得
 										// まず、地番バッファ重複長の最も大きい道路中心線で取得
 										List<RoadCenterLinePosition> roadCenterLinePosList = judgementLayerDao
-												.getRoadCenterLinePositionWithBuffer(lotNumberList, lod2.getObjectId(),
-														epsg, roadCenterLineBuffer, lod2.getLineNumber());
+												.getRoadCenterLinePositionWithBuffer(lotNumberList, applicationId,
+														lod2.getObjectId(), epsg, roadCenterLineBuffer,
+														lod2.getLineNumber());
 										if (roadCenterLinePosList.size() != 1) {
 											// バッファ重複長で取れない場合、最も近い道路中心線を取得
 											LOGGER.debug("道路判定 地番バッファで道路中心線が取得できないため最も近い道路中心線を取得");
 											roadCenterLinePosList = judgementLayerDao.getRoadCenterLinePosition(
-													lotNumberList, lod2.getObjectId(), lod2.getLineNumber());
+													lotNumberList, applicationId, lod2.getObjectId(),
+													lod2.getLineNumber());
 										}
 
 										if (roadCenterLinePosList.size() != 1) {
@@ -617,7 +700,8 @@ public class JudgementService extends AbstractJudgementService {
 										LOGGER.debug("GIS重なり判定開始 区分判定ID=" + categoryJudgement.getJudgementItemId()
 												+ " レイヤテーブル名=" + layerTableName);
 										// 重なる・重ならない判定(1,2)
-										oidList = judgementLayerDao.getIntersectsOid(lotNumberList, layerTableName);
+										oidList = judgementLayerDao.getIntersectsOid(lotNumberList, applicationId,
+												layerTableName);
 										layerOidMap.put(targetLayer.getLayerId(), oidList);
 										if ((GIS_JUDGEMENT_1.equals(gisJudgement) && oidList.size() == 0)
 												|| (GIS_JUDGEMENT_2.equals(gisJudgement) && oidList.size() > 0)) {
@@ -629,7 +713,7 @@ public class JudgementService extends AbstractJudgementService {
 										LOGGER.debug("GISバッファ判定開始 区分判定ID=" + categoryJudgement.getJudgementItemId()
 												+ " レイヤテーブル名=" + layerTableName);
 										// バッファに重なる・重ならない判定(3,4)
-										oidList = judgementLayerDao.getBufferIntersectsOid(lotNumberList,
+										oidList = judgementLayerDao.getBufferIntersectsOid(lotNumberList, applicationId,
 												layerTableName, epsg, categoryJudgement.getBuffer());
 										layerOidMap.put(targetLayer.getLayerId(), oidList);
 										if ((GIS_JUDGEMENT_3.equals(gisJudgement) && oidList.size() == 0)
@@ -654,13 +738,15 @@ public class JudgementService extends AbstractJudgementService {
 													List<ColumnValue> columnValueList = judgementLayerDao
 															.getColumnValue(tableName, fieldArray[fieldIdx],
 																	tmpOid.getOid());
-													if (columnValueList.size() != 1) {
+													if (columnValueList == null || columnValueList.size() != 1) {
 														LOGGER.error("テーブル値の取得に失敗 テーブル名: " + tableName + ", カラム名: "
 																+ fieldArray[fieldIdx] + ", OID: " + tmpOid.getOid());
 														throw new RuntimeException("テーブル値の取得に失敗");
 													}
 													ColumnValue tmpValue = columnValueList.get(0);
-													values.add(tmpValue.getVal());
+													String tVal = (tmpValue != null) ? tmpValue.getVal()
+															: attributeNullValue;
+													values.add(tVal);
 												}
 												valuesList.add(values);
 											}
@@ -680,6 +766,28 @@ public class JudgementService extends AbstractJudgementService {
 						judgeResult = categoryJudgeResult;
 					} else {
 						judgeResult = false;
+					}
+
+					// 今回判定対象
+					if (judgeResult) {
+						if (isCatagoryJudgeExists && gisJudgeExists) {
+							isnNewJudgementItem = executeCategoryJudgement && gisJudgeResult;
+						} else if (!isCatagoryJudgeExists && gisJudgeExists) {
+							isnNewJudgementItem = gisJudgeResult;
+						} else if (isCatagoryJudgeExists && !gisJudgeExists) {
+							isnNewJudgementItem = executeCategoryJudgement;
+						}
+					}
+
+					// 許可判定の場合、前回存在すれば、判定対象とする
+					if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+						judgeResult = isRegistedJudgementItem;
+						// 一律追加条項リスト存在するするか判定
+						for (String judgementId : defaultAddJudgementItemIdList) {
+							if (judgementId.equals(categoryJudgement.getJudgementItemId())) {
+								judgeResult = true;
+							}
+						}
 					}
 					LOGGER.debug("概況診断判定実行終了 区分判定ID=" + categoryJudgement.getJudgementItemId() + ", 区分判定有無="
 							+ isCatagoryJudgeExists + ", GIS判定有無=" + gisJudgeExists + ", 区分判定結果=" + categoryJudgeResult
@@ -710,14 +818,15 @@ public class JudgementService extends AbstractJudgementService {
 									if (!layerOidMap.containsKey(targetLayer.getLayerId())) {
 										LOGGER.debug("GIS重なり判定開始 区分判定ID=" + categoryJudgement.getJudgementItemId()
 												+ " レイヤテーブル名=" + layerTableName);
-										oidList = judgementLayerDao.getIntersectsOid(lotNumberList, layerTableName);
+										oidList = judgementLayerDao.getIntersectsOid(lotNumberList, applicationId,
+												layerTableName);
 									} else {
 										oidList = layerOidMap.get(targetLayer.getLayerId());
 									}
 									if (oidList.size() == 0) {
 										// 距離を算出
 										List<Distance> distanceResult = judgementLayerDao.getDistance(lotNumberList,
-												layerTableName, distanceEpsg);
+												applicationId, layerTableName, distanceEpsg);
 										if (distanceResult.size() > 0) {
 											layerDistanceMap.put(targetLayer.getLayerId(), distanceResult.get(0));
 											LOGGER.debug("距離を算出 区分判定ID=" + categoryJudgement.getJudgementItemId()
@@ -732,7 +841,7 @@ public class JudgementService extends AbstractJudgementService {
 									if (!layerOidMap.containsKey(targetLayer.getLayerId())) {
 										LOGGER.debug("GISバッファ判定開始 区分判定ID=" + categoryJudgement.getJudgementItemId()
 												+ " レイヤテーブル名=" + layerTableName);
-										oidList = judgementLayerDao.getBufferIntersectsOid(lotNumberList,
+										oidList = judgementLayerDao.getBufferIntersectsOid(lotNumberList, applicationId,
 												layerTableName, epsg, categoryJudgement.getBuffer());
 									} else {
 										oidList = layerOidMap.get(targetLayer.getLayerId());
@@ -740,7 +849,7 @@ public class JudgementService extends AbstractJudgementService {
 									if (oidList.size() == 0) {
 										// 距離を算出
 										List<Distance> distanceResult = judgementLayerDao.getDistance(lotNumberList,
-												layerTableName, distanceEpsg);
+												applicationId, layerTableName, distanceEpsg);
 										if (distanceResult.size() > 0) {
 											layerDistanceMap.put(targetLayer.getLayerId(), distanceResult.get(0));
 											LOGGER.debug("距離を算出 区分判定ID=" + categoryJudgement.getJudgementItemId()
@@ -800,7 +909,8 @@ public class JudgementService extends AbstractJudgementService {
 						// GIS判定が「道路判定」かつ該当の場合、取得された判定図形単位でformを付加する
 						judgeResultItemId = setRoadJudgeResultToGeneralConditionDiagnosisResultForm(formList,
 								roadJudgeResultList, categoryJudgement, generalConditionDiagnosisId, layers,
-								judgeResultItemId, lotNumberList);
+								judgeResultItemId, lotNumberList, applicationId, isnNewJudgementItem,
+								generalConditionDiagnosisRequestFrom);
 					} else {
 						// 該当表示文言の距離表示箇所を置き換え
 						int intDistance = 0;
@@ -823,7 +933,8 @@ public class JudgementService extends AbstractJudgementService {
 							// 重なり属性表示フラグが「行を分けて表示」の場合、取得された判定図形単位でformを付加する
 							judgeResultItemId = setSeparatedJudgeResultToGeneralConditionDiagnosisResultForm(formList,
 									valuesList, categoryJudgement, judgeResult, generalConditionDiagnosisId, layers,
-									judgeResultItemId, distanceResultText);
+									judgeResultItemId, distanceResultText, isnNewJudgementItem,
+									generalConditionDiagnosisRequestFrom);
 						} else {
 							if (displayAttributeFlag != null && !DISPLAY_ATTRIBUTE_NONE.equals(displayAttributeFlag)) {
 								// 重なり属性表示フラグが設定されているので、該当表示文言を置換する
@@ -840,10 +951,13 @@ public class JudgementService extends AbstractJudgementService {
 								// 置換後文字列で上書き
 								categoryJudgement.setApplicableDescription(applicableDescription);
 							}
+							// 判定結果の一行だけなので、インデックスを0とする
+							String dataType = getDataType(isnNewJudgementItem, generalConditionDiagnosisRequestFrom,
+									categoryJudgement, 0);
 							// 道路判定以外は建物表示有効
 							formList.add(getGeneralConditionDiagnosisResultFormFromEntity(categoryJudgement,
 									judgeResult, layers, generalConditionDiagnosisId, distanceResultText,
-									judgeResultItemId, true));
+									judgeResultItemId, true, dataType));
 							judgeResultItemId++;
 						}
 					}
@@ -860,46 +974,235 @@ public class JudgementService extends AbstractJudgementService {
 	 * 
 	 * @param generalConditionDiagnosisReportRequestForm リクエストパラメータ
 	 * @return 生成帳票
-	 * @throws Exception 例外
 	 */
-	public boolean exportJudgeReportWorkBook(
+	public boolean generateJudgeReportWorkBook(
 			GeneralConditionDiagnosisReportRequestForm generalConditionDiagnosisReportRequestForm,
 			HttpServletResponse response) {
 		LOGGER.debug("概況診断結果レポート帳票生成 開始");
 		try {
-			Workbook wb = exportJudgeReportWorkBook(generalConditionDiagnosisReportRequestForm);
+			// 概況診断レポートを生成
+			Workbook wb = null;
+			// 申請IDがある場合、申請フォルダに配置
+			if (generalConditionDiagnosisReportRequestForm.getApplicationId() != null
+					&& generalConditionDiagnosisReportRequestForm.getApplicationId().intValue() > 0) {
 
-			if (wb != null) {
-				try (OutputStream os = response.getOutputStream()) {
-					// ファイルサイズ測定
-					int fileSize = -1;
-					try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-						wb.write(byteArrayOutputStream);
-						fileSize = byteArrayOutputStream.size();
-					}
-
-					// 帳票ダウンロード出力
-					LOGGER.debug(judgeReportFileName);
-					LOGGER.debug(fileSize + "");
-					response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-					response.setHeader("Content-Disposition", "attachment; filename=" + judgeReportFileName);
-					response.setContentLength(fileSize);
-					wb.write(os);
-					os.flush();
+				final Map<Integer, Map<String, String>> generalConditionAnswerMap = new HashMap<Integer, Map<String, String>>();
+				List<GeneralConditionDiagnosisResultForm> conditionList = generalConditionDiagnosisReportRequestForm
+						.getGeneralConditionDiagnosisResults();
+				if (conditionList.size() < 1) {
+					LOGGER.error("概況診断結果が存在しない");
+					throw new RuntimeException("概況診断結果が存在しません");
 				}
+				Integer applicationStepId = conditionList.get(0).getApplicationStepId();
+				for (GeneralConditionDiagnosisResultForm condition : conditionList) {
+					List<Answer> answerList = answerRepository.findAnswerByJudgementResult(
+							generalConditionDiagnosisReportRequestForm.getApplicationId(), applicationStepId,
+							condition.getJudgementId(), condition.getJudgementResultIndex());
+					if (answerList.size() < 1) {
+						LOGGER.warn("回答が存在しない 判定項目ID：" + condition.getJudgementId());
+						continue;
+					}
+					Answer answer = answerList.get(0);
+					Map<String, String> answerContentMap = new HashMap<String, String>();
+					answerContentMap.put("answerId", answer.getAnswerId().toString());
+					answerContentMap.put("answerContent", answer.getNotifiedText());
+					generalConditionAnswerMap.put(condition.getJudgeResultItemId(), answerContentMap);
+				}
+				generalConditionDiagnosisReportRequestForm.setAnswerJudgementMap(generalConditionAnswerMap);
+				wb = exportJudgeReportWorkBook(generalConditionDiagnosisReportRequestForm);
+				if (wb == null) {
+					return false;
+				}
+				LOGGER.trace("概況診断レポートアップロード 開始");
+				Integer applicationId = generalConditionDiagnosisReportRequestForm.getApplicationId();
+				// ファイル名は「概況診断結果_<申請ID>_yyyy_mm_dd.xlsx」
+				SimpleDateFormat sdf = new SimpleDateFormat(applicationReportFileNameFooter);
+				String fileName = applicationReportFileNameHeader + applicationId + sdf.format(new Date()) + ".xlsx";
+				UploadApplicationFileForm uploadForm = new UploadApplicationFileForm();
+				uploadForm.setApplicationId(applicationId);
+				uploadForm.setApplicationStepId(applicationStepId);
+				uploadForm.setApplicationFileId(applicationReportFileId);
+				uploadForm.setUploadFileName(fileName);
+				// 版情報
+				uploadForm.setVersionInformation(
+						getApplicatioFileMaxVersion(applicationId, applicationReportFileId, applicationStepId) + 1);
+				// 拡張子
+				uploadForm.setExtension("xlsx");
+				applicationService.uploadApplicationFile(uploadForm, wb);
+				LOGGER.trace("概況診断レポートアップロード 終了");
 			} else {
-				return false;
+				wb = exportJudgeReportWorkBook(generalConditionDiagnosisReportRequestForm);
+				if (wb == null) {
+					return false;
+				}
 			}
-
-			// 一時フォルダーの削除処理
-			deleteTmpFolder(generalConditionDiagnosisReportRequestForm);
-
+			// 一時フォルダに配置
+			String absoluteFolderPath = judgementFolderPath + PATH_SPLITTER
+					+ generalConditionDiagnosisReportRequestForm.getFolderName();
+			Path checkPath = Paths.get(absoluteFolderPath);
+			if (!Files.exists(checkPath)) {
+				LOGGER.error("指定フォルダが存在しない: " + absoluteFolderPath);
+				throw new RuntimeException("指定フォルダが存在しません");
+			}
+			String fileName =  generalConditionDiagnosisReportRequestForm.getFileName();
+			// 申請IDがある場合の生成は末尾に"__申請ID"を強制付与（出力時の認証チェックで使用）
+			if (generalConditionDiagnosisReportRequestForm.getApplicationId() != null
+					&& generalConditionDiagnosisReportRequestForm.getApplicationId().intValue() > 0) {
+				fileName = fileName.replaceAll("\\.(?=[^\\.]+$)", "__"+ generalConditionDiagnosisReportRequestForm.getApplicationId() + ".");
+			}
+			exportWorkBook(wb,
+					absoluteFolderPath + PATH_SPLITTER + fileName);
 			return true;
 		} catch (Exception ex) {
 			LOGGER.error("概況診断結果レポート帳票生成で例外発生", ex);
 			return false;
 		} finally {
 			LOGGER.debug("概況診断結果レポート帳票生成 終了");
+		}
+	}
+
+	/**
+	 * 概況診断結果レポート帳票出力
+	 * 
+	 * @param generalConditionDiagnosisReportRequestForm リクエストパラメータ
+	 * @return 生成帳票
+	 * @throws Exception 例外
+	 */
+	public boolean exportJudgeReportWorkBook(
+			GeneralConditionDiagnosisReportRequestForm generalConditionDiagnosisReportRequestForm,
+			HttpServletResponse response) {
+		LOGGER.debug("概況診断結果レポート帳票出力 開始");
+		try {
+			if (generalConditionDiagnosisReportRequestForm.getFolderName() == null
+					|| generalConditionDiagnosisReportRequestForm.getFolderName().equals("")) {
+				Workbook wb = exportJudgeReportWorkBook(generalConditionDiagnosisReportRequestForm);
+
+				if (wb != null) {
+					try (OutputStream os = response.getOutputStream()) {
+						// ファイルサイズ測定
+						int fileSize = -1;
+						try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+							wb.write(byteArrayOutputStream);
+							fileSize = byteArrayOutputStream.size();
+						}
+
+						// 帳票ダウンロード出力
+						LOGGER.debug(judgeReportFileName);
+						LOGGER.debug(fileSize + "");
+						response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+						response.setHeader("Content-Disposition", "attachment; filename=" + judgeReportFileName);
+						response.setContentLength(fileSize);
+						wb.write(os);
+						os.flush();
+					}
+				} else {
+					return false;
+				}
+			} else {
+				// 絶対ファイルパス
+				String absoluteFolderPath = judgementFolderPath + PATH_SPLITTER
+						+ generalConditionDiagnosisReportRequestForm.getFolderName();
+				Path checkPath = Paths.get(absoluteFolderPath);
+				if (!Files.exists(checkPath)) {
+					LOGGER.error("指定フォルダが存在しない: " + absoluteFolderPath);
+					throw new RuntimeException("指定フォルダが存在しません");
+				}
+				List<String> xlsxFileNames = findXlsxFileNames(absoluteFolderPath);
+				if (xlsxFileNames == null || xlsxFileNames.size() < 1) {
+					LOGGER.error("概況診断レポートが存在しない: " + absoluteFolderPath);
+					throw new RuntimeException("概況診断レポートが存在しません");
+				}
+				String fileName = xlsxFileNames.get(0);
+				// 末尾の"__申請ID." にマッチする正規表現
+				Pattern pattern = Pattern.compile("__([0-9]+)\\.(?=[^\\.]*$)");
+		        Matcher matcher = pattern.matcher(fileName);
+		        // 含まれている場合は申請IDの照合(認証チェック)を強制
+		        if (matcher.find()) {
+		            Integer suffixApplicationId = Integer.parseInt(matcher.group(1));
+		            String id = generalConditionDiagnosisReportRequestForm.getLoginId();
+		            String password = generalConditionDiagnosisReportRequestForm.getPassword();
+		            AnswerConfirmLoginForm answerConfirmLoginForm = new AnswerConfirmLoginForm();
+					answerConfirmLoginForm.setLoginId(id);
+					answerConfirmLoginForm.setPassword(password);
+					// 申請ID
+					Integer applicationId = applicationService.getApplicationIdFromApplicantInfo(answerConfirmLoginForm);
+					if (applicationId == null || !applicationId.equals(suffixApplicationId)) {
+						LOGGER.warn("申請情報取得不能");
+						throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+					}
+		        }
+				String filePath = absoluteFolderPath + PATH_SPLITTER + xlsxFileNames.get(0);
+				Resource resource = new PathResource(filePath);
+				response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+				response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+						"attachment; filename=\"" + resource.getFilename() + "\"");
+				// ファイルの内容をバイト配列として取得
+				byte[] fileBytes = Files.readAllBytes(resource.getFile().toPath());
+				// レスポンスの出力ストリームにバイト配列を書き込む
+				response.getOutputStream().write(fileBytes);
+				response.getOutputStream().flush();
+			}
+
+			// 一時フォルダーの削除処理
+			if (generalConditionDiagnosisReportRequestForm.getFolderName() != null
+					&& !generalConditionDiagnosisReportRequestForm.getFolderName().equals("")) {
+				deleteTmpFolder(generalConditionDiagnosisReportRequestForm);
+			}
+
+			return true;
+		} catch (Exception ex) {
+			LOGGER.error("概況診断結果レポート帳票出力で例外発生", ex);
+			return false;
+		} finally {
+			LOGGER.debug("概況診断結果レポート帳票出力 終了");
+		}
+	}
+
+	/**
+	 * 概況診断結果レポート進捗状況取得
+	 * 
+	 * @param generalConditionDiagnosisReportRequestFormList リクエストパラメータ
+	 * @return generalConditionDiagnosisReportProgressFormList
+	 */
+	public List<GeneralConditionDiagnosisReportProgressForm> getGeneralConditionDiagnosisReportProgress(
+			List<GeneralConditionDiagnosisReportRequestForm> generalConditionDiagnosisReportRequestFormList) {
+		LOGGER.debug("概況診断結果レポート進捗状況取得 開始");
+		List<GeneralConditionDiagnosisReportProgressForm> generalConditionDiagnosisReportProgressFormList = new ArrayList<GeneralConditionDiagnosisReportProgressForm>();
+		try {
+			for (GeneralConditionDiagnosisReportRequestForm generalConditionDiagnosisReportRequestForm : generalConditionDiagnosisReportRequestFormList) {
+				GeneralConditionDiagnosisReportProgressForm generalConditionDiagnosisReportProgressForm = new GeneralConditionDiagnosisReportProgressForm();
+				// 絶対ファイルパス
+				String absoluteFolderPath = judgementFolderPath + PATH_SPLITTER
+						+ generalConditionDiagnosisReportRequestForm.getFolderName();
+				Path folderPath = Paths.get(absoluteFolderPath);
+				if (Files.exists(folderPath)) {
+					int counts = countFoldersAndFiles(new File(absoluteFolderPath));
+					generalConditionDiagnosisReportProgressForm
+							.setFolderName(generalConditionDiagnosisReportRequestForm.getFolderName());
+					generalConditionDiagnosisReportProgressForm.setCapturedCount(counts);
+					List<File> xlsxFiles = findXlsxFiles(absoluteFolderPath);
+					if (xlsxFiles != null && xlsxFiles.size() > 0) {
+						File xlsxFile = xlsxFiles.get(0);
+						if (xlsxFile != null) {
+							// ファイルサイズを取得する（バイト単位）
+							long fileSizeBytes = xlsxFile.length();
+							// バイトをメガバイトに変換する
+							double fileSizeMB = (double) fileSizeBytes / (1024 * 1024);
+							// 小数点1位まで表示するためのフォーマットを設定する
+							DecimalFormat df = new DecimalFormat("#");
+							String formattedFileSizeMB = df.format(fileSizeMB) + "MB";
+							generalConditionDiagnosisReportProgressForm.setFileSize(formattedFileSizeMB);
+						}
+					}
+					generalConditionDiagnosisReportProgressFormList.add(generalConditionDiagnosisReportProgressForm);
+				}
+			}
+			return generalConditionDiagnosisReportProgressFormList;
+		} catch (Exception ex) {
+			LOGGER.error("概況診断結果レポート進捗状況取得で例外発生", ex);
+			throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);
+		} finally {
+			LOGGER.debug("概況診断結果レポート進捗状況取得 終了");
 		}
 	}
 
@@ -957,7 +1260,6 @@ public class JudgementService extends AbstractJudgementService {
 		try {
 			String folderName = uploadForGeneralConditionDiagnosisForm.getFolderName();
 			boolean currentSituationMapFlg = uploadForGeneralConditionDiagnosisForm.getCurrentSituationMapFlg();
-			// String judgementId = uploadForGeneralConditionDiagnosisForm.getJudgementId();
 			String judgeResultItemId = (uploadForGeneralConditionDiagnosisForm.getJudgeResultItemId() != null)
 					? uploadForGeneralConditionDiagnosisForm.getJudgeResultItemId().toString()
 					: null;
@@ -975,7 +1277,6 @@ public class JudgementService extends AbstractJudgementService {
 				if (judgeResultItemId == null) {
 					throw new RuntimeException("判定項目IDがnull");
 				}
-				// absoluteFolderPath += PATH_SPLITTER + judgementId;
 				absoluteFolderPath += PATH_SPLITTER + judgeResultItemId;
 			}
 			directoryPath = Paths.get(absoluteFolderPath);
@@ -989,7 +1290,6 @@ public class JudgementService extends AbstractJudgementService {
 			if (currentSituationMapFlg) {
 				absoluteFilePath += ExportJudgeForm.OVERVIEW_FILE_NAME;
 			} else {
-				// absoluteFilePath += judgementId + ExportJudgeForm.JUDGEMENT_IMAGE_EXTENTION;
 				absoluteFilePath += judgeResultItemId + ExportJudgeForm.JUDGEMENT_IMAGE_EXTENTION;
 			}
 			LOGGER.trace("ファイル出力 開始");
@@ -1013,21 +1313,55 @@ public class JudgementService extends AbstractJudgementService {
 	 * @return 判定結果
 	 */
 	private boolean executeCategoryJudgement(Map<String, Set<String>> categoryMap,
-			CategoryJudgement categoryJudgement) {
+			CategoryJudgementAndResult categoryJudgement) {
 
-		if (isContainsCategoryCodes(categoryMap.get(CATEGORY_1), categoryJudgement.getCategory1())
-				|| isContainsCategoryCodes(categoryMap.get(CATEGORY_2), categoryJudgement.getCategory2())
-				|| isContainsCategoryCodes(categoryMap.get(CATEGORY_3), categoryJudgement.getCategory3())
-				|| isContainsCategoryCodes(categoryMap.get(CATEGORY_4), categoryJudgement.getCategory4())
-				|| isContainsCategoryCodes(categoryMap.get(CATEGORY_5), categoryJudgement.getCategory5())
-				|| isContainsCategoryCodes(categoryMap.get(CATEGORY_6), categoryJudgement.getCategory6())
-				|| isContainsCategoryCodes(categoryMap.get(CATEGORY_7), categoryJudgement.getCategory7())
-				|| isContainsCategoryCodes(categoryMap.get(CATEGORY_8), categoryJudgement.getCategory8())
-				|| isContainsCategoryCodes(categoryMap.get(CATEGORY_9), categoryJudgement.getCategory9())
-				|| isContainsCategoryCodes(categoryMap.get(CATEGORY_10), categoryJudgement.getCategory10())) {
-			return true;
+		String itemId = categoryJudgement.getJudgementItemId();
+		List<ApplicationCategoryJudgement> judgelist = applicationCategoryJudgementRepository
+				.getAppCategoryJudgeListforItemId(itemId);
+		if (judgelist == null)
+			return false;
+		boolean res = false;
+		// 画面ID単位で集約
+		final Map<String, List<String>> judgeListMap = new HashMap<String, List<String>>();
+		for (ApplicationCategoryJudgement judge : judgelist) {
+			if (judgeListMap.containsKey(judge.getViewId())) {
+				judgeListMap.get(judge.getViewId()).add(judge.getCategoryId());
+			} else {
+				final List<String> categoryList = new ArrayList<String>();
+				categoryList.add(judge.getCategoryId());
+				judgeListMap.put(judge.getViewId(), categoryList);
+			}
 		}
-		return false;
+		final List<Boolean> resultList = new ArrayList<Boolean>();
+		for (String keycontent : categoryMap.keySet()) {
+			// 区分判定チェックを行う画面IDか否かを判定
+			if (judgeListMap.containsKey(keycontent)) {
+				boolean aResult = false;
+				final List<String> judgeCategoryList = judgeListMap.get(keycontent);
+				for (String aCategoryId : judgeCategoryList) {
+					// 区分判定リストに含まれるか否かを判定（OR判定）
+					if (categoryMap.get(keycontent).contains(aCategoryId)) {
+						aResult = true;
+						break;
+					}
+				}
+				// 判定結果リストに追加
+				resultList.add(aResult);
+			}
+		}
+		// 判定結果をANDで集約
+		if (resultList.size() > 0) {
+			boolean finalRes = true;
+			for (Boolean aRes : resultList) {
+				if (!aRes) {
+					finalRes = false;
+					break;
+				}
+			}
+			return finalRes;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -1036,25 +1370,332 @@ public class JudgementService extends AbstractJudgementService {
 	 * @param categoryJudgement 区分判定
 	 * @return
 	 */
-	private boolean isCategoryJudgeExists(CategoryJudgement categoryJudgement) {
-		if (categoryJudgement.getCategory1().equals(CATEGORY_NONE)
-				&& categoryJudgement.getCategory1().equals(CATEGORY_NONE)
-				&& categoryJudgement.getCategory2().equals(CATEGORY_NONE)
-				&& categoryJudgement.getCategory3().equals(CATEGORY_NONE)
-				&& categoryJudgement.getCategory4().equals(CATEGORY_NONE)
-				&& categoryJudgement.getCategory5().equals(CATEGORY_NONE)
-				&& categoryJudgement.getCategory6().equals(CATEGORY_NONE)
-				&& categoryJudgement.getCategory7().equals(CATEGORY_NONE)
-				&& categoryJudgement.getCategory8().equals(CATEGORY_NONE)
-				&& categoryJudgement.getCategory9().equals(CATEGORY_NONE)
-				&& categoryJudgement.getCategory10().equals(CATEGORY_NONE)) {
-			return false;
+	private boolean isCategoryJudgeExists(CategoryJudgementAndResult categoryJudgement, Integer applicationStepId) {
+
+		String itemId = categoryJudgement.getJudgementItemId();
+		List<ApplicationCategoryJudgement> judgelist = applicationCategoryJudgementRepository
+				.getAppCategoryJudgeListforItemId(itemId);
+
+		// 許可判定の場合、申請区分がないため、 M_申請区分_区分判定に存在するかチェックをおこなわない
+		if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+			return true;
 		}
+		if (judgelist == null)
+			return false;
+		for (ApplicationCategoryJudgement judge : judgelist) {
+			if (!judge.getCategoryId().equals(CATEGORY_NONE)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 再申請判断対象であるか判定
+	 * 
+	 * @param categoryJudgement
+	 * @param generalConditionDiagnosisRequestFrom
+	 * @param judgementResultIndex                 判定結果のインデックス
+	 * 
+	 * @return
+	 */
+	private boolean isReapplicationJudgementItem(CategoryJudgementAndResult categoryJudgement,
+			GeneralConditionDiagnosisRequestForm generalConditionDiagnosisRequestFrom) {
+
+		// 前回の申請段階IDが空である場合、初回の申請とする
+		if (generalConditionDiagnosisRequestFrom.getPreApplicationStepId() == null) {
+			return true;
+		} else {
+
+			String itemId = categoryJudgement.getJudgementItemId();
+			String departmentId = categoryJudgement.getDepartmentId();
+			Integer applicationId = generalConditionDiagnosisRequestFrom.getApplicationId();
+			Integer applicationStepId = generalConditionDiagnosisRequestFrom.getApplicationStepId();
+			Integer preApplicationStepId = generalConditionDiagnosisRequestFrom.getPreApplicationStepId();
+			Integer acceptVersionInformation = generalConditionDiagnosisRequestFrom.getAcceptVersionInformation();
+
+			// 事前協議⇒事前協議の場合、受付された版情報が0の場合、事前相談の条項を参照
+			if (APPLICATION_STEP_ID_2.equals(preApplicationStepId) && APPLICATION_STEP_ID_2.equals(applicationStepId)
+					&& acceptVersionInformation.equals(0)) {
+				preApplicationStepId = APPLICATION_STEP_ID_1;
+			}
+
+			List<Answer> answerList = answerRepository.findByJudgementId(applicationId, preApplicationStepId, itemId);
+
+			// 該当条項は前回の申請に存在するか判断
+			if (answerList == null || answerList.size() == 0) {
+
+				// 事前協議 ⇒ 許可判定
+				if (APPLICATION_STEP_ID_2.equals(preApplicationStepId)
+						&& APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+					// 一律追加条項リスト存在するするか判定
+					for (String judgementItemId : defaultAddJudgementItemIdList) {
+						if (itemId.equals(judgementItemId)) {
+							return true;
+						}
+					}
+					return false;
+				} else {
+					return false;
+				}
+			} else {
+				// 段階変わらないの再申請
+				if (preApplicationStepId.equals(applicationStepId)) {
+					// 事前相談⇒事前相談
+					if (APPLICATION_STEP_ID_1.equals(applicationStepId)) {
+
+						boolean isExecution = false;
+
+						for (Answer answer : answerList) {
+							// 未回答の回答がある場合、該当判定項目は判断実施対象とする
+							if (answer.getBusinessReApplicationFlag() == null) {
+								isExecution = true;
+							} else {
+								// 再申請要の場合、判断実施対象とする
+								if (answer.getBusinessReApplicationFlag()) {
+									isExecution = true;
+								}
+							}
+						}
+
+						return isExecution;
+
+					}
+
+					// 事前協議⇒事前協議
+					if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+						for (Answer answer : answerList) {
+							if (departmentId.equals(answer.getDepartmentId())) {
+								return true;
+							}
+						}
+					}
+
+					// 許可判定⇒許可判定
+					if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+						return true;
+					}
+				} else {
+
+					// 事前相談⇒事前協議
+					if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+
+						boolean isExecution = false;
+
+						for (Answer answer : answerList) {
+							// 要事前協議の回答がある場合、該当判定項目は判断実施対象とする
+							if (answer.getDiscussionFlag() != null && answer.getDiscussionFlag()) {
+								isExecution = true;
+							}
+						}
+
+						return isExecution;
+					}
+
+					// 事前協議⇒許可判定
+					if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+						List<DepartmentAnswer> departmentAnswer = departmentAnswerRepository
+								.findByDepartmentAnswerId(answerList.get(0).getDepartmentAnswerId());
+
+						// 事前協議の中に、この条項に対する部署確定登録ステータスが取下であるか判定
+						if (departmentAnswer.size() > 0) {
+							// 部署の行政確定が取下である場合、該当部署の全ての条項が許可判定に引継しない
+							if (GOVERNMENT_CONFIRM_STATUS_1_WITHDRAW
+									.equals(departmentAnswer.get(0).getGovernmentConfirmStatus())) {
+								return false;
+							}
+						}
+
+						boolean isExecution = false;
+						for (Answer answer : answerList) {
+							// 許可判定移行フラグ（0：許可判定移行時チェック）かつ、行政確定ステータス（0:合意）の条項が判定実施対象にする
+							if ((answer.getPermissionJudgementMigrationFlag() == null
+									|| !answer.getPermissionJudgementMigrationFlag())
+									&& (GOVERNMENT_CONFIRM_STATUS_0_AGREE
+											.equals(answer.getGovernmentConfirmStatus()))) {
+								isExecution = true;
+							}
+						}
+
+						return isExecution;
+
+					} else {
+						return true;
+					}
+
+				}
+			}
+		}
+
 		return true;
 	}
 
 	/**
-	 * 申請区分リストに指定のコードが含まれるか判定
+	 * 条項を比較して、データ種類を設定
+	 * 
+	 * @param isnNewJudgementItem                  今回判定対象
+	 * @param generalConditionDiagnosisRequestFrom 概況診断実施のリクエスト
+	 * @param categoryJudgement                    M_判定結果
+	 * @param judgementResultIndex                 判定結果のインデックス
+	 * @return
+	 */
+	private String getDataType(boolean isnNewJudgementItem,
+			GeneralConditionDiagnosisRequestForm generalConditionDiagnosisRequestFrom,
+			CategoryJudgementAndResult categoryJudgement, Integer judgementResultIndex) {
+
+		String dataType = EMPTY;
+		// 「非該当かつ 非該当時表示がtrue」の判定項目は今回判定対象とする
+		if (categoryJudgement.getNonApplicableDisplayFlag() || isnNewJudgementItem) {
+			isnNewJudgementItem = true;
+		}
+
+		// 初回申請
+		if (generalConditionDiagnosisRequestFrom.getApplicationId() == null) {
+			dataType = ANSWER_DATA_TYPE_INSERT;
+		} else {
+
+			Integer applicationId = generalConditionDiagnosisRequestFrom.getApplicationId();
+			Integer applicationStepId = generalConditionDiagnosisRequestFrom.getApplicationStepId();
+			Integer preApplicationStepId = generalConditionDiagnosisRequestFrom.getPreApplicationStepId();
+			Integer acceptVersionInformation = generalConditionDiagnosisRequestFrom.getAcceptVersionInformation();
+
+			// 事前協議⇒事前協議の場合、受付された版情報が0の場合、事前相談の条項を参照
+			if (APPLICATION_STEP_ID_2.equals(preApplicationStepId) && APPLICATION_STEP_ID_2.equals(applicationStepId)
+					&& acceptVersionInformation.equals(0)) {
+				preApplicationStepId = APPLICATION_STEP_ID_1;
+			}
+
+			String judgementItemId = categoryJudgement.getJudgementItemId();
+			String departmentId = categoryJudgement.getDepartmentId();
+
+			boolean isExist = false;
+			List<Answer> answerList = answerRepository.findAnswerByJudgementResult(applicationId, preApplicationStepId,
+					judgementItemId, judgementResultIndex);
+			Answer answer = null;
+			if (answerList.size() > 0) {
+
+				isExist = true;
+				answer = answerList.get(0);
+				// 事前協議の場合、判定項目は部署より、複数行がある可能
+				if (APPLICATION_STEP_ID_2.equals(preApplicationStepId)
+						&& APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+					for (Answer ans : answerList) {
+						if (departmentId.equals(ans.getDepartmentId())) {
+							isExist = true;
+							answer = ans;
+							break;
+						}
+					}
+				} else {
+					isExist = true;
+					answer = answerList.get(0);
+				}
+
+			}
+			if (preApplicationStepId.equals(applicationStepId)) {
+				// 事前相談⇒事前相談
+				if (APPLICATION_STEP_ID_1.equals(applicationStepId)) {
+
+					// 前回申請時にある
+					if (isExist) {
+						// 再申請時にある
+						if (isnNewJudgementItem) {
+							// 前回が再申請不要の場合、「削除済み」とする
+							if (answer.getBusinessReApplicationFlag() != null
+									&& !answer.getBusinessReApplicationFlag()) {
+								dataType = ANSWER_DATA_TYPE_DELETE;
+							} else {
+								dataType = ANSWER_DATA_TYPE_UPDATE;
+							}
+						} else {
+							// 前回が未回答、要再申請の場合、「削除済み」とする
+							if (answer.getBusinessReApplicationFlag() == null) {
+								dataType = ANSWER_DATA_TYPE_DELETE;
+							} else {
+								if (answer.getBusinessReApplicationFlag()) {
+									dataType = ANSWER_DATA_TYPE_DELETE;
+								} else {
+
+								}
+							}
+						}
+					} else {
+						// 前回申請時になし、再申請時にある
+						dataType = ANSWER_DATA_TYPE_ADD;
+					}
+				}
+				// 事前協議⇒事前協議
+				if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+					// 前回申請時にある
+					if (isExist) {
+						// 再申請時にある
+						if (isnNewJudgementItem) {
+							if (ANSWER_DATA_TYPE_GOVERNMENT_DELETE.equals(answer.getAnswerDataType())) {
+								dataType = ANSWER_DATA_TYPE_GOVERNMENT_DELETE;
+							} else {
+								dataType = ANSWER_DATA_TYPE_UPDATE;
+							}
+						} else {
+							if (ANSWER_DATA_TYPE_GOVERNMENT_DELETE.equals(answer.getAnswerDataType())) {
+								dataType = ANSWER_DATA_TYPE_GOVERNMENT_DELETE;
+							} else {
+								dataType = ANSWER_DATA_TYPE_DELETE;
+							}
+						}
+					} else {
+						// 前回申請時になし、再申請時にある
+						dataType = ANSWER_DATA_TYPE_ADD;
+					}
+				}
+				// 許可判定⇒許可判定：申請区分が変わらないため、概況診断実施不要
+
+			} else {
+				// 事前相談⇒事前協議
+				if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+					// 前回申請時にある
+					if (isExist) {
+						// 再申請時にある
+						if (isnNewJudgementItem) {
+							// 前回が事前協議要の場合、
+							if (answer.getDiscussionFlag() != null && answer.getDiscussionFlag()) {
+								dataType = ANSWER_DATA_TYPE_UPDATE;
+							} else {
+								dataType = ANSWER_DATA_TYPE_DELETE;
+							}
+						} else {
+							// 前回が要事前協議の場合、「引継」とする
+							if (answer.getDiscussionFlag() != null && answer.getDiscussionFlag()) {
+								dataType = ANSWER_DATA_TYPE_TAKEOVER;
+							}
+						}
+					} else {
+						// 前回申請時になし、再申請時にある
+						dataType = ANSWER_DATA_TYPE_ADD;
+					}
+				}
+				// 事前協議⇒許可判定
+				if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+					// 申請区分選択がないため、再申請時の申請区分の判断がいらない
+					// 前回申請時にある
+					if (isExist) {
+						dataType = ANSWER_DATA_TYPE_UPDATE;
+					} else {
+						// 一律追加条項リスト存在するするか判定
+						for (String judgementId : defaultAddJudgementItemIdList) {
+							if (judgementId.equals(categoryJudgement.getJudgementItemId())) {
+								dataType = ANSWER_DATA_TYPE_UNIFORM;
+							}
+						}
+					}
+				}
+			}
+
+		}
+		return dataType;
+	}
+
+	/**
+	 * 申請区分リストに指定のコードが含まれるか判定, 旧版により不使用
 	 * 
 	 * @param categoryList 申請区分リスト
 	 * @param codes        区分コード(カンマ区切りのコード文字列)
@@ -1128,12 +1769,13 @@ public class JudgementService extends AbstractJudgementService {
 	/**
 	 * M_区分判定EntityをM_区分判定フォームに詰めなおす
 	 * 
-	 * @param entity M_区分判定Entity
+	 * @param entity M_区分判定、M_判定結果Entity
 	 * @return M_区分判定フォーム
 	 */
 	private GeneralConditionDiagnosisResultForm getGeneralConditionDiagnosisResultFormFromEntity(
-			CategoryJudgement entity, boolean judgeResult, List<LayerForm> layers, int generalConditionDiagnosisId,
-			String distanceText, int judgeResultItemId, boolean buildingDisplayFlag) {
+			CategoryJudgementAndResult entity, boolean judgeResult, List<LayerForm> layers,
+			int generalConditionDiagnosisId, String distanceText, int judgeResultItemId, boolean buildingDisplayFlag,
+			String dataType) {
 		GeneralConditionDiagnosisResultForm form = new GeneralConditionDiagnosisResultForm();
 		form.setJudgementId(entity.getJudgementItemId());
 		form.setTitle(entity.getTitle());
@@ -1147,7 +1789,7 @@ public class JudgementService extends AbstractJudgementService {
 		form.setDefaultAnswer(entity.getDefaultAnswer());
 		form.setGeneralConditionDiagnosisResultId(generalConditionDiagnosisId);
 		form.setBuildingDisplayFlag(buildingDisplayFlag);
-		if (distanceText == null || distanceText == "") {
+		if (distanceText == null || distanceText.equals("")) {
 			distanceText = "-";
 		}
 		form.setDistance(distanceText);
@@ -1155,6 +1797,13 @@ public class JudgementService extends AbstractJudgementService {
 		form.setAnswerDays(entity.getAnswerDays());
 		// エクステントはセットしない
 		form.setExtentFlag(false);
+		// 【R6】申請種類、申請段階、部署（事前協議のみ）ごとに、結果の文言を分けるため、下記を追加
+		form.setApplicationTypeId(entity.getApplicationTypeId());
+		form.setApplicationStepId(entity.getApplicationStepId());
+		form.setDepartmentId(entity.getDepartmentId());
+		form.setDataType(dataType);
+		form.setJudgementResultIndex(0);
+
 		return form;
 	}
 
@@ -1205,15 +1854,19 @@ public class JudgementService extends AbstractJudgementService {
 	 * @param generalConditionDiagnosisId 概況診断結果ID
 	 * @Param layers レイヤ
 	 * @Param judgeResultItemId 判定結果項目ID
-	 * @param entity        M_区分判定Entity
-	 * @param lotNumberList 申請地番リスト
+	 * @param entity                               M_区分判定、M_判定結果Entity
+	 * @param lotNumberList                        申請地番リスト
+	 * @param applicationId                        申請ID
+	 * @param isnNewJudgementItem                  再申請で新規追加された区分であるか
+	 * @param generalConditionDiagnosisRequestFrom 概要診断実施リクエスト
 	 * 
 	 * @return 判定結果項目ID更新値
 	 */
 	private int setRoadJudgeResultToGeneralConditionDiagnosisResultForm(
 			List<GeneralConditionDiagnosisResultForm> formList, List<RoadJudgeResult> roadJudgeResultList,
-			CategoryJudgement entity, int generalConditionDiagnosisId, List<LayerForm> layers, int judgeResultItemId,
-			List<Integer> lotNumberList) {
+			CategoryJudgementAndResult entity, int generalConditionDiagnosisId, List<LayerForm> layers,
+			int judgeResultItemId, List<Integer> lotNumberList, Integer applicationId, boolean isnNewJudgementItem,
+			GeneralConditionDiagnosisRequestForm generalConditionDiagnosisRequestFrom) {
 		JudgementLayerDao judgementLayerDao = new JudgementLayerDao(emf);
 		for (int i = 0; i < roadJudgeResultList.size(); i++) {
 			// 区割り線レイヤ表示フラグ
@@ -1417,7 +2070,20 @@ public class JudgementService extends AbstractJudgementService {
 								&& roadJudgeResult.getAdjacentWalkwayFlag()) {
 							final String walkwayText = setSeparateStringFromListInteger(
 									roadJudgeResult.getAdjacentWalkwayObjectIdList(), "_");
-							final String lotNumberText = setSeparateStringFromListInteger(lotNumberList, "_");
+							String lotNumberText = "";
+							if (applicationId == null) {
+								lotNumberText = setSeparateStringFromListInteger(lotNumberList, "_");
+							} else {
+								// 再申請時は重なるF_地番図形を取得してセット
+								LotNumberDao dao = new LotNumberDao(emf);
+								final List<LotNumber> srcLotNumberList = dao
+										.getLotNumberMasterFromApplicationId(applicationId, epsg);
+								final List<Integer> srcLotNumberIdList = new ArrayList<Integer>();
+								for (LotNumber aLotNumber : srcLotNumberList) {
+									srcLotNumberIdList.add(aLotNumber.getChibanId());
+								}
+								lotNumberText = setSeparateStringFromListInteger(srcLotNumberIdList, "_");
+							}
 							addLayer.setLayerQuery(layerQuery.replace(sideWalkLayerIdentifyText, "")
 									.replace(sideWalkSidewalkIdentifyText, walkwayText)
 									.replace(sideWalkLotNumberIdentifyText, lotNumberText));
@@ -1479,6 +2145,14 @@ public class JudgementService extends AbstractJudgementService {
 			form.setMinlat(minlat);
 			form.setMaxlon(maxlon);
 			form.setMaxlat(maxlat);
+			// 【R6】申請種類、申請段階、部署（事前協議のみ）ごとに、結果の文言を分けるため、下記を追加
+			form.setApplicationTypeId(entity.getApplicationTypeId());
+			form.setApplicationStepId(entity.getApplicationStepId());
+			form.setDepartmentId(entity.getDepartmentId());
+			String dataType = getDataType(isnNewJudgementItem, generalConditionDiagnosisRequestFrom, entity, i);
+			form.setDataType(dataType);
+			form.setJudgementResultIndex(i);
+
 			judgeResultItemId++;
 			formList.add(form);
 		}
@@ -1546,25 +2220,31 @@ public class JudgementService extends AbstractJudgementService {
 	/**
 	 * 概況診断結果複数行表示フォームをセット
 	 * 
-	 * @param formList                    概況診断結果フォーム
-	 * @param valuesList                  重なり属性値リスト
-	 * @param entity                      M_区分判定Entity
-	 * @param generalConditionDiagnosisId 概況診断結果ID
-	 * @param layers                      レイヤフォーム
-	 * @param judgeResultItemId           判定結果項目ID
-	 * @param distanceResultText          距離判定結果
+	 * @param formList                             概況診断結果フォーム
+	 * @param valuesList                           重なり属性値リスト
+	 * @param entity                               M_区分判定、M_判定結果Entity
+	 * @param generalConditionDiagnosisId          概況診断結果ID
+	 * @param layers                               レイヤフォーム
+	 * @param judgeResultItemId                    判定結果項目ID
+	 * @param distanceResultText                   距離判定結果
+	 * @param isnNewJudgementItem                  再申請で新規追加された区分であるか
+	 * @param generalConditionDiagnosisRequestFrom 概要診断実施リクエスト
+	 * 
 	 * @return
 	 */
 	private int setSeparatedJudgeResultToGeneralConditionDiagnosisResultForm(
-			List<GeneralConditionDiagnosisResultForm> formList, List<List<String>> valuesList, CategoryJudgement entity,
-			boolean judgeResult, int generalConditionDiagnosisId, List<LayerForm> layers, int judgeResultItemId,
-			String distanceResultText) {
+			List<GeneralConditionDiagnosisResultForm> formList, List<List<String>> valuesList,
+			CategoryJudgementAndResult entity, boolean judgeResult, int generalConditionDiagnosisId,
+			List<LayerForm> layers, int judgeResultItemId, String distanceResultText, boolean isnNewJudgementItem,
+			GeneralConditionDiagnosisRequestForm generalConditionDiagnosisRequestFrom) {
 		// 置換対象要素数を取得
 		int rowCount = 0;
 		if (valuesList.size() > 0) {
 			List<String> values = valuesList.get(0);
 			rowCount = values.size();
 		}
+
+		int judgementResultIndex = 0;
 		for (List<String> aValues : valuesList) {
 			GeneralConditionDiagnosisResultForm form = new GeneralConditionDiagnosisResultForm();
 			form.setJudgementId(entity.getJudgementItemId());
@@ -1600,7 +2280,7 @@ public class JudgementService extends AbstractJudgementService {
 			form.setAnswerRequireFlag(entity.getAnswerRequireFlag());
 			form.setDefaultAnswer(entity.getDefaultAnswer());
 			form.setGeneralConditionDiagnosisResultId(generalConditionDiagnosisId);
-			if (distanceResultText == null || distanceResultText == "") {
+			if (distanceResultText == null || distanceResultText.equals("")) {
 				distanceResultText = "-";
 			}
 			form.setDistance(distanceResultText);
@@ -1609,7 +2289,19 @@ public class JudgementService extends AbstractJudgementService {
 			form.setBuildingDisplayFlag(true);
 			// エクステントはセットしない
 			form.setExtentFlag(false);
+			// 【R6】申請種類、申請段階、部署（事前協議のみ）ごとに、結果の文言を分けるため、下記を追加
+			form.setApplicationTypeId(entity.getApplicationTypeId());
+			form.setApplicationStepId(entity.getApplicationStepId());
+			form.setDepartmentId(entity.getDepartmentId());
+
+			String dataType = getDataType(isnNewJudgementItem, generalConditionDiagnosisRequestFrom, entity,
+					judgementResultIndex);
+			form.setDataType(dataType);
+			form.setJudgementResultIndex(judgementResultIndex);
+
 			judgeResultItemId++;
+			judgementResultIndex++;
+
 			formList.add(form);
 		}
 		return judgeResultItemId;
@@ -1725,5 +2417,130 @@ public class JudgementService extends AbstractJudgementService {
 			}
 		}
 		return description;
+	}
+
+	/**
+	 * フォルダ内にあるエクセルファイル名の一覧を取得
+	 * 
+	 * @param folderPath
+	 * @return xlsxFileNames ファイル名一覧
+	 */
+	private List<String> findXlsxFileNames(String folderPath) {
+		List<String> xlsxFileNames = new ArrayList<>();
+		File folder = new File(folderPath);
+		File[] files = folder.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				if (file.isFile() && file.getName().toLowerCase().endsWith(".xlsx")) {
+					xlsxFileNames.add(file.getName());
+				}
+			}
+		}
+		return xlsxFileNames;
+	}
+
+	/**
+	 * フォルダ内にあるエクセルファイル一覧を取得
+	 * 
+	 * @param folderPath
+	 * @return xlsxFiles ファイル一覧
+	 */
+	private List<File> findXlsxFiles(String folderPath) {
+		List<File> xlsxFiles = new ArrayList<>();
+		File folder = new File(folderPath);
+		File[] files = folder.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				if (file.isFile() && file.getName().toLowerCase().endsWith(".xlsx")) {
+					xlsxFiles.add(file);
+				}
+			}
+		}
+		return xlsxFiles;
+	}
+
+	/**
+	 * フォルダとファイル数をカウントする
+	 * 
+	 * @param directory
+	 * @return 正常：counts=フォルダ及びファイル数の合計 , 異常：counts=-1
+	 */
+	private int countFoldersAndFiles(File directory) {
+		try {
+			int counts = 0;
+			File[] files = directory.listFiles();
+
+			if (files != null) {
+				for (File file : files) {
+					if (file.isDirectory()) {
+						counts++;
+					} else if (file.isFile()) {
+						if (file.getName().toLowerCase().endsWith(".xlsx")
+								|| file.getName().toLowerCase().endsWith(".png")) {
+							counts++;
+						}
+					}
+				}
+			}
+			return counts;
+		} catch (Exception e) {
+			return -1;
+		}
+	}
+
+	/**
+	 * 申請ファイルIDごとに、申請ファイルの最新版情報取得
+	 * 
+	 * @param applicationId     申請ID
+	 * @param applicationFileId 申請ファイルID
+	 * @param applicationStepId 申請段階ID
+	 * 
+	 * @return 版情報
+	 */
+	public int getApplicatioFileMaxVersion(int applicationId, String applicationFileId, int applicationStepId) {
+		LOGGER.trace("申請ファイルの最新版情報取得 開始");
+		int versionInformation = 0;
+		ApplicationDao dao = new ApplicationDao(emf);
+		List<ApplicationFile> applicationFileList = dao.getApplicatioFile(applicationFileId, applicationId,
+				applicationStepId);
+		if (applicationFileList.size() > 0) {
+			versionInformation = applicationFileList.get(0).getVersionInformation();
+		}
+		LOGGER.trace("申請ファイルの最新版情報取得 終了");
+		return versionInformation;
+
+	}
+	
+	/**
+	 * 申請種類IDから申請種類名を取得する
+	 * 
+	 * @param applicationTypeId 申請種別ID
+	 * @return 申請種別名
+	 */
+	public String getApplicationTypeName(Integer applicationTypeId) {
+
+		String applicationTypeName = applicationService.getApplicationTypeName(applicationTypeId);
+
+		if (applicationTypeName == null) {
+			applicationTypeName = EMPTY;
+		}
+
+		return applicationTypeName;
+	}
+	
+	/**
+	 * 申請段階IDから申請段階名を取得する
+	 * 
+	 * @param applicationStepId 申請段階ID
+	 * @return 申請段階名
+	 */
+	public String getApplicationStepName(Integer applicationStepId) {
+
+		String applicationStepName = applicationService.getApplicationStepName(applicationStepId);
+
+		if (applicationStepName == null) {
+			applicationStepName = EMPTY;
+		}
+		return applicationStepName;
 	}
 }

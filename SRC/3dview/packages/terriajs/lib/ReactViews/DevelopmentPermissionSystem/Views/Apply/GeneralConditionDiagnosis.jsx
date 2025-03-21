@@ -17,6 +17,7 @@ import Config from "../../../../../customconfig.json";
 import sampleTerrainMostDetailed from "terriajs-cesium/Source/Core/sampleTerrainMostDetailed";
 import { BaseModel } from "../../../../Models/Definition/Model";
 import EventHelper from "terriajs-cesium/Source/Core/EventHelper";
+import L from 'leaflet';
 /**
  * 概況診断結果表示画面
  */
@@ -117,28 +118,58 @@ class GeneralConditionDiagnosis extends React.Component {
         checkedApplicationCategory = checkedApplicationCategory.filter(Boolean);
         let generalConditionDiagnosisResult = this.props.viewState.generalConditionDiagnosisResult;
         try{
-            const item = new webMapServiceCatalogItem(Config.layer.lotnumberSearchLayerNameForApplicationTarget, this.state.terria);
-            const wmsUrl = Config.config.geoserverUrl;
-            const items = this.state.terria.workbench.items;
-            for (const aItem of items) {
-                if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationTarget) {
-                    this.state.terria.workbench.remove(aItem);
-                    aItem.loadMapItems();
+            // 再申請か否か
+            let isReApply = this.props.viewState.isReApply;
+            if(this.props.viewState.isSimulateExecution && this.props.viewState.applicationId){
+                const item = new webMapServiceCatalogItem(Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget, this.state.terria);
+                const wmsUrl = Config.config.geoserverUrl;
+                const items = this.state.terria.workbench.items;
+                for (const aItem of items) {
+                    if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget) {
+                        this.state.terria.workbench.remove(aItem);
+                        aItem.loadMapItems();
+                    }
+                }
+                item.setTrait(CommonStrata.definition, "url", wmsUrl);
+                item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForApplicationSearchTarget);
+                item.setTrait(
+                    CommonStrata.user,
+                    "layers",
+                    Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget);
+                item.setTrait(CommonStrata.user,
+                    "parameters",
+                    {
+                        "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + this.props.viewState.applicationId,                    
+                    });
+                item.loadMapItems();
+                this.state.terria.workbench.add(item);
+            }else if (!isReApply) {
+                const params =  Object.keys(applicationPlace)?.map(key => { return applicationPlace[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_");
+                if(params){
+                    const item = new webMapServiceCatalogItem(Config.layer.lotnumberSearchLayerNameForApplicationTarget, this.state.terria);
+                    const wmsUrl = Config.config.geoserverUrl;
+                    const items = this.state.terria.workbench.items;
+                    for (const aItem of items) {
+                        if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationTarget) {
+                            this.state.terria.workbench.remove(aItem);
+                            aItem.loadMapItems();
+                        }
+                    }
+                    item.setTrait(CommonStrata.definition, "url", wmsUrl);
+                    item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForApplicationTarget);
+                    item.setTrait(
+                        CommonStrata.user,
+                        "layers",
+                        Config.layer.lotnumberSearchLayerNameForApplicationTarget);
+                    item.setTrait(CommonStrata.user,
+                        "parameters",
+                        {
+                            "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationTarget + params,
+                        });
+                    item.loadMapItems();
+                    this.state.terria.workbench.add(item);
                 }
             }
-            item.setTrait(CommonStrata.definition, "url", wmsUrl);
-            item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForApplicationTarget);
-            item.setTrait(
-                CommonStrata.user,
-                "layers",
-                Config.layer.lotnumberSearchLayerNameForApplicationTarget);
-            item.setTrait(CommonStrata.user,
-                "parameters",
-                {
-                    "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationTarget + Object.keys(this.props.viewState.applicationPlace)?.map(key => { return this.props.viewState.applicationPlace[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_"),
-                });
-            item.loadMapItems();
-            this.state.terria.workbench.add(item);
             this.focusMapPlaceDriver();
         }catch(error){
             document.getElementById("customloaderForGeneralConditionDiagnosisDrag").style.display = "none";
@@ -151,15 +182,40 @@ class GeneralConditionDiagnosis extends React.Component {
                     disabledFlg = false;
                 }
             });
-            this.setState({ generalConditionDiagnosisResult: generalConditionDiagnosisResult, disabledFlg: disabledFlg });
-            document.getElementById("customloaderForGeneralConditionDiagnosisDrag").style.display = "none";
+            this.setState({ generalConditionDiagnosisResult: generalConditionDiagnosisResult, disabledFlg: disabledFlg },()=>{
+                document.getElementById("customloaderForGeneralConditionDiagnosisDrag").style.display = "none";
+                if(this.props.viewState.isSimulateExecution){
+                    setTimeout(() => {
+                        this.outputPreparation();
+                    }, 10000);
+                }
+            });
         }else{
+            let param ="";
+
+            //再申請の場合
+            if(this.props.viewState.isReApply){
+                param = JSON.stringify({
+                    applyLotNumbers: applicationPlace,
+                    applicationCategories: checkedApplicationCategory,
+                    applicationId: this.props.viewState.reApplication.applicationId,
+                    applicationTypeId: this.props.viewState.reApplication.applicationTypeId,
+                    applicationStepId: this.props.viewState.reapplyApplicationStepId,
+                    preApplicationStepId: this.props.viewState.preReapplyApplicationStepId,
+                    acceptVersionInformation: this.props.viewState.reApplication.acceptVersionInformation
+                });
+            }else{
+                param = JSON.stringify({
+                    lotNumbers: applicationPlace,
+                    applicationCategories: checkedApplicationCategory,
+                    applicationTypeId: this.props.viewState.selectedApplicationType.applicationTypeId,
+                    applicationStepId: 1
+                });
+            }
+
             fetch(Config.config.apiUrl + "/judgement/execute", {
                 method: 'POST',
-                body: JSON.stringify({
-                    lotNumbers: applicationPlace,
-                    applicationCategories: checkedApplicationCategory
-                }),
+                body: param,
                 headers: new Headers({ 'Content-type': 'application/json' }),
             })
                 .then(res => res.json())
@@ -176,8 +232,14 @@ class GeneralConditionDiagnosis extends React.Component {
                                 disabledFlg = false;
                             }
                         });
-                        this.setState({ generalConditionDiagnosisResult: res, disabledFlg: disabledFlg });
-                        document.getElementById("customloaderForGeneralConditionDiagnosisDrag").style.display = "none";
+                        this.setState({ generalConditionDiagnosisResult: res, disabledFlg: disabledFlg },()=>{
+                            document.getElementById("customloaderForGeneralConditionDiagnosisDrag").style.display = "none";
+                            if(this.props.viewState.isSimulateExecution){
+                                setTimeout(() => {
+                                    this.outputPreparation();
+                                }, 10000);
+                            }
+                        });
                     } else {
                         this.setState({ generalConditionDiagnosisResult: [], disabledFlg: true });
                         alert("概況診断に失敗しました。\n再度初めからやり直してください。");
@@ -216,42 +278,100 @@ class GeneralConditionDiagnosis extends React.Component {
     }
 
     /**
-     * キャプチャを作成し、概況診断結果レポートを出力
+     * 概況診断結果レポート シミュレート実行
      */
-    outputPreparation() {
-        if (window.confirm("現在マップで表示されている領域に申請地が全て含まれるようにしてください。このままレポートの出力を開始しますか？")) {
-            let myBar = document.getElementById("myBar");
-            let wholePercent = document.getElementById("wholePercent");
-            document.getElementById("loadingBg").style.display = "block";
-            document.getElementById("loading").style.display = "block";
-            //完了率をスクリーンショット最大完了率 - スクリーンショット完了率にしてレイヤ表示切替処理に遷移
-            myBar.style.width = this.captureAllMaxPercent - this.captureMaxPercent + "%";
-            wholePercent.innerHTML = this.captureAllMaxPercent - this.captureMaxPercent;
-            try{
-                this.showCaptureLayers();
-            }catch(error){
-                this.errorHandler(error);
-            }
+    simulateExecution(){
+        if(this.props.viewState.showCustomMessage){
+            return;
         }
+        this.props.viewState.setCustomMessage("帳票の生成を開始しました","混雑している場合、時間がかかることがございますので、ご了承ください。生成中の進捗状況の確認及び各帳票のダウンロードは、右上の概況診断レポート一覧から行えます。");
+        this.props.viewState.setShowCustomMessage(true);
+        let generalConditionDiagnosisResult = this.state.generalConditionDiagnosisResult;
+        generalConditionDiagnosisResult = Object.values(generalConditionDiagnosisResult);
+        generalConditionDiagnosisResult = generalConditionDiagnosisResult.filter(Boolean);
+        let applicationPlace = this.props.viewState.applicationPlace;
+        applicationPlace = Object.values(applicationPlace);
+        applicationPlace = applicationPlace.filter(Boolean);
+        let checkedApplicationCategory = this.props.viewState.checkedApplicationCategory;
+        checkedApplicationCategory = Object.values(checkedApplicationCategory);
+        checkedApplicationCategory = checkedApplicationCategory.filter(Boolean);
+        const fileName = this.props.viewState.getFileName();
+        this.props.viewState.setFileName(fileName);
+        //概況診断のキャプチャ格納用フォルダを生成
+        fetch(Config.config.apiUrl + "/judgement/image/upload/preparation")
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 401){
+                alert("認証情報が無効です。ページの再読み込みを行います。");
+                window.location.reload();
+                return null;
+            }
+            if (res.folderName) {
+                const folderName = res.folderName;
+                this.props.viewState.setFolderName(folderName);
+                const requestBody = {
+                    folderName: folderName,
+                    fileName:fileName,
+                    lotNumbers: applicationPlace,
+                    applicationCategories: checkedApplicationCategory,
+                    generalConditionDiagnosisResults: generalConditionDiagnosisResult,
+                    applicationId:0
+                };
+                //概況診断シミュレート実行API
+                fetch(Config.config.simulatorApiUrl+"/simulator/execution", {
+                    method: 'POST',
+                    body: JSON.stringify(requestBody),
+                    headers: new Headers({ 'Content-type': 'application/json' }),
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if(res.status === 401){
+                        alert("認証情報が無効です。ページの再読み込みを行います。");
+                        window.location.reload();
+                        return null;
+                    }
+                    if(res.status === 202){
+                        //処理状況の対象にセット
+                        this.props.viewState.setProgressList(requestBody);
+                        //概況診断レポート一覧画面表示
+                        this.props.viewState.setGeneralConditionDiagnosisrReportShow(true);
+                    }else{
+                        this.errorHandler(null);
+                    }
+                }).catch(error => {
+                    this.errorHandler(error);
+                });
+            }else{
+                this.errorHandler(null);
+            }
+        }).catch(error => {
+            this.errorHandler(error);
+        });
     }
 
     /**
-     * キャプチャを作成し、概況診断結果レポートを出力（申請登録時）
+     * キャプチャを作成せずに、概況診断結果レポートを出力
      */
-    outputPreparationForConfirmApplicationDetails() {
-        if (window.confirm("申請に必要なレポートの生成を行います。現在マップで表示されている領域に申請地が全て含まれるようにしてください。このまま申請処理を開始しますか？")) {
-            let myBar = document.getElementById("myBar");
-            let wholePercent = document.getElementById("wholePercent");
-            document.getElementById("loadingBg").style.display = "block";
-            document.getElementById("loading").style.display = "block";
-            //完了率をスクリーンショット最大完了率 - スクリーンショット完了率にしてレイヤ表示切替処理に遷移
-            myBar.style.width = this.captureAllMaxPercent - this.captureMaxPercent + "%";
-            wholePercent.innerHTML = this.captureAllMaxPercent - this.captureMaxPercent;
-            try{
-                this.showCaptureLayers();
-            }catch(error){
-                this.errorHandler(error);
-            }
+    outputWithoutCapture(){
+        this.props.viewState.setFolderName("");
+        this.outputFile()
+    }
+
+    /**
+     * キャプチャを作成し、概況診断結果レポートを出力
+     */
+    outputPreparation() {
+        let myBar = document.getElementById("myBar");
+        let wholePercent = document.getElementById("wholePercent");
+        document.getElementById("loadingBg").style.display = "block";
+        document.getElementById("loading").style.display = "block";
+        //完了率をスクリーンショット最大完了率 - スクリーンショット完了率にしてレイヤ表示切替処理に遷移
+        myBar.style.width = this.captureAllMaxPercent - this.captureMaxPercent + "%";
+        wholePercent.innerHTML = this.captureAllMaxPercent - this.captureMaxPercent;
+        try{
+            this.showCaptureLayers();
+        }catch(error){
+            this.errorHandler(error);
         }
     }
 
@@ -301,7 +421,7 @@ class GeneralConditionDiagnosis extends React.Component {
      * @param {*} minLat 最小経度
      */
     resultRowFocusMapPlace(maxLon, maxLat, minLon, minLat) {
-        this.outputFocusMapPlaceWithTop(maxLon, maxLat, minLon, minLat, (maxLon + minLon) / 2, (maxLat + minLat) / 2);
+        this.outputFocusMapPlace(maxLon, maxLat, minLon, minLat, (maxLon + minLon) / 2, (maxLat + minLat) / 2);
     }
     /**
      * フォーカス処理
@@ -313,75 +433,7 @@ class GeneralConditionDiagnosis extends React.Component {
      * @param {number} lat 緯度
      */
     outputFocusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat) {
-        // 3dmodeにセット
-        this.props.viewState.set3dMode();
-        //現在のカメラ位置等を取得
-        const currentSettings = getShareData(this.state.terria, this.props.viewState);
-        const currentCamera = currentSettings.initSources[0].initialCamera;
-        let newCamera = Object.assign(currentCamera);
-        //新規の表示範囲を設定
-        let currentLonDiff = Math.abs(maxLon - minLon);
-        let currentLatDiff = Math.abs(maxLat - minLat);
-        newCamera.north = maxLon + currentLatDiff / 2;
-        newCamera.south = minLon - currentLatDiff / 2;
-        newCamera.east = maxLat + currentLonDiff / 2;
-        newCamera.west = minLat - currentLonDiff / 2;
-        //camera.positionを緯度経度に合わせて設定
-        const scene = this.props.terria.cesium.scene;
-        const terrainProvider = scene.terrainProvider;
-        const positions = [Cartographic.fromDegrees(lon, minLat)];
-        let height = 0;
-        sampleTerrainMostDetailed(terrainProvider, positions).then((updatedPositions) => {
-            height = updatedPositions[0].height
-            let coord_wgs84 = Cartographic.fromDegrees(lon, minLat, parseFloat(height) + parseInt((400000 * currentLatDiff )) + 200 );
-            let coord_xyz = Ellipsoid.WGS84.cartographicToCartesian(coord_wgs84);
-            newCamera.position = { x: coord_xyz.x, y: coord_xyz.y, z: coord_xyz.z - parseInt((300000 * currentLatDiff )) - 170 };
-            //カメラの向きは統一にさせる
-            newCamera.direction = { x: this.props.terria.focusCameraDirectionX, y: this.props.terria.focusCameraDirectionY, z: this.props.terria.focusCameraDirectionZ };
-            newCamera.up = { x: this.props.terria.focusCameraUpX, y: this.props.terria.focusCameraUpY, z:this.props.terria.focusCameraUpZ };
-            this.state.terria.currentViewer.zoomTo(newCamera, 5);
-        })
-    }
-    /**
-     * フォーカス処理（正面表示）
-     * @param {number} maxLon 最大経度
-     * @param {number} maxLat 最大緯度
-     * @param {number} minLon 最小経度
-     * @param {number} minLat 最小緯度
-     * @param {number} lon 経度
-     * @param {number} lat 緯度
-     */
-    outputFocusMapPlaceWithTop(maxLon, maxLat, minLon, minLat, lon, lat) {
-        // 3dmodeにセット
-        this.props.viewState.set3dMode();
-        //現在のカメラ位置等を取得
-        const currentSettings = getShareData(this.state.terria, this.props.viewState);
-        const currentCamera = currentSettings.initSources[0].initialCamera;
-        let newCamera = Object.assign(currentCamera);
-        //新規の表示範囲を設定
-        let currentLonDiff = Math.abs(maxLon - minLon);
-        let currentLatDiff = Math.abs(maxLat - minLat);
-        newCamera.north = maxLon + currentLatDiff / 2;
-        newCamera.south = minLon - currentLatDiff / 2;
-        newCamera.east = maxLat + currentLonDiff / 2;
-        newCamera.west = minLat - currentLonDiff / 2;
-        //camera.positionを緯度経度に合わせて設定
-        const scene = this.props.terria.cesium.scene;
-        const terrainProvider = scene.terrainProvider;
-        const positions = [Cartographic.fromDegrees(lon, lat)];
-        let height = 0;
-        sampleTerrainMostDetailed(terrainProvider, positions).then((updatedPositions) => {
-            height = updatedPositions[0].height
-            //let coord_wgs84 = Cartographic.fromDegrees(lon, minLat, parseFloat(height) + parseInt((400000 * currentLatDiff )) + 200 );
-            let coord_wgs84 = Cartographic.fromDegrees(lon, lat, parseFloat(height + 300) + parseInt((100000 * (maxLon-minLon) )));
-            let coord_xyz = Ellipsoid.WGS84.cartographicToCartesian(coord_wgs84);
-            //newCamera.position = { x: coord_xyz.x, y: coord_xyz.y, z: coord_xyz.z - parseInt((300000 * currentLatDiff )) - 170 };
-            newCamera.position = { x: coord_xyz.x, y: coord_xyz.y, z: coord_xyz.z  };
-            //カメラの向きは統一にさせる
-            newCamera.direction = { x: this.props.terria.focusCameraDirectionX, y: this.props.terria.focusCameraDirectionY - 1.0, z: this.props.terria.focusCameraDirectionZ };
-            newCamera.up = { x: this.props.terria.focusCameraUpX, y: this.props.terria.focusCameraUpY, z:this.props.terria.focusCameraUpZ };
-            this.state.terria.currentViewer.zoomTo(newCamera, 5);
-        })
+        this.props.terria.focusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat, this.props.viewState);
     }
     /**
      * レイヤ表示切替及びcapture処理（呼び出し元）
@@ -419,36 +471,21 @@ class GeneralConditionDiagnosis extends React.Component {
         });
         //terriaに概況診断コンポーネントをセット
         this.props.terria.setGeneralConditionDiagnosis(this);
-        //概況診断のキャプチャ格納用フォルダを生成
-        fetch(Config.config.apiUrl + "/judgement/image/upload/preparation")
-        .then(res => res.json())
-        .then(res => {
-            if(res.status === 401){
-                alert("認証情報が無効です。ページの再読み込みを行います。");
-                window.location.reload();
-                return null;
-            }
-            if (res.folderName) {
-                const folderName = res.folderName;
-                this.props.viewState.setFolderName(folderName);
-                this.setState({ captureMode: true }, () => {
-                    //初回キャプチャ呼び出し
-                    if(parseInt(document.getElementById("ProgressBarJsx").style.width) >= 90){
-                        this.initCapture(0, 1, this.props.terria);
-                    }else{
-                        //初回キャプチャのイベントをセット
-                        this.eventHelper.add(
-                            this.props.terria.tileLoadProgressEvent,
-                            this.initCapture
-                        );
-                    }
-                });
-            }else{
-                this.errorHandler(null);
-            }
-        }).catch(error => {
-            this.errorHandler(error);
-        });
+
+        if(this.props.viewState.folderName){
+            this.setState({ captureMode: true }, () => {
+                //初回キャプチャ呼び出し
+                if(parseInt(document.getElementById("ProgressBarJsx").style.width) >= 90){
+                    this.initCapture(0, 1, this.props.terria);
+                }else{
+                    //初回キャプチャのイベントをセット
+                    this.eventHelper.add(
+                        this.props.terria.tileLoadProgressEvent,
+                        this.initCapture
+                    );
+                }
+            });
+        }
 
     }
 
@@ -565,13 +602,39 @@ class GeneralConditionDiagnosis extends React.Component {
                             "viewparams": layers[layerIndex].layerQuery.replace(Config.wfs.road_width_identify_text, "").replace(Config.wfs.identify_text, ""),
                         });
                     item.setTrait(CommonStrata.user, "czmlTemplate", Config.wfs.czmlTemplate.road_width);
-                } 
-                item.loadMapItems();
-                this.state.terria.workbench.add(item).then(
-                    r =>{
-                        this.judgementLayerChange();
-                    }
-                );
+                    item.loadMapItems();
+
+                    // 道路判定幅員値2d用
+                    const item2 = new WebFeatureServiceCatalogItem(layers[layerIndex].layerCode, this.state.terria);
+                    item2.setTrait(CommonStrata.definition, "url", wfsUrl);
+                    item2.setTrait(CommonStrata.user, "name", layers[layerIndex].layerName+"_2d");
+                    item2.setTrait(
+                        CommonStrata.user,
+                        "typeNames",
+                        layers[layerIndex].layerCode);
+                    item2.setTrait(CommonStrata.user,
+                        "parameters",
+                        {
+                            "viewparams": layers[layerIndex].layerQuery.replace(Config.wfs.road_width_identify_text, "").replace(Config.wfs.identify_text, ""),
+                        });
+                    item2.setTrait(CommonStrata.user, "czmlTemplate", Config.wfs.czmlTemplate.road_width_2d);
+                    item2.loadMapItems();
+
+                    this.state.terria.workbench.add(item).then(
+                        this.state.terria.workbench.add(item2).then(
+                            r =>{
+                                this.judgementLayerChange();
+                            }
+                        )
+                    );
+                }else{
+                    item.loadMapItems();
+                    this.state.terria.workbench.add(item).then(
+                        r =>{
+                            this.judgementLayerChange();
+                        }
+                    );
+                }
             } else {
                 const item = new webMapServiceCatalogItem(layers[layerIndex].layerCode, this.state.terria);
                 const wmsUrl = Config.config.geoserverUrl;
@@ -636,7 +699,7 @@ class GeneralConditionDiagnosis extends React.Component {
             this.layerIndex = this.layerIndex + 1;
             this.layerLoop();
         }
-     }
+    }
 
      /**
      * 初回以降のレイヤキャプチャ処理(tileLoadProgressEvent)
@@ -747,6 +810,7 @@ class GeneralConditionDiagnosis extends React.Component {
      * 概況診断レポートをExcel形式で出力
      */
     outputFile() {
+        const isSimulateExecution = this.props.viewState.isSimulateExecution;
         let generalConditionDiagnosisResult = this.state.generalConditionDiagnosisResult;
         generalConditionDiagnosisResult = Object.values(generalConditionDiagnosisResult);
         generalConditionDiagnosisResult = generalConditionDiagnosisResult.filter(Boolean);
@@ -760,16 +824,27 @@ class GeneralConditionDiagnosis extends React.Component {
         let wholePercent = document.getElementById("wholePercent");
         let numberOfSheets = document.getElementById("numberOfSheets");
         let allMax = 100;
-        //申請登録時のレポート生成の場合帳票出力は行わない
-        if(!document.getElementById("confirmApplicationDetailsRegisterButton")){
+
+        let applicationTypeId = this.props.viewState.selectedApplicationType.applicationTypeId;
+        let applicationStepId = 1;
+        if(this.props.viewState.isReApply){
+            applicationTypeId = this.props.viewState.reApplication.applicationTypeId;
+            applicationStepId = this.props.viewState.reapplyApplicationStepId;
+        }
+
+        //シミュレート実行の場合は帳票出力は行わない
+        if(!isSimulateExecution){
+            const requestBody = {
+                folderName: this.props.viewState.folderName,
+                lotNumbers: applicationPlace,
+                applicationCategories: checkedApplicationCategory,
+                generalConditionDiagnosisResults: generalConditionDiagnosisResult,
+                applicationTypeId: applicationTypeId,
+                applicationStepId: applicationStepId
+            };
             fetch(Config.config.apiUrl + "/judgement/report", {
                 method: 'POST',
-                body: JSON.stringify({
-                    folderName: this.props.viewState.folderName,
-                    lotNumbers: applicationPlace,
-                    applicationCategories: checkedApplicationCategory,
-                    generalConditionDiagnosisResults: generalConditionDiagnosisResult
-                }),
+                body: JSON.stringify(requestBody),
                 headers: new Headers({ 'Content-type': 'application/json' }),
             })
             .then((res) => {
@@ -829,6 +904,57 @@ class GeneralConditionDiagnosis extends React.Component {
                     }, 3000)
                 });
             });
+        
+        //シミュレート実行の場合は帳票生成を行う
+        }else if(isSimulateExecution){
+            const requestBody = {
+                folderName: this.props.viewState.folderName,
+                fileName:this.props.viewState.fileName,
+                applicationCategories: checkedApplicationCategory,
+                generalConditionDiagnosisResults: generalConditionDiagnosisResult,
+                applicationId:this.props.viewState.applicationId
+            }
+            const chibanIdStr =  Object.keys(applicationPlace)?.map(key => { return applicationPlace[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_");
+            if(chibanIdStr){
+                requestBody["lotNumbers"] = applicationPlace;
+            }else{
+                requestBody["applyLotNumbers"] = applicationPlace;
+            }
+            fetch(Config.config.apiUrl + "/judgement/generate", {
+                method: 'POST',
+                body: JSON.stringify(requestBody),
+                headers: new Headers({ 'Content-type': 'application/json' }),
+            })
+            .then(res => res.json())
+            .then((res) => {
+                if(res.status === 401){
+                    alert("認証情報が無効です。ページの再読み込みを行います。");
+                    window.location.reload();
+                    return null;
+                }else if(res.status === 201){
+                    const newDiv = document.createElement('div');
+                    newDiv.id = 'completionIndicator';
+                    document.body.appendChild(newDiv);
+                }
+            })
+            .catch(error => {
+                this.errorHandler(error);
+            }).finally(() => {
+                //初期化
+                this.setState({ captureMode: false, uploadForGeneralConditionDiagnosisCompleteForm: {},uploadForGeneralConditionDiagnosisForm: {} },()=>{
+                    this.clearLayer(false);
+                    this.props.terria.setGeneralConditionDiagnosis(null);
+                    setTimeout(() => {
+                        document.getElementById("loadingBg").style.display = "none";
+                        document.getElementById("loading").style.display = "none";
+                        myBar.style.width = "0%";
+                        wholePercent.innerHTML = 0;
+                        numberOfSheets.innerHTML = 0 + "/" + 0;
+                    }, 3000)
+                });
+            });
+
+        //何もしない
         }else{
             //初期化
             this.setState({ captureMode: false, uploadForGeneralConditionDiagnosisCompleteForm: {},uploadForGeneralConditionDiagnosisForm: {} },()=>{
@@ -840,7 +966,6 @@ class GeneralConditionDiagnosis extends React.Component {
                     myBar.style.width = "0%";
                     wholePercent.innerHTML = 0;
                     numberOfSheets.innerHTML = 0 + "/" + 0;
-                    document.getElementById("confirmApplicationDetailsRegisterButton").click();
                 }, 3000)
             });
         }
@@ -888,7 +1013,6 @@ class GeneralConditionDiagnosis extends React.Component {
 
             // 該当判定結果の詳細は表示されているか判断して、表示・非表示を切り替え
             if(displayDescriptionFlg){
-                //if(currentGeneralConditionDiagnosisResult.judgementId === obj.judgementId){
                 if(currentGeneralConditionDiagnosisResult.judgeResultItemId === obj.judgeResultItemId){
                     this.setState({displayDescriptionFlg:false});
                     return;
@@ -923,9 +1047,31 @@ class GeneralConditionDiagnosis extends React.Component {
                                     "viewparams": layers[key].layerQuery.replace(Config.wfs.road_width_identify_text, "").replace(Config.wfs.identify_text, ""),
                                 });
                             item.setTrait(CommonStrata.user, "czmlTemplate", Config.wfs.czmlTemplate.road_width);
-                        } 
-                        item.loadMapItems();
-                        this.state.terria.workbench.add(item);
+                            item.loadMapItems();
+
+                            // 道路判定幅員値 2d用
+                            const item2 = new WebFeatureServiceCatalogItem(layers[key].layerCode, this.state.terria);
+                            item2.setTrait(CommonStrata.definition, "url", wfsUrl);
+                            item2.setTrait(CommonStrata.user, "name", layers[key].layerName+"_2d");
+                            item2.setTrait(
+                                CommonStrata.user,
+                                "typeNames",
+                                layers[key].layerCode);
+                            item2.setTrait(CommonStrata.user,
+                                "parameters",
+                                {
+                                    "viewparams": layers[key].layerQuery.replace(Config.wfs.road_width_identify_text, "").replace(Config.wfs.identify_text, ""),
+                                });
+                            item2.setTrait(CommonStrata.user, "czmlTemplate", Config.wfs.czmlTemplate.road_width_2d);
+                            item2.loadMapItems();
+
+                            this.state.terria.workbench.add(item).then(
+                                this.state.terria.workbench.add(item2)
+                            )
+                        }else{
+                            item.loadMapItems();
+                            this.state.terria.workbench.add(item);
+                        }
                     } else {
                         // WMS
                         const item = new webMapServiceCatalogItem(layers[key].layerCode, this.state.terria);
@@ -1045,13 +1191,23 @@ class GeneralConditionDiagnosis extends React.Component {
      * @param {*} showFlag 
      */
     switch3DBuildings(showFlag) {
-        const cesium3DTiles = this.state.terria.getModelById(BaseModel, Config.buildingModel.id);
+        try{
+            const cesium3DTiles = this.state.terria.getModelById(BaseModel, Config.buildingModel.id);
             cesium3DTiles.traits.style.show = showFlag;
             cesium3DTiles.setTrait(
                 CommonStrata.user,
                 "style",
                 {"show": showFlag});
             cesium3DTiles.loadMapItems();
+            const leaflet2DModel = this.state.terria.getModelById(BaseModel, Config.buildingModelFor2d.id);
+            leaflet2DModel.setTrait(
+                CommonStrata.user,
+                "show",
+                showFlag);
+            leaflet2DModel.loadMapItems();
+        } catch (error) {
+            console.error('処理に失敗しました', error);
+        }
     }
     render() {
         let generalConditionDiagnosisResult = this.state.generalConditionDiagnosisResult;
@@ -1064,6 +1220,8 @@ class GeneralConditionDiagnosis extends React.Component {
         if(displayDescriptionFlg){
             judgeResultItemId = this.state.currentGeneralConditionDiagnosisResult.judgeResultItemId;
         }
+        const captureRequiredJudgement = Config.captureRequiredJudgement;
+        const selectedApplicationType = this.props.viewState.selectedApplicationType;
         return (
             <>
                 <div className={CustomStyle.loadingBg} id="loadingBg"></div>
@@ -1075,7 +1233,7 @@ class GeneralConditionDiagnosis extends React.Component {
                         <div className={CustomStyle.myBar} id="myBar"></div>
                     </div>
                     <p style={{ textAlign: "center" }}>帳票作成中 <span id="wholePercent">0</span>%</p>
-                    <If condition = {!document.getElementById("confirmApplicationDetailsRegisterButton") && Config.QuestionaryActived.GeneralConditionDiagnosisView == "true"}>
+                    <If condition = {Config.QuestionaryActived.GeneralConditionDiagnosisView == "true"}>
                         <span style={{ textAlign: "center", fontSize: "x-small" }}>※帳票出力したあとで、別タブでアンケート画面が開きますので、アンケートへの回答ご協力お願いします。</span>
                     </If>
                 </div>
@@ -1102,7 +1260,9 @@ class GeneralConditionDiagnosis extends React.Component {
                                         {Object.keys(generalConditionDiagnosisResult).map(key => (
                                             <tr key={key} 
                                                 onClick={() => { this.showLayers(generalConditionDiagnosisResult[key]);}}
-                                                className={generalConditionDiagnosisResult[key]["judgeResultItemId"] == judgeResultItemId ? CustomStyle.isActiveLine : CustomStyle.tr_button} 
+                                                className={`${generalConditionDiagnosisResult[key]["judgeResultItemId"] == judgeResultItemId ? CustomStyle.isActiveLine : generalConditionDiagnosisResult[key]["dataType"] == "5" || generalConditionDiagnosisResult[key]["dataType"] == "6"? CustomStyle.data_type_style_background_gray:CustomStyle.tr_button}
+                                                    ${generalConditionDiagnosisResult[key]["judgeResultItemId"] == judgeResultItemId ? "":CustomStyle.tr_button}
+                                                    ${generalConditionDiagnosisResult[key]["dataType"] == "2" ? CustomStyle.data_type_style_color_red:""}`} 
                                             >
                                                 <td className={CustomStyle.title}>
                                                     {generalConditionDiagnosisResult[key].title}
@@ -1123,15 +1283,14 @@ class GeneralConditionDiagnosis extends React.Component {
                     <div className={CustomStyle.custom_footer}>
                         <div className={CustomStyle.box}>
                             <div className={CustomStyle.item}>
-                                <button className={CustomStyle.custom_button} disabled={disabledFlg} onClick={() => {
-                                    this.outputPreparation();
-                                    }}>出力</button>
-                                <button className={CustomStyle.custom_button} id="generalConditionOutputBtn" style={{ display: "none" }} onClick={() => {
-                                    this.outputPreparationForConfirmApplicationDetails();
+                                <button className={CustomStyle.custom_button} id="generalConditionOutputBtn" disabled={disabledFlg} onClick={() => {
+                                    captureRequiredJudgement.find((num) => num == selectedApplicationType.applicationTypeId) != undefined ?
+                                    this.simulateExecution() :
+                                    this.outputWithoutCapture();
                                     }}>出力</button>
                             </div>
                             <div className={CustomStyle.item}>
-                                <button className={CustomStyle.custom_button} disabled={disabledFlg} onClick={() => {
+                                <button className={CustomStyle.custom_button} disabled={!selectedApplicationType.applicable || disabledFlg} onClick={() => {
                                     this.next();
                                     }}>申請</button>
                             </div>

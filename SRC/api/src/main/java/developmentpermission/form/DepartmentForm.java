@@ -37,4 +37,8 @@ public class DepartmentForm implements Serializable {
 	/** メールアドレス */
 	@ApiModelProperty(value = "メールアドレス", example = "xxx@xxx.xxx")
 	private String mailAddress;
+	
+	/** 管理者メールアドレス */
+	@ApiModelProperty(value = "管理者メールアドレス", example = "xxx@xxx.xxx")
+	private String adminMailAddress;
 }

@@ -12,6 +12,7 @@ import LotNumberSearchButton from "../DevelopmentPermissionSystem/PageButton/Lot
 import AnswerConfirmButton from "../DevelopmentPermissionSystem/PageButton/AnswerConfirmButton";
 import ApplyButton from "../DevelopmentPermissionSystem/PageButton/ApplyButton";
 import LoginButton from "../DevelopmentPermissionSystem/PageButton/LoginButton";
+import GeneralConditionDiagnosisrReportButton from "../DevelopmentPermissionSystem/PageButton/GeneralConditionDiagnosisrReportbutton";
 import ApplicationInformationSearchButton from "../AdminPermissionSystem/PageButton/ApplicationInformationSearchButton";
 import Styles from "./menu-bar.scss";
 import { runInAction } from "mobx";
@@ -108,6 +109,17 @@ const MenuBar = observer(props => {
           </ul>
         </If> */}
         <ul className={classNames(Styles.menu)}>
+
+          {/* 概況診断レポート一覧ボタン */}
+          {!props.terria.authorityJudgment() && (
+            <li className={Styles.menuItem}>
+                <GeneralConditionDiagnosisrReportButton
+                  viewState={props.viewState}
+                  terria={props.terria}
+                />
+          </li>
+          )}
+          
           <li className={Styles.menuItem}>
             <HelpButton viewState={props.viewState} terria={props.terria} />
           </li>

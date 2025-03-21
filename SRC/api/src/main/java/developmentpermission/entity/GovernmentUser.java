@@ -48,8 +48,12 @@ public class GovernmentUser implements Serializable {
 	/** 部署ID */
 	@Column(name = "department_id")
 	private String departmentId;
-	
+
 	/** 氏名 */
 	@Column(name = "user_name")
 	private String userName;
+
+	/** 管理者フラグ(0:一般ユーザ、1:管理者) */
+	@Column(name = "admin_flag", columnDefinition = "char(1)")
+	private Boolean adminFlag;
 }

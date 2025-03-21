@@ -22,10 +22,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import developmentpermission.form.AnswerConfirmLoginForm;
 import developmentpermission.form.ApplicationCategoryForm;
 import developmentpermission.form.ApplicationCategorySelectionLogForm;
 import developmentpermission.form.ApplicationCategorySelectionViewForm;
+import developmentpermission.form.ApplyLotNumberForm;
 import developmentpermission.form.CategoryJudgementLogForm;
+import developmentpermission.form.GeneralConditionDiagnosisReportProgressForm;
 import developmentpermission.form.GeneralConditionDiagnosisReportRequestForm;
 import developmentpermission.form.GeneralConditionDiagnosisRequestForm;
 import developmentpermission.form.GeneralConditionDiagnosisResultForm;
@@ -33,6 +36,7 @@ import developmentpermission.form.GeneralConditionDiagnosisResultLogForm;
 import developmentpermission.form.LotNumberForm;
 import developmentpermission.form.ResponseEntityForm;
 import developmentpermission.form.UploadForGeneralConditionDiagnosisForm;
+import developmentpermission.service.ApplicationService;
 import developmentpermission.service.JudgementService;
 import developmentpermission.util.AuthUtil;
 import developmentpermission.util.LogUtil;
@@ -56,6 +60,10 @@ public class JudgementApiController extends AbstractApiController {
 	/** 区分判定Serviceインスタンス */
 	@Autowired
 	private JudgementService judgementService;
+	
+	/** 申請Serviceインスタンス */
+	@Autowired
+	private ApplicationService applicationService;
 
 	/** 概況診断結果ログファイルパス */
 	@Value("${app.json.log.rootPath.judgeresult}")
@@ -69,6 +77,10 @@ public class JudgementApiController extends AbstractApiController {
 	@Value("${app.csv.log.path.judge.report}")
 	private String judgeReportLogPath;
 
+	/**	申請段階ID */
+	final private Integer APPLICATION_STEP_ID2 = 2;
+	final private Integer APPLICATION_STEP_ID3 = 3;
+	
 	/**
 	 * 概況診断実行
 	 * 
@@ -85,6 +97,11 @@ public class JudgementApiController extends AbstractApiController {
 			@ApiParam(required = true, value = "概況診断結果リクエストフォーム")@RequestBody GeneralConditionDiagnosisRequestForm generalConditionDiagnosisRequestForm, @CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("概況診断実行 開始");
 		try {
+			String role = AuthUtil.getRole(token);
+			if (!AuthUtil.ROLE_BUSINESS.equals(role) && !AuthUtil.ROLE_GOVERMENT.equals(role)) {
+				LOGGER.warn("ロール不適合: " + role);
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
 			// パラメータチェック
 			if (isValidParam(generalConditionDiagnosisRequestForm)) {
 				try {
@@ -119,6 +136,78 @@ public class JudgementApiController extends AbstractApiController {
 			LOGGER.info("概況診断実行 終了");
 		}
 	}
+	
+	/**
+	 * 概況診断結果レポート生成（シミュレータ実行用）
+	 * 
+	 * @param generalConditionDiagnosisReportRequestForm パラメータ
+	 * @param response                                   HttpServletResponse
+	 */
+	@RequestMapping(value = "/generate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "概況診断結果レポート生成", notes = "概況診断結果レポートを生成する.")
+	@ResponseBody
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
+			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
+			@ApiResponse(code = 503, message = "帳票生成に失敗した場合", response = ResponseEntityForm.class) })
+	public ResponseEntityForm generateGeneralConditionDiagnosisReport(
+			@ApiParam(required = true, value = "概況診断結果レポート出力リクエストフォーム")@RequestBody GeneralConditionDiagnosisReportRequestForm generalConditionDiagnosisReportRequestForm,
+			@CookieValue(value = "token", required = false) String token, HttpServletResponse response) {
+		LOGGER.info("概況診断結果レポート生成 開始");
+		try {
+			String role = AuthUtil.getRole(token);
+			if (!AuthUtil.ROLE_BUSINESS.equals(role) && !AuthUtil.ROLE_GOVERMENT.equals(role)) {
+				LOGGER.warn("ロール不適合: " + role);
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+			}
+			// パラメータチェック
+			if (isValidParam(generalConditionDiagnosisReportRequestForm) 
+					&& generalConditionDiagnosisReportRequestForm.getFolderName() != null && !generalConditionDiagnosisReportRequestForm.getFolderName().equals("") 
+						&& generalConditionDiagnosisReportRequestForm.getFileName() != null && !generalConditionDiagnosisReportRequestForm.getFileName().equals("")) {
+				if (!judgementService.generateJudgeReportWorkBook(generalConditionDiagnosisReportRequestForm, response)) {
+					LOGGER.warn("帳票生成失敗");
+					throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);
+				}else {
+					ResponseEntityForm responseEntityForm = new ResponseEntityForm(HttpStatus.CREATED.value(),
+							"Application File registration successful.");
+					return responseEntityForm;
+				}
+			} else {
+				LOGGER.warn("パラメータ不正");
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			}
+		} finally {
+			LOGGER.info("概況診断結果レポート生成 終了");
+		}
+	}
+	
+	/**
+	 * 概況診断結果レポート進捗状況取得（シミュレータ実行用）
+	 * 
+	 * @param generalConditionDiagnosisReportRequestFormList パラメータ
+	 * @param response                                   HttpServletResponse
+	 */
+	@RequestMapping(value = "/progress", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "概況診断結果レポート進捗状況取得", notes = "概況診断結果レポートの進捗状況を取得する.")
+	@ResponseBody
+	@ApiResponses(value = { @ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
+			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
+			@ApiResponse(code = 503, message = "進捗状況取得に失敗した場合", response = ResponseEntityForm.class) })
+	public List<GeneralConditionDiagnosisReportProgressForm> getGeneralConditionDiagnosisReportProgress(
+			@ApiParam(required = true, value = "概況診断結果レポート出力リクエストフォーム")@RequestBody List<GeneralConditionDiagnosisReportRequestForm> generalConditionDiagnosisReportRequestFormList,
+			@CookieValue(value = "token", required = false) String token, HttpServletResponse response) {
+		LOGGER.info("概況診断結果レポート進捗状況取得 開始");
+		try {
+			// パラメータチェック　一時フォルダのみ
+			if (generalConditionDiagnosisReportRequestFormList != null) {
+				return judgementService.getGeneralConditionDiagnosisReportProgress(generalConditionDiagnosisReportRequestFormList);
+			} else {
+				LOGGER.warn("パラメータ不正");
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			}
+		} finally {
+			LOGGER.info("概況診断結果レポート進捗状況取得 終了");
+		}
+	}
 
 	/**
 	 * 概況診断結果レポート出力
@@ -138,7 +227,21 @@ public class JudgementApiController extends AbstractApiController {
 		LOGGER.info("概況診断結果レポート出力 開始");
 		try {
 			// パラメータチェック
-			if (isValidParam(generalConditionDiagnosisReportRequestForm)) {
+			if (generalConditionDiagnosisReportRequestForm!=null) {
+				String id = generalConditionDiagnosisReportRequestForm.getLoginId();
+				String password = generalConditionDiagnosisReportRequestForm.getPassword();
+				Integer parmApplicationId = generalConditionDiagnosisReportRequestForm.getApplicationId();
+				if (parmApplicationId != null && parmApplicationId > 0) {
+					AnswerConfirmLoginForm answerConfirmLoginForm = new AnswerConfirmLoginForm();
+					answerConfirmLoginForm.setLoginId(id);
+					answerConfirmLoginForm.setPassword(password);
+					// 申請ID
+					Integer applicationId = applicationService.getApplicationIdFromApplicantInfo(answerConfirmLoginForm);
+					if (applicationId == null || !applicationId.equals(parmApplicationId)) {
+						LOGGER.warn("申請情報取得不能");
+						throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+					}
+				}
 				if (!judgementService.exportJudgeReportWorkBook(generalConditionDiagnosisReportRequestForm, response)) {
 					LOGGER.warn("帳票生成失敗");
 					throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);
@@ -150,12 +253,33 @@ public class JudgementApiController extends AbstractApiController {
 		} finally {
 			// 概況診断結果レポート（出力件数） ログ出力
 			try {
-				// アクセスID
-				String accessId = AuthUtil.getAccessId(token);
-				Object[] logData = { LogUtil.localDateTimeToString(LocalDateTime.now()), accessId,
-						generalConditionDiagnosisReportRequestForm.getGeneralConditionDiagnosisResults().get(0)
-								.getGeneralConditionDiagnosisResultId() };
-				LogUtil.writeLogToCsv(judgeReportLogPath, judgeReportLogHeader, logData);
+				// バックグラウンドで帳票生成の場合、ログ出力をスキップ
+				if (generalConditionDiagnosisReportRequestForm.getGeneralConditionDiagnosisResults() != null) {
+					// アクセスID
+					String accessId = AuthUtil.getAccessId(token);
+
+					// 申請種類
+					String applicationTypeName = "";
+					if (generalConditionDiagnosisReportRequestForm.getApplicationTypeId() != null) {
+
+						applicationTypeName = judgementService.getApplicationTypeName(
+								generalConditionDiagnosisReportRequestForm.getApplicationTypeId());
+					}
+
+					// 申請段階
+					String applicationStepName = "";
+					if (generalConditionDiagnosisReportRequestForm.getApplicationStepId() != null) {
+
+						applicationStepName = judgementService.getApplicationStepName(
+								generalConditionDiagnosisReportRequestForm.getApplicationStepId());
+					}
+
+					Object[] logData = { LogUtil.localDateTimeToString(LocalDateTime.now()), accessId,
+							generalConditionDiagnosisReportRequestForm.getGeneralConditionDiagnosisResults().get(0)
+									.getGeneralConditionDiagnosisResultId(),
+							applicationTypeName, applicationStepName };
+					LogUtil.writeLogToCsv(judgeReportLogPath, judgeReportLogHeader, logData);
+				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -251,9 +375,10 @@ public class JudgementApiController extends AbstractApiController {
 		List<GeneralConditionDiagnosisResultForm> generalConditionDiagnosisResults = generalConditionDiagnosisReportRequestForm
 				.getGeneralConditionDiagnosisResults();
 		List<LotNumberForm> lotNumbers = generalConditionDiagnosisReportRequestForm.getLotNumbers();
+		List<ApplyLotNumberForm> applyLotNumbers = generalConditionDiagnosisReportRequestForm.getApplyLotNumbers();
 		if (applicationCategories == null || applicationCategories.size() == 0
 				|| generalConditionDiagnosisResults == null || generalConditionDiagnosisResults.size() == 0
-				|| lotNumbers == null || lotNumbers.size() == 0) {
+				|| ((lotNumbers == null || lotNumbers.size() == 0) && (applyLotNumbers == null || applyLotNumbers.size() == 0))) {
 			LOGGER.warn("申請区分選択一覧または概況診断結果一覧または申請地番一覧がnullまたは空");
 			return false;
 		}
@@ -267,14 +392,38 @@ public class JudgementApiController extends AbstractApiController {
 	 * @return 判定結果
 	 */
 	private boolean isValidParam(GeneralConditionDiagnosisRequestForm generalConditionDiagnosisRequestForm) {
-		List<ApplicationCategorySelectionViewForm> applicationCategories = generalConditionDiagnosisRequestForm
-				.getApplicationCategories();
-		List<LotNumberForm> lotNumbers = generalConditionDiagnosisRequestForm.getLotNumbers();
-		if (applicationCategories == null || applicationCategories.size() == 0 || lotNumbers == null
-				|| lotNumbers.size() == 0) {
-			LOGGER.warn("申請区分一覧または申請地番一覧がnullまたは空");
+		// 許可判定の場合、申請区分がないため、必須チェックを行わなない
+		if (generalConditionDiagnosisRequestForm.getApplicationStepId() != 3) {
+			List<ApplicationCategorySelectionViewForm> applicationCategories = generalConditionDiagnosisRequestForm
+					.getApplicationCategories();
+			if (applicationCategories == null || applicationCategories.size() == 0) {
+				LOGGER.warn("申請区分一覧がnullまたは空");
+				return false;
+			}
+		}
+
+		// 初回申請の場合、申請地番が必須項目です
+		if (generalConditionDiagnosisRequestForm.getApplicationId() == null) {
+			List<LotNumberForm> lotNumbers = generalConditionDiagnosisRequestForm.getLotNumbers();
+			if (lotNumbers == null || lotNumbers.size() == 0) {
+				LOGGER.warn("申請地番一覧がnullまたは空");
+				return false;
+			}
+		}
+
+		if (generalConditionDiagnosisRequestForm.getApplicationTypeId() == null
+				|| generalConditionDiagnosisRequestForm.getApplicationStepId() == null) {
+			LOGGER.warn("申請種類IDまたは申請段階IDがnull");
 			return false;
 		}
+
+		if ((APPLICATION_STEP_ID2.equals(generalConditionDiagnosisRequestForm.getApplicationStepId())
+				|| APPLICATION_STEP_ID3.equals(generalConditionDiagnosisRequestForm.getApplicationStepId()))
+				&& generalConditionDiagnosisRequestForm.getApplicationId() == null) {
+			LOGGER.warn("申請段階が事前協議または、許可判定の場合、申請IDがnull");
+			return false;
+		}
+
 		return true;
 	}
 
@@ -299,10 +448,39 @@ public class JudgementApiController extends AbstractApiController {
 			logForm.setアクセス日時(executeDateTime);
 			// アクセスID
 			logForm.setアクセスID(accessId);
+
+			// 申請種類
+			if (generalConditionDiagnosisRequestForm.getApplicationTypeId() == null) {
+				logForm.set申請種類("");
+			} else {
+
+				String applicationTypeName = judgementService
+						.getApplicationTypeName(generalConditionDiagnosisRequestForm.getApplicationTypeId());
+				logForm.set申請種類(applicationTypeName);
+			}
+
+			// 申請段階
+			if (generalConditionDiagnosisRequestForm.getApplicationStepId() == null) {
+				logForm.set申請段階("");
+			} else {
+
+				String applicationStepName = judgementService
+						.getApplicationStepName(generalConditionDiagnosisRequestForm.getApplicationStepId());
+				logForm.set申請段階(applicationStepName);
+			}
+
 			// 地番
 			List<String> lotNumbers = new ArrayList<String>();
-			for (LotNumberForm aLotNumber : generalConditionDiagnosisRequestForm.getLotNumbers()) {
-				lotNumbers.add(aLotNumber.getDistrictName() + aLotNumber.getChiban());
+			if (generalConditionDiagnosisRequestForm.getApplicationId() == null) {
+				for (LotNumberForm aLotNumber : generalConditionDiagnosisRequestForm.getLotNumbers()) {
+
+					lotNumbers.add(aLotNumber.getDistrictName() + aLotNumber.getChiban());
+				}
+			} else {
+				for (ApplyLotNumberForm aLotNumber : generalConditionDiagnosisRequestForm.getApplyLotNumbers()) {
+
+					lotNumbers.add(aLotNumber.getLot_numbers());
+				}
 			}
 			logForm.set申請地番一覧(lotNumbers);
 			// 申請区分

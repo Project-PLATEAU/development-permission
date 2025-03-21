@@ -28,11 +28,15 @@ public class ApplicationSearchResultForm implements Serializable {
 	@ApiModelProperty(value = "申請ID", example = "1")
 	private Integer applicationId;
 
+	/** ステータスコード */
+	@ApiModelProperty(value = "ステータスコード", example = "101")
+	private String statusCode;
+	
 	/** 検索結果属性情報（O_申請, O_申請者情報, O_申請区分の情報をMap形式で格納.） */
 	@ApiModelProperty(value = "属性情報")
 	private Map<String, Object> attributes;
 	
 	/** 地番一覧 */
 	@ApiModelProperty(value = "地番一覧")
-	private List<LotNumberForm> lotNumbers;
+	private List<ApplyLotNumberForm> lotNumbers;
 }

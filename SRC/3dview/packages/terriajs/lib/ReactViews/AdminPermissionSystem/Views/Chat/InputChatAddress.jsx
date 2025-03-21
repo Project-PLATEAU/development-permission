@@ -72,7 +72,7 @@ class InputChatAddress extends React.Component {
      * 部署一覧取得
      */
     getDepartmentList(){
-        fetch(Config.config.apiUrl + "/application/search/conditions")
+        fetch(Config.config.apiUrl + "/application/departments")
         .then(res => {
             // 401認証エラーの場合の処理を追加
             if (res.status === 401) {
@@ -83,8 +83,8 @@ class InputChatAddress extends React.Component {
             return res.json();
         })
         .then(res => {
-            if (Object.keys(res).length > 0) {
-                this.setState({department: res.department});
+            if (res && Object.keys(res).length > 0) {
+                this.setState({department: res});
             } else {
                 alert("部署一覧取得に失敗しました。再度操作をやり直してください。");
             }

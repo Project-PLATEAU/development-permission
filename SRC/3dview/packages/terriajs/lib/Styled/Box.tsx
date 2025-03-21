@@ -103,18 +103,18 @@ export const Box = styled.div<IBoxProps>`
     box-sizing: border-box;
   `}
 
-  // ${props => props.col1 && "width: 8.33333%;"}
-  // ${props => props.col2 && "width: 16.66667%;"}
-  // ${props => props.col3 && "width: 25%;"}
-  // ${props => props.col4 && "width: 33.33333%;"}
+  ${props => props.col1 && "width: 8.33333%;"}
+  ${props => props.col2 && "width: 16.66667%;"}
+  ${props => props.col3 && "width: 25%;"}
+  ${props => props.col4 && "width: 33.33333%;"}
   ${props => props.col5 && "width: 41.66667%;"}
   ${props => props.col6 && "width: 50%;"}
-  // ${props => props.col7 && "width: 58.33333%;"}
-  // ${props => props.col8 && "width: 66.66667%;"}
-  // ${props => props.col9 && "width: 75%;"}
+  ${props => props.col7 && "width: 58.33333%;"}
+  ${props => props.col8 && "width: 66.66667%;"}
+  ${props => props.col9 && "width: 75%;"}
   ${props => props.col10 && "width: 83.33333%;"}
   ${props => props.col11 && "width: 91.66667%;"}
-  // ${props => props.col12 && "width: 100%;"}
+  ${props => props.col12 && "width: 100%;"}
 
   ${props => props.verticalCenter && `align-items: center;`}
   ${props => props.centered && `align-items: center;`}

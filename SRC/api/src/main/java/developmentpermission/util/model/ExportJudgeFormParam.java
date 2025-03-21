@@ -56,10 +56,6 @@ public class ExportJudgeFormParam {
 
 	/** 判定結果出力開始行 */
 	private int judgeResultStartRow;
-//	/** 「判定結果」ラベル */
-//	private String judgeResultLabel;
-//	/** 「判定結果」ラベル 出力列 */
-//	private int judgeResultCol;
 	/** 判定結果 結合行数 */
 	private int judgeResultMergeRow;
 	/** 判定結果タイトル 出力列 */
@@ -115,6 +111,9 @@ public class ExportJudgeFormParam {
 	/** 判定結果詳細 回答タイトルテンプレート文字列2 **/
 	private String judgeResultDescriptionAnswerTitleTemplateText2;
 	
+	/** 判定結果詳細 回答タイトルテンプレート文字列3 **/
+	private String judgeResultDescriptionAnswerTitleTemplateText3;
+	
 	/** 判定結果詳細 回答タイトル出力列 **/
 	private int judgeResultDescriptionAnswerTitleCol;
 	
@@ -133,9 +132,10 @@ public class ExportJudgeFormParam {
 	/** 判定結果詳細 回答内容非該当時文字列 **/
 	private String judgeResultDescriptionAnswerContentNoApply;
 	
+	/** 行政による回答削除 **/
+	private String judgeResultDescriptionAnswerDelete;
+	
 	/** 一時フォルダパス */
 	private String folderPath;
-	/** 開発用ダミー画像パス */
-	// private String dummyImagePath;
 
 }

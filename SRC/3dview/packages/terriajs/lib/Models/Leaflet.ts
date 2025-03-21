@@ -53,6 +53,8 @@ import Feature from "./Feature";
 import GlobeOrMap from "./GlobeOrMap";
 import MapInteractionMode from "./MapInteractionMode";
 import Terria from "./Terria";
+import Color from "terriajs-cesium/Source/Core/Color";
+import { CaughtException } from "mobx/lib/internal";
 
 // We want TS to look at the type declared in lib/ThirdParty/terriajs-cesium-extra/index.d.ts
 // and import doesn't allows us to do that, so instead we use require + type casting to ensure
@@ -79,12 +81,15 @@ export default class Leaflet extends GlobeOrMap {
   private _cesiumReqAnimFrameId: number | undefined;
   private _pickedFeatures: PickedFeatures | undefined = undefined;
   private _pauseMapInteractionCount = 0;
+  private _altKeyFlag = false;
 
   /* Disposers */
   private readonly _disposeWorkbenchMapItemsSubscription: () => void;
   private readonly _disposeDisableInteractionSubscription: () => void;
   private _disposeSelectedFeatureSubscription?: () => void;
   private _disposeSplitterReaction: () => void;
+  private handleKeyDown:any;
+  private handleKeyUp:any;
 
   // These are used to split CesiumTileLayer and MapboxCanvasVectorTileLayer
   @observable size: L.Point | undefined;
@@ -252,6 +257,91 @@ export default class Leaflet extends GlobeOrMap {
     });
 
     this._initProgressEvent();
+    this._userDrawing();
+  }
+
+
+  private _userDrawing(){
+        //2D用の自由形選択(地番選択時)
+        let drawnPolygon:any = null;
+        let isDrawing = false;
+        let altPressed = false;
+    
+        const finishDrawing = () => {
+            if (drawnPolygon) {
+              try{
+                this.terria.setActiveShapeLonLat(this.terria.activeShapeLonLat[0]);
+                drawnPolygon.addLatLng(drawnPolygon.getLatLngs()[0]);
+              }catch(ex){
+                const error:any = ex;
+                console.log(error.message);
+              }
+              this.map.removeLayer(drawnPolygon);
+            }
+            isDrawing = false;
+            const freeBtn = document.getElementById("freeBtn");
+            freeBtn?.click();
+            this.terria.initActiveShapeLonLat();
+            this.terria.initActiveShapePoints();
+            this.map.dragging.enable();
+        }
+
+        this.handleKeyDown = (event:any) => {
+            const freeBtn = document.getElementById("freeBtn");
+            if(event.key === 'Alt' && this.terria.clickMode === "1" && freeBtn) {
+              altPressed = true;
+              this.map.dragging.disable();
+            }
+        };
+        document.addEventListener('keydown',this.handleKeyDown);
+
+        this.handleKeyUp = (event:any) => {
+            const freeBtn = document.getElementById("freeBtn");
+            if (event.key === 'Alt' && this.terria.clickMode === "1" && freeBtn) {
+              altPressed = false;
+              this.map.dragging.enable();
+              finishDrawing();
+            }
+        };
+        document.addEventListener('keyup', this.handleKeyUp);
+    
+        this.map.on('mousedown', (e:any) => {
+          try{
+            this._altKeyFlag = false;
+            if (altPressed) {
+              this._altKeyFlag = true;
+              isDrawing = true;
+              this.terria.initSetActiveShapeLonLat([e.latlng.lng,e.latlng.lat]);
+              drawnPolygon = L.polygon([e.latlng], {color: '#ee7800',fillColor: '#ee7800',fillOpacity: 0.5}).addTo(this.map);
+            }
+          }catch(ex){
+            const error:any = ex;
+            console.log(error.message);
+          }
+        });
+    
+        this.map.on('mousemove', (e:any) => {
+          try{
+            if (isDrawing && altPressed && drawnPolygon) {
+              this.terria.setActiveShapeLonLat([e.latlng.lng,e.latlng.lat]);
+              drawnPolygon.addLatLng(e.latlng);
+            }
+          }catch(ex){
+            const error:any = ex;
+            console.log(error.message);
+          }
+        });
+    
+        this.map.on('mouseup', () => {
+          try{
+            if (isDrawing && altPressed) {
+                finishDrawing();
+            }
+          }catch(ex){
+            const error:any = ex;
+            console.log(error.message);
+          }
+        });
   }
 
   /**
@@ -297,17 +387,31 @@ export default class Leaflet extends GlobeOrMap {
    * Pick feature from mouse click event.
    */
   private pickLocation(e: L.LeafletEvent) {
+
+    if(this._altKeyFlag) return;
+
     const mouseEvent = <L.LeafletMouseEvent>e;
 
     // Handle click events that cross the anti-meridian
     if (mouseEvent.latlng.lng > 180 || mouseEvent.latlng.lng < -180) {
       mouseEvent.latlng = mouseEvent.latlng.wrap();
     }
-
     // if (!this._dragboxcompleted && that.map.dragging.enabled()) {
     this._pickFeatures(mouseEvent.latlng);
     // }
     // this._dragboxcompleted = false;
+    this.terria.setLat(mouseEvent.latlng.lat + "");
+    this.terria.setLon(mouseEvent.latlng.lng + "");
+    //地図選択(事業者)
+    if(this.terria.clickMode === "1"){
+      const clickMapSelection = document.getElementById('clickMapSelection') as HTMLElement;
+      clickMapSelection.click();
+    }
+    //申請情報詳細へ遷移(行政)
+    if(this.terria.clickMode === "2"){
+      const getApplication = document.getElementById('getApplication') as HTMLElement;
+      getApplication.click();
+    }
   }
 
   getContainer() {
@@ -348,6 +452,10 @@ export default class Leaflet extends GlobeOrMap {
     this.dataSourceDisplay.destroy();
     this.map.off("move");
     this.map.off("zoom");
+    this.map.off("mousemove");
+    this.map.off("mouseup");
+    document.removeEventListener('keydown', this.handleKeyDown);
+    document.removeEventListener('keyup', this.handleKeyUp);
     this.map.remove();
   }
 

@@ -40,9 +40,12 @@ public class Department implements Serializable {
 	/** 回答権限フラグ */
 	@Column(name = "answer_authority_flag", columnDefinition = "char(1)")
 	private Boolean answerAuthorityFlag;
-	
+
 	/** メールアドレス */
 	@Column(name = "mail_address")
 	private String mailAddress;
 
+	/** 管理者メールアドレス */
+	@Column(name = "admin_mail_address")
+	private String adminMailAddress;
 }

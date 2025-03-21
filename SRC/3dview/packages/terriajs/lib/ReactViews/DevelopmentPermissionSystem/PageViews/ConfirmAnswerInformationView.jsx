@@ -33,9 +33,7 @@ class ConfirmAnswerInformationView extends React.Component {
         super(props);
         this.state = {
             viewState: props.viewState,
-            terria: props.terria,
-            // //申請地番
-            // lotNumber: props.viewState.answerContent.lotNumbers,
+            terria: props.terria
         };
     }
 
@@ -49,29 +47,28 @@ class ConfirmAnswerInformationView extends React.Component {
         applicationPlace = applicationPlace.filter(Boolean);
         this.props.viewState.setLotNumbers(applicationPlace);
         try{
-            const item = new webMapServiceCatalogItem(Config.layer.lotnumberSearchLayerNameForApplicationTarget, this.state.terria);
+            const item = new webMapServiceCatalogItem(Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget, this.state.terria);
             const wmsUrl = Config.config.geoserverUrl;
             const items = this.state.terria.workbench.items;
             for (const aItem of items) {
-                if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationTarget) {
+                if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget) {
                     this.state.terria.workbench.remove(aItem);
                     aItem.loadMapItems();
                 }
             }
             item.setTrait(CommonStrata.definition, "url", wmsUrl);
-            item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForApplicationTarget);
+            item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForApplicationSearchTarget);
             item.setTrait(
                 CommonStrata.user,
                 "layers",
-                Config.layer.lotnumberSearchLayerNameForApplicationTarget);
+                Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget);
             item.setTrait(CommonStrata.user,
                 "parameters",
                 {
-                    "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationTarget + Object.keys(applicationPlace)?.map(key => { return applicationPlace[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_"),
+                    "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + this.props.viewState.answerContent.applicationId,                    
                 });
             item.loadMapItems();
             this.state.terria.workbench.add(item);
-            this.focusMapPlaceDriver();
         }catch(error){
             console.error('処理に失敗しました', error);
         }
@@ -81,7 +78,7 @@ class ConfirmAnswerInformationView extends React.Component {
     /**
      * フォーカス処理ドライバー
      */
-    focusMapPlaceDriver() {
+    focusMapPlaceDriver = () => {
         let applicationPlace = Object.assign({}, this.props.viewState.answerContent.lotNumbers);
         applicationPlace = Object.values(applicationPlace);
         applicationPlace = applicationPlace.filter(Boolean);
@@ -126,53 +123,17 @@ class ConfirmAnswerInformationView extends React.Component {
      * @param {number} lon 経度
      * @param {number} lat 緯度
      */
-    outputFocusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat) {
-        // 3dmodeにセット
-        this.props.viewState.set3dMode();
-        //現在のカメラ位置等を取得
-        const currentSettings = getShareData(this.state.terria, this.props.viewState);
-        const currentCamera = currentSettings.initSources[0].initialCamera;
-        let newCamera = Object.assign(currentCamera);
-        //新規の表示範囲を設定
-        let currentLonDiff = Math.abs(maxLon - minLon);
-        let currentLatDiff = Math.abs(maxLat - minLat);
-        newCamera.north = maxLon + currentLatDiff / 2;
-        newCamera.south = minLon - currentLatDiff / 2;
-        newCamera.east = maxLat + currentLonDiff / 2;
-        newCamera.west = minLat - currentLonDiff / 2;
-        //camera.positionを緯度経度に合わせて設定
-        const scene = this.props.terria.cesium.scene;
-        const terrainProvider = scene.terrainProvider;
-        const positions = [Cartographic.fromDegrees(lon, minLat)];
-        let height = 0;
-        sampleTerrainMostDetailed(terrainProvider, positions).then((updatedPositions) => {
-            height = updatedPositions[0].height
-            let coord_wgs84 = Cartographic.fromDegrees(lon, minLat, parseFloat(height) + parseInt((400000 * currentLatDiff )) + 200 );
-            let coord_xyz = Ellipsoid.WGS84.cartographicToCartesian(coord_wgs84);
-            newCamera.position = { x: coord_xyz.x, y: coord_xyz.y, z: coord_xyz.z - parseInt((300000 * currentLatDiff )) - 170 };
-            //カメラの向きは統一にさせる
-            newCamera.direction = { x: this.props.terria.focusCameraDirectionX, y: this.props.terria.focusCameraDirectionY, z: this.props.terria.focusCameraDirectionZ };
-            newCamera.up = { x: this.props.terria.focusCameraUpX, y: this.props.terria.focusCameraUpY, z:this.props.terria.focusCameraUpZ };
-            this.state.terria.currentViewer.zoomTo(newCamera, 5);
-        })
+    outputFocusMapPlace = (maxLon, maxLat, minLon, minLat, lon, lat) => {
+        this.props.terria.focusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat, this.props.viewState);
     }
 
     render() {
-        const t = this.props.t;
-        let infoMessage = t("infoMessage.tipsForConfirmAnswer");
-        
         return (
-            <>
-                <Box column style={{overflowY:"auto" , overflowX: "hidden"}} id="ConfirmAnswerInformationView" >
-                    <div className={Styles.div_area}>
-                        <Box padded  className={Styles.text_area}>
-                            <span dangerouslySetInnerHTML={{ __html: infoMessage }}></span>
-                        </Box>
-
-                        <AnswerContent terria={this.props.terria} viewState={this.props.viewState} />
-                    </div>
-                </Box>
-            </>
+            <Box column style={{overflowY:"auto" , overflowX: "hidden"}} id="ConfirmAnswerInformationView" >
+                <div className={Styles.div_area}>
+                    <AnswerContent terria={this.props.terria} viewState={this.props.viewState}  focusMapPlaceDriver={this.focusMapPlaceDriver} />
+                </div>
+            </Box>
         );
     };
 }

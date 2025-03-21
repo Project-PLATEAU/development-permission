@@ -159,7 +159,6 @@ module.exports = terria.start({
         ];
 
         // Automatically update Terria (load new catalogs, etc.) when the hash part of the URL changes.
-        updateApplicationOnHashChange(terria, window);
         updateApplicationOnMessageFromParentWindow(terria, window);
 
         // Show a modal disclaimer before user can do anything else.
@@ -266,6 +265,7 @@ module.exports = terria.start({
         
         viewState.showApplicationAreaLayer();
         render(terria, [], viewState);
+        updateApplicationOnHashChange(terria,viewState, window);
     } catch (e) {
         console.error(e);
         console.error(e.stack);

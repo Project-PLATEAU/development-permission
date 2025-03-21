@@ -149,7 +149,7 @@ class AnswerLogin extends React.Component {
     }
 
     render() {
-        const explanation = "ID/パスワードを入力してください";
+        const explanation = "照合ID/パスワードを入力してください";
         const id = this.state.id;
         const password = this.state.password;
         const errorItems = this.state.errorItems;
@@ -179,7 +179,7 @@ class AnswerLogin extends React.Component {
                                         type="text"
                                         white={true}
                                         value={id}
-                                        placeholder="ID"
+                                        placeholder="照合ID"
                                         id="id"
                                         fieldBorder={"#d3d3d3"}
                                         border
@@ -197,7 +197,7 @@ class AnswerLogin extends React.Component {
                                         type={pushHide ? "password" : "text" }
                                         white={true}
                                         value={password}
-                                        placeholder="Pass"
+                                        placeholder="パスワード"
                                         id="password"
                                         fieldBorder={"#d3d3d3"}
                                         border
@@ -231,7 +231,7 @@ class AnswerLogin extends React.Component {
                         <p className={CustomStyle.explanation}>{explanation}</p>
                         <div className={CustomStyle.inputBox}>
                             <div className={CustomStyle.caption}>
-                                <Text>ID</Text>
+                                <Text>照合ID</Text>
                             </div>
                             <div className={CustomStyle.input_text}>
                                 {errorItems["id"] && (
@@ -279,7 +279,6 @@ class AnswerLogin extends React.Component {
                             </div>
                         </div>
                     </div>
-                    {/* <Box paddedRatio={3} /> */}
                     <div className={CustomStyle.button_position}>
                         <button
                             className={CustomStyle.next_button}

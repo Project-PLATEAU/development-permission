@@ -41,15 +41,15 @@ public class ApplicationFileMaster implements Serializable {
 	@Column(name = "judgement_item_id")
 	private String judgementItemId;
 
-	/** 必須有無 */
+	/** 必須有無(1:必須 0:任意 2:任意(注意文言あり)) */
 	@Column(name = "require_flag", columnDefinition = "char(1)")
-	private Boolean requireFlag;
+	private String requireFlag;
 
 	/** アップロードファイル名 */
 	@Id
 	@Column(name = "upload_file_name")
 	private String uploadFileName;
-	
+
 	/** 拡張子 */
 	@Column(name = "extension")
 	private String extension;

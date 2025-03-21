@@ -21,7 +21,8 @@ class ImageEdit extends React.Component {
         t: PropTypes.func.isRequired,
         path: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        objectUrl: PropTypes.string
+        objectUrl: PropTypes.string,
+        editable: PropTypes.bool
     }
 
     constructor(props){
@@ -35,6 +36,7 @@ class ImageEdit extends React.Component {
             addFile: props.addFile,
             markerjsAlertModal: true,
             markerjsShow: false,
+            editable: props.editable
         };
         this.imgRef = React.createRef();
     }
@@ -47,10 +49,8 @@ class ImageEdit extends React.Component {
       this.setState({markerjsAlertModal:true});
 
       if (this.state.src) {
-          //this.showMarkerArea();
       } else if (this.state.filePath) {
           this.getFileUrl(this.state.filePath).then(res => {
-              //this.setState({ src: res }, this.showMarkerArea);
               this.setState({ src: res }); 
             });
       }
@@ -62,8 +62,8 @@ class ImageEdit extends React.Component {
      */
     componentDidUpdate(prevProps) 
     {
-      if (this.props.path !== prevProps.path || this.props.name !== prevProps.name || this.props.objectUrl !== prevProps.objectUrl) {
-        this.setState({ fileName: this.props.name})
+      if (this.props.path !== prevProps.path || this.props.name !== prevProps.name || this.props.objectUrl !== prevProps.objectUrl || this.props.editable !== prevProps.editable) {
+        this.setState({ fileName: this.props.name, editable: this.props.editable})
         if (this.props.objectUrl) {
           this.setState({ src: this.props.objectUrl }) 
           this.showMarkerArea();
@@ -167,109 +167,127 @@ class ImageEdit extends React.Component {
         markerArea.show();
 
         // show tooltip
-        const elements = document.querySelectorAll(".__markerjs2__0_toolbar_button");
-        Array.from(elements).forEach(element => {
-          const dataAction = element.getAttribute("data-action");
-          const typeName = element.getAttribute("data-type-name");
-  
-          if(typeName) {
-            let typeNameJp;
-            // 変換
-            switch(typeName){
-              case "FrameMarker":
-                typeNameJp = "正方形/長方形";
-                break;
-              case "FreehandMarker":
-                typeNameJp = "フリーハンド";
-                break
-              case "ArrowMarker":
-                typeNameJp = "矢印";
-                break;
-              case "TextMarker":
-                typeNameJp = "テキスト";
-                break;
-              case "EllipseMarker":
-                typeNameJp = "円/楕円";
-                break;
-              case "HighlightMarker":
-                typeNameJp = "強調";
-                break;
-              case "CalloutMarker":
-                typeNameJp = "吹き出し";
-                break;
-              default:
-                typeNameJp = typeName;
-            }  
-            element.setAttribute("data-tippy-content", typeNameJp);
-          }
-          else if(dataAction){
-            let dataActionJp;
-            switch(dataAction){
-              case "select":
-                dataActionJp = "選択";
-                break;
-              case "delete":
-                dataActionJp = "削除";
-                break;
-              case "undo":
-                dataActionJp = "戻る";
-                break;
-              case "render":
-                dataActionJp = "完了";
-                break;
-              case "close":
-                dataActionJp = "閉じる";
-                break;
-              default:
-                dataActionJp = dataAction;
-            }
-            element.setAttribute("data-tippy-content", dataActionJp);
-          }
-        });
-        tippy('.__markerjs2__0_toolbar_button');
+        const elements = document.querySelectorAll( "[class*='_toolbar_button']");
 
-        markerArea.addEventListener('markercreating', event => {
-          const elements = document.querySelectorAll(".__markerjs2__0_toolbox_button");
+        if(this.state.editable == false){
+          // 回答ファイルが編集不可の場合、ツールボタンが非表示にする
           Array.from(elements).forEach(element => {
-            const title = element.getAttribute("title");
-            
-            if(title){
-              let titleJp;
-              switch(title){
-                case "Line color":
-                  titleJp = "線色";
-                  break;
-                case "Line width":
-                  titleJp = "線幅";
-                  break;
-                case "Line style":
-                  titleJp = "線スタイル";
-                  break;
-                case "Color":
-                  titleJp = "色";
-                  break;
-                case "Arrow type":
-                  titleJp = "矢印タイプ";
-                  break;
-                case "Font":
-                  titleJp = "フォント";
-                  break;
-                case "Fill color":
-                  titleJp = "塗色";
-                  break;
-                case "Opacity":
-                  titleJp = "透過度";
-                  break;
-                case "Text color":
-                  titleJp = "文字色";
-                  break;
-                default:
-                  titleJp = title;
-              }
-              element.setAttribute("data-tippy-content", titleJp);
+            const dataAction = element.getAttribute("data-action");
+
+            if(dataAction !== "close"){
+              element.style.display = 'none';
             }
           });
-          tippy('.__markerjs2__0_toolbox_button');
+
+        }else{
+          Array.from(elements).forEach(element => {
+            const dataAction = element.getAttribute("data-action");
+            const typeName = element.getAttribute("data-type-name");
+            if(typeName) {
+              let typeNameJp;
+              // 変換
+              switch(typeName){
+                case "FrameMarker":
+                  typeNameJp = "正方形/長方形";
+                  break;
+                case "FreehandMarker":
+                  typeNameJp = "フリーハンド";
+                  break
+                case "ArrowMarker":
+                  typeNameJp = "矢印";
+                  break;
+                case "TextMarker":
+                  typeNameJp = "テキスト";
+                  break;
+                case "EllipseMarker":
+                  typeNameJp = "円/楕円";
+                  break;
+                case "HighlightMarker":
+                  typeNameJp = "強調";
+                  break;
+                case "CalloutMarker":
+                  typeNameJp = "吹き出し";
+                  break;
+                default:
+                  typeNameJp = typeName;
+              }  
+              element.setAttribute("data-tippy-content", typeNameJp);
+            }
+            else if(dataAction){
+              let dataActionJp;
+              switch(dataAction){
+                case "select":
+                  dataActionJp = "選択";
+                  break;
+                case "delete":
+                  dataActionJp = "削除";
+                  break;
+                case "undo":
+                  dataActionJp = "戻る";
+                  break;
+                case "render":
+                  dataActionJp = "完了";
+                  break;
+                case "close":
+                  dataActionJp = "閉じる";
+                  break;
+                default:
+                  dataActionJp = dataAction;
+              }
+              element.setAttribute("data-tippy-content", dataActionJp);
+            }
+          });
+        }
+        tippy(elements);
+
+        markerArea.addEventListener('markercreating', event => {
+          const elements = document.querySelectorAll( "[class*='_toolbox_button']");
+          
+          Array.from(elements).forEach(element => {
+            const title = element.getAttribute("title");
+            if(this.state.editable == false){
+              // 回答ファイルが編集不可の場合、ツールボタンが非表示にする
+              element.style.display = 'none';
+            }else{
+
+              if(title){
+                let titleJp;
+                switch(title){
+                  case "Line color":
+                    titleJp = "線色";
+                    break;
+                  case "Line width":
+                    titleJp = "線幅";
+                    break;
+                  case "Line style":
+                    titleJp = "線スタイル";
+                    break;
+                  case "Color":
+                    titleJp = "色";
+                    break;
+                  case "Arrow type":
+                    titleJp = "矢印タイプ";
+                    break;
+                  case "Font":
+                    titleJp = "フォント";
+                    break;
+                  case "Fill color":
+                    titleJp = "塗色";
+                    break;
+                  case "Opacity":
+                    titleJp = "透過度";
+                    break;
+                  case "Text color":
+                    titleJp = "文字色";
+                    break;
+                  default:
+                    titleJp = title;
+                }
+                element.setAttribute("data-tippy-content", titleJp);
+              }
+            }
+          });
+          tippy(elements);
         });
         
       }

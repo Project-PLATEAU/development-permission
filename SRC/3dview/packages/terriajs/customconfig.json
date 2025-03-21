@@ -1,6 +1,7 @@
 {
   "config": {
       "apiUrl":"/api",
+      "simulatorApiUrl":"/simulatorapi",
       "pdfViewerUrl": "/pdfjs",
       "geoserverUrl":"/geoserver/devps/wms",
       "geoserverWfsUrl": "/geoserver/devps/ows",
@@ -8,6 +9,11 @@
       "maxFileSize":"50",
       "maxRequestFileSize":"100",
       "answerReportName":"行政回答レポート",
+      "applicationSearchResultFileName": "申請情報検索結果",
+      "inquirySearchResultFileName": "問い合わせ情報検索結果",
+      "governmentAddAnswerTitle":"その他",
+      "answerContentUpdatingInfoText":"行政担当者で回答修正中",
+      "topButtonUrl":"https://path.to.questinnaire/",
       "questionnaireUrlForBusiness":"https://path.to.questinnaire/for/business",
       "questionnaireUrlForGoverment":"https://path.to.questinnaire/for/government"
   },
@@ -30,7 +36,10 @@
       "lotnumberSearchLayerDisplayNameForAll":"筆界",
       "lotnumberSearchLayerNameForApplicationSearchTarget":"devps:申請情報表示地番",
       "lotnumberSearchLayerDisplayNameForApplicationSearchTarget":"申請情報表示地番",
-      "lotnumberSearchViewParamNameForApplicationSearchTarget":"lot_numbers:"
+      "lotnumberSearchViewParamNameForApplicationSearchTarget":"application_id:",
+      "lotnumberSearchLayerNameForSelectedFullFlag":"devps:全筆かからない筆選択地番",
+      "lotnumberSearchLayerDisplayNameForSelectedFullFlag":"全筆かからない筆",
+      "lotnumberSearchViewParamNameForSelectedFullFlag":"lot_numbers:"
   },
   "landMark":{
       "id":"//ランドマーク/ランドマーク",
@@ -38,6 +47,9 @@
   },
   "buildingModel":{
       "id":"//3D都市モデル/建物モデル（○○市）"
+  },
+  "buildingModelFor2d":{
+      "id":""
   },
   "wfs": {
       "identify_text": "@wfs",
@@ -71,19 +83,6 @@
                     0.0
                   ]
                 },
-                "showBackground ": true,
-                "backgroundColor": {
-                  "rgba": [
-                    80,
-                    68,
-                    236,
-                    255
-                  ]
-                },
-                "backgroundPadding ": [
-                  100,
-                  100
-                ],
                 "outlineWidth": 7.0,
                 "pixelOffset": {
                   "cartesian2": [
@@ -97,7 +96,40 @@
                   "reference": "#properties.label_text"
                 }
               }
-          }
+          },
+          "road_width_2d": {
+            "label": {
+              "fillColor": {
+                "rgba": [
+                  255,
+                  255,
+                  255,
+                  255
+                ]
+              },
+              "font": "13pt Lucida Console bold",
+              "horizontalOrigin": "CENTER",
+              "translucencyByDistance": {
+                "nearFarScalar": [
+                  1000,
+                  1.0,
+                  1000,
+                  0.0
+                ]
+              },
+              "pixelOffset": {
+                "cartesian2": [
+                  2,
+                  27
+                ]
+              },
+              "heightReference": "RELATIVE_TO_GROUND",
+              "style": "FILL_AND_OUTLINE",
+              "text": {
+                "reference": "#properties.label_text"
+              }
+            }
+        }
       }
   },
   "NotDraggableItem":[
@@ -108,5 +140,43 @@
       "UserAgreementView":"false",
       "GeneralConditionDiagnosisView":"true",
       "ApplyCompletedView":"true"
+  },
+  "focusCameraSettings":{
+    "cesium":{
+      "focusCameraDirectionX":0.6984744646088341,
+      "focusCameraDirectionY":-0.6617056496661655,
+      "focusCameraDirectionZ":0.2725418417221117,
+      "focusCameraUpX":-0.21791222301017105,
+      "focusCameraUpY":0.1660947782238842,
+      "focusCameraUpZ": 0.9617311410729739,
+      "adjust":{
+        "latitudeHeightAdjustmentFactor":400000,
+        "baseHeightOffset":100
+      }
+    }
+  },
+  "defaultViewermode":{
+    "goverment":"2d",
+    "business":"3d"
+  },
+  "persistViewerMode":{
+    "goverment":false,
+    "business":true
+  },
+  "captureRequiredJudgement":[],
+  "notifications":[],
+  "extension": {
+    "answerFile":"pdf,tiff,jpeg,png,dxf,dwg",
+    "inquiryFile":"pdf,tiff,jpeg,png,cad"
+  },
+  "inputMaxLength":{
+    "answerContent":1000,
+    "applicantInfo":{
+      "text":150,
+      "textarea":1000
+    },
+    "chatMsg":1000,
+    "reviseContent":1000,
+    "notifyComment":1000
   }
 }

@@ -84,7 +84,7 @@ class MapSelection extends React.Component {
             catalogItem.loadMapItems();
             this.state.terria.workbench.add(catalogItem);
 
-            //3D建物モデルを非表示
+            //建物モデルを非表示
             const cesium3DTiles = this.state.terria.getModelById(BaseModel, Config.buildingModel.id);
             cesium3DTiles.traits.style.show = false;
             cesium3DTiles.setTrait(
@@ -92,6 +92,12 @@ class MapSelection extends React.Component {
                 "style",
                 {"show": false});
             cesium3DTiles.loadMapItems();
+            const leaflet2DModel = this.state.terria.getModelById(BaseModel, Config.buildingModelFor2d.id);
+            leaflet2DModel.setTrait(
+                CommonStrata.user,
+                "show",
+                false);
+            leaflet2DModel.loadMapItems();
         } catch (error) {
             console.error('処理に失敗しました', error);
         }
@@ -162,14 +168,20 @@ class MapSelection extends React.Component {
             }
         }
         try{
-            //3D建物モデルを表示
+            //建物モデルを表示
             const cesium3DTiles = this.state.terria.getModelById(BaseModel, Config.buildingModel.id);
-            cesium3DTiles.traits.style.show = false;
+            cesium3DTiles.traits.style.show = true;
             cesium3DTiles.setTrait(
                 CommonStrata.user,
                 "style",
                 {"show": true});
             cesium3DTiles.loadMapItems();
+            const leaflet2DModel = this.state.terria.getModelById(BaseModel, Config.buildingModelFor2d.id);
+            leaflet2DModel.setTrait(
+                CommonStrata.user,
+                "show",
+                true);
+            leaflet2DModel.loadMapItems();
         }catch(error){
             console.error('処理に失敗しました', error);
         }
@@ -257,14 +269,20 @@ class MapSelection extends React.Component {
             }
         }
         try{
-            //3D建物モデルを表示
+            //建物モデルを表示
             const cesium3DTiles = this.state.terria.getModelById(BaseModel, Config.buildingModel.id);
-            cesium3DTiles.traits.style.show = false;
+            cesium3DTiles.traits.style.show = true;
             cesium3DTiles.setTrait(
                 CommonStrata.user,
                 "style",
                 {"show": true});
             cesium3DTiles.loadMapItems();
+            const leaflet2DModel = this.state.terria.getModelById(BaseModel, Config.buildingModelFor2d.id);
+            leaflet2DModel.setTrait(
+                CommonStrata.user,
+                "show",
+                true);
+            leaflet2DModel.loadMapItems();
         }catch(error){
             console.error('処理に失敗しました', error);
         }

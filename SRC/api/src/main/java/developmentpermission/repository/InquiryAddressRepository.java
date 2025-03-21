@@ -45,4 +45,12 @@ public interface InquiryAddressRepository extends JpaRepository<InquiryAddress, 
 	@Query(value = "SELECT inquiry_address_id, message_id, department_id, read_flag, answer_complete_flag FROM o_inquiry_address  WHERE message_id = :messageId AND department_id =:departmentId ", nativeQuery = true)
 	List<InquiryAddress> findByMessageIdAndDepartmentId(@Param("messageId") Integer messageId, @Param("departmentId") String departmentId);
 
+	/**
+	 * O_問合せ宛先検索
+	 * 
+	 * @param messageId メッセージID
+	 * @return　問合せ宛先一覧
+	 */
+	@Query(value = "SELECT * FROM o_inquiry_address WHERE message_id = :messageId AND answer_complete_flag = '0';", nativeQuery = true)
+	List<InquiryAddress> findByMessageIdAndFlag0(@Param("messageId") Integer messageId);
 }

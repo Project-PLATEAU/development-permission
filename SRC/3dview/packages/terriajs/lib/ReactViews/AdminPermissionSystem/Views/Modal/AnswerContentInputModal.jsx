@@ -8,6 +8,7 @@ import Styles from "./scss/AnswerContentInputModal.scss"
 import { RawButton } from "../../../../Styled/Button";
 import Icon, { StyledIcon } from "../../../../Styled/Icon";
 import Spacing from "../../../../Styled/Spacing";
+import Config from "../../../../../customconfig.json";
 
 /**
  * 行政用コンポーネント：回答テンプレート選択ダイアログ
@@ -30,7 +31,7 @@ class AnswerContentInputModal extends React.Component {
             answer: props.viewState.answerTemplateTarget,
             answerContent:"",
             applyInfo:[],
-            callback: this.props.callback
+            callback:props.viewState.callBackFunction
         }
         this.CallBackFunction = this.CallBackFunction.bind(this);
     }
@@ -45,28 +46,25 @@ class AnswerContentInputModal extends React.Component {
         let applyInfo = [];
         // 申請地番
         let lotNumberText = "";
-        let lotNumberResult = {};
         const lotNumber = applyAnswerForm.lotNumbers;
         Object.keys(lotNumber).map(key => {
-            if (!lotNumberResult[lotNumber[key].districtName]) {
-                lotNumberResult[lotNumber[key].districtName] = new Array();
-            }
-            lotNumberResult[lotNumber[key].districtName].push(lotNumber[key].chiban);
-        });
-
-        Object.keys(lotNumberResult).map(key => {
-            lotNumberText = lotNumberText +`${key} ${lotNumberResult[key].map(chiban => { return chiban }).join(",")}`;
-            lotNumberText = lotNumberText + `\n`;
+            lotNumberText = lotNumberText + lotNumber[key].lot_numbers;
         });
         applyInfo.push({name:"申請地番",value:lotNumberText});
 
-        // 申請区分
+        // 申請区分(該当申請段階に対する申請区分)
         let applicationCategoryText = "";
-        const checkedApplicationCategory = applyAnswerForm.applicationCategories;
-        Object.keys(checkedApplicationCategory).map(key => {
-            applicationCategoryText = applicationCategoryText + `${checkedApplicationCategory[key]?.title}：${checkedApplicationCategory[key]?.applicationCategory?.map(function (value) { return value.content }).join(",")}`;
-            applicationCategoryText = applicationCategoryText + `\n`;
-        });
+        const checkedApplicationStepId = this.props.viewState.checkedApplicationStepId
+        Object.keys(applyAnswerForm.applyAnswerDetails).map(key => {
+            let applyAnswerDetailForm = applyAnswerForm.applyAnswerDetails[key];
+            if(applyAnswerDetailForm.applicationStepId == checkedApplicationStepId){
+                const checkedApplicationCategory = applyAnswerDetailForm.applicationCategories;
+                Object.keys(checkedApplicationCategory).map(key => {
+                    applicationCategoryText = applicationCategoryText + `${checkedApplicationCategory[key]?.title}：${checkedApplicationCategory[key]?.applicationCategory?.map(function (value) { return value.content }).join(",")}`;
+                    applicationCategoryText = applicationCategoryText + `\n`;
+                });
+            }
+        })
         applyInfo.push({name:"申請区分",value:applicationCategoryText});
 
         // 申請者氏名
@@ -112,11 +110,11 @@ class AnswerContentInputModal extends React.Component {
  
     /**
      * コールバック関数
-     * @param {*} answerId 回答ID
+     * @param {*} target 回答
      * @param {*} text 回答内容
      */
-    CallBackFunction(answerId, text) {
-        this.state.callback(answerId, text);
+    CallBackFunction(target, text) {
+        this.state.callback(target, text);
     }
 
     /**
@@ -127,7 +125,7 @@ class AnswerContentInputModal extends React.Component {
         const target = this.state.answer;
         let answerId = target.answerId;
         let answerContent = this.state.answerContent;
-        this.CallBackFunction(answerId, answerContent);
+        this.CallBackFunction(target, answerContent);
         this.state.viewState.changeAnswerContentInputModalShow();
     }
 
@@ -143,10 +141,16 @@ class AnswerContentInputModal extends React.Component {
 
         if (answerTextarea) {
             //カーソルの位置を基準に前後を分割して、その間に文字列を挿入
-            answerTextarea.value = answerTextarea.value.substr(0, answerTextarea.selectionStart)
+            let answerContent = answerTextarea.value.substr(0, answerTextarea.selectionStart)
                 + text
                 + answerTextarea.value.substr(answerTextarea.selectionStart);
-            // answerTextarea.scrollTop = answerTextarea.scrollHeight;
+
+            // 文字数チェック
+            if(answerContent.length > Config.inputMaxLength.answerContent){
+                alert(Config.inputMaxLength.answerContent + "文字以内で入力してください。");
+                return;
+            }
+            answerTextarea.value = answerContent;
             this.setState({answerContent:answerTextarea.value});
         }
     }
@@ -161,6 +165,8 @@ class AnswerContentInputModal extends React.Component {
         let answerContent = this.state.answerContent;
         // 回答内容のテキストエリアのデフォルト内容
         const placeholderText = `テキスト入力で回答を入力できます。\nテンプレートを選択すると、カーソルが当たっている位置にテンプレートを差し込むことができます。`;
+        const maxLength =  Config.inputMaxLength.answerContent;
+        const inputBuffLength = 1;
         return (
             <div className={Styles.overlay}>
                 <div className={Styles.modal}  id="answerContentInputModal">
@@ -188,9 +194,16 @@ class AnswerContentInputModal extends React.Component {
                                 <textarea className={Styles.text_area}
                                     id="answerContent"
                                     type="text"
+                                    maxLength={maxLength + inputBuffLength}
                                     value={answerContent}
                                     placeholder ={placeholderText}
-                                    onChange={e => this.setState({ answerContent: e.target.value })}
+                                    onChange={e => {
+                                        if(e.target.value.length > maxLength){
+                                            alert(maxLength+"文字以内で入力してください。");
+                                            return;
+                                        }
+                                        this.setState({ answerContent: e.target.value });
+                                    }}
                                 />
                             </div>
                             <div className={Styles.list_item}>
@@ -228,7 +241,7 @@ class AnswerContentInputModal extends React.Component {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {Object.keys(answerTemplates).map(index => (
+                                            {answerTemplates && Object.keys(answerTemplates).map(index => (
                                                 <tr key={`body-template-${index}`}>
                                                     <td className={Styles.text_align_left}>
                                                         {answerTemplates[index]?.answerTemplateText}

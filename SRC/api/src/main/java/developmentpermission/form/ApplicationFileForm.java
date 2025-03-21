@@ -31,9 +31,9 @@ public class ApplicationFileForm implements Serializable {
 	@ApiModelProperty(value = "判定項目ID", example = "2001")
 	private String judgementItemId;
 
-	/** 必須有無 */
-	@ApiModelProperty(value = "必須有無", example = "true")
-	private Boolean requireFlag;
+	/** 必須有無(1:必須 0:任意 2:任意(注意文言あり) */
+	@ApiModelProperty(value = "必須有無", example = "1")
+	private String requireFlag;
 
 	/** 申請ファイル名 */
 	@ApiModelProperty(value = "申請ファイル名", example = "給排水平面図")
@@ -54,4 +54,8 @@ public class ApplicationFileForm implements Serializable {
 	/** アップロードファイル一式 */
 	@ApiModelProperty(value = "アップロードファイル一式")
 	private List<UploadApplicationFileForm> applicationFileHistorys;
+	
+	/** アップロードファイル一式(回答登録で引用可能の全ての申請段階の申請ファイル) */
+	@ApiModelProperty(value = "アップロードファイル一式")
+	private List<UploadApplicationFileForm> applicationFileAllHistorys;
 }

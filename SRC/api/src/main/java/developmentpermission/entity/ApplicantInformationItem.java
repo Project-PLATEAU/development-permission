@@ -56,8 +56,24 @@ public class ApplicantInformationItem implements Serializable {
 	/** メールアドレス */
 	@Column(name = "mail_address", columnDefinition = "char(1)")
 	private Boolean mailAddress;
-	
+
+	/** 項目型 */
+	@Column(name = "item_type", columnDefinition = "char(1)")
+	private String itemType;
+
 	/** 検索条件表示有無 */
 	@Column(name = "search_condition_flag", columnDefinition = "char(1)")
 	private Boolean searchConditionFlag;
+
+	/** 申請段階 */
+	@Column(name = "application_step")
+	private String applicationStep;
+
+	/** 追加情報フラグ */
+	@Column(name = "add_information_item_flag", columnDefinition = "char(1)")
+	private Boolean addInformationItemFlag;
+	
+	/** 連絡先フラグ */
+	@Column(name = "contact_address_flag", columnDefinition = "char(1)")
+	private Boolean contactAddressFlag;
 }

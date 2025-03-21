@@ -4,6 +4,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,9 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.FileSystemUtils;
 
+import developmentpermission.entity.Answer;
 import developmentpermission.entity.CategoryJudgement;
+import developmentpermission.entity.CategoryJudgementResult;
 import developmentpermission.form.GeneralConditionDiagnosisReportRequestForm;
+import developmentpermission.form.GeneralConditionDiagnosisResultForm;
+import developmentpermission.repository.AnswerRepository;
 import developmentpermission.repository.CategoryJudgementRepository;
+import developmentpermission.repository.JudgementResultRepository;
 import developmentpermission.util.ExportJudgeForm;
 import developmentpermission.util.model.ExportJudgeFormParam;
 
@@ -101,12 +108,6 @@ public abstract class AbstractJudgementService extends AbstractService {
 	/** 判定結果出力開始行 */
 	@Value("${app.judge.report.judgeresult.startrow}")
 	protected int judgeResultStartRow;
-//	/** 「判定結果」ラベル */
-//	@Value("${app.judge.report.judgeresult.label}")
-//	private String judgeResultLabel;
-//	/** 「判定結果」ラベル 出力列 */
-//	@Value("${app.judge.report.judgeresult.col}")
-//	private int judgeResultCol;
 	/** 判定結果 結合行数 */
 	@Value("${app.judge.report.judgeresult.mergerow}")
 	protected int judgeResultMergeRow;
@@ -180,6 +181,10 @@ public abstract class AbstractJudgementService extends AbstractService {
 	@Value("${app.judge.report.judgeresult.description.answer.title.template.text2}")
 	protected String judgeResultDescriptionAnswerTitleTemplateText2;
 	
+	/** 判定結果詳細 回答タイトルテンプレート文字列3 **/
+	@Value("${app.judge.report.judgeresult.description.answer.title.template.text3}")
+	protected String judgeResultDescriptionAnswerTitleTemplateText3;
+	
 	/** 判定結果詳細 回答タイトル出力列 **/
 	@Value("${app.judge.report.judgeresult.description.answer.title.col}")
 	protected int judgeResultDescriptionAnswerTitleCol;
@@ -208,14 +213,14 @@ public abstract class AbstractJudgementService extends AbstractService {
 	@Value("${app.judge.report.judgeresult.description.answer.content.noapply}")
 	protected String judgeResultDescriptionAnswerContentNoApply;
 	
-//	/** 開発用ダミー画像パス */
-//	@Value("${app.judge.report.dummyimage.path}")
-//	private String dummyImagePath;
-
+	/** 判定結果詳細行政による回答削除 **/
+	@Value("${app.judge.report.judgeresult.description.answer.delete}")
+	protected String judgeResultDescriptionAnswerDelete;
+	
 	/** M_区分判定Repositoryインスタンス */
 	@Autowired
 	protected CategoryJudgementRepository categoryJudgementRepository;
-
+	
 	/**
 	 * 帳票出力設定を取得
 	 * 
@@ -242,8 +247,6 @@ public abstract class AbstractJudgementService extends AbstractService {
 		param.setAddressCol(addressCol);
 		param.setLotNumberSeparators(lotNumberSeparators);
 		param.setJudgeResultStartRow(judgeResultStartRow);
-//		param.setJudgeResultLabel(judgeResultLabel);
-//		param.setJudgeResultCol(judgeResultCol);
 		param.setJudgeResultMergeRow(judgeResultMergeRow);
 		param.setJudgeResultTitleCol(judgeResultTitleCol);
 		param.setJudgeResultTitleMergeCol(judgeResultTitleMergeCol);
@@ -266,6 +269,7 @@ public abstract class AbstractJudgementService extends AbstractService {
 		param.setJudgeResultDescriptionAnswerTitleMergeCol(judgeResultDescriptionAnswerTitleMergeCol);
 		param.setJudgeResultDescriptionAnswerTitleTemplateText1(judgeResultDescriptionAnswerTitleTemplateText1);
 		param.setJudgeResultDescriptionAnswerTitleTemplateText2(judgeResultDescriptionAnswerTitleTemplateText2);
+		param.setJudgeResultDescriptionAnswerTitleTemplateText3(judgeResultDescriptionAnswerTitleTemplateText3);
 		param.setJudgeResultDescriptionAnswerTitleCol(judgeResultDescriptionAnswerTitleCol);
 		param.setJudgeResultDescriptionAnswerContentMergeRow(judgeResultDescriptionAnswerContentMergeRow);
 		param.setJudgeResultDescriptionAnswerContentMergeCol(judgeResultDescriptionAnswerContentMergeCol);
@@ -273,6 +277,7 @@ public abstract class AbstractJudgementService extends AbstractService {
 		param.setJudgeResultDescriptionAnswerTitleNoApply(judgeResultDescriptionAnswerTitleNoApply);
 		param.setJudgeResultDescriptionAnswerContentNoApply(judgeResultDescriptionAnswerContentNoApply);
 		param.setJudgeResultDescriptionNoApplyLabel(judgeResultDescriptionNoApplyLabel);
+		param.setJudgeResultDescriptionAnswerDelete(judgeResultDescriptionAnswerDelete);
 		return param;
 	}
 
@@ -289,11 +294,16 @@ public abstract class AbstractJudgementService extends AbstractService {
 		// 帳票生成
 		ExportJudgeForm exportForm = new ExportJudgeForm(categoryJudgementList);
 		ExportJudgeFormParam formParam = getExportParam();
-		formParam.setFolderPath(judgementFolderPath + PATH_SPLITTER + form.getFolderName());
-		Path directoryPath = Paths.get(formParam.getFolderPath());
-		if (!Files.exists(directoryPath)) {
-			LOGGER.error("指定フォルダが存在しない: " + directoryPath);
-			return null;
+		
+		if(form.getFolderName() != null && !form.getFolderName().equals("")) {
+			formParam.setFolderPath(judgementFolderPath + PATH_SPLITTER + form.getFolderName());
+			Path directoryPath = Paths.get(formParam.getFolderPath());
+			if (!Files.exists(directoryPath)) {
+				LOGGER.error("指定フォルダが存在しない: " + directoryPath);
+				return null;
+			}
+		}else {
+			formParam.setFolderPath(null);
 		}
 		return exportForm.createJudgeReportWorkBook(form, formParam);
 	}
@@ -306,12 +316,12 @@ public abstract class AbstractJudgementService extends AbstractService {
 	 * @return 生成帳票
 	 * @throws Exception 例外
 	 */
-	protected Workbook exportAnswerReportWorkBook(String tempFilePath, Map<Integer, String> answerNotifiedTextMap) throws Exception {
+	protected Workbook exportAnswerReportWorkBook(String tempFilePath, Map<Integer, String> answerNotifiedTextMap,Integer applicationStepId,GeneralConditionDiagnosisReportRequestForm generalConditionDiagnosisReportRequestForm) throws Exception {
 		// 帳票生成
 		ExportJudgeForm exportForm = new ExportJudgeForm();
 		// 帳票作成用プロパティパラメータを設定する
 		ExportJudgeFormParam formParam = getExportParam();
-		return exportForm.createAnswerReportWorkBook(tempFilePath, answerNotifiedTextMap, formParam);
+		return exportForm.createAnswerReportWorkBook(tempFilePath, answerNotifiedTextMap, formParam,applicationStepId,generalConditionDiagnosisReportRequestForm);
 	}
 	
 	/**

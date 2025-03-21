@@ -41,24 +41,37 @@ public class JudgementLayerDao extends AbstractDao {
 	 * 指定レイヤと指定地番図形が重なるか判定
 	 * 
 	 * @param lotNumberIdList 地番IDリスト
+	 * @param applicationId   申請ID
 	 * @param targetTableName 比較テーブル名
 	 * @return 比較テーブル内図形で地番と重なった図形のOID1件
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Oid> getIntersectsOid(List<Integer> lotNumberIdList, String targetTableName) {
+	public List<Oid> getIntersectsOid(List<Integer> lotNumberIdList, Integer applicationId, String targetTableName) {
 		LOGGER.debug("指定レイヤと指定地番図形が重なるか判定 開始");
 		EntityManager em = null;
 		try {
 			em = emf.createEntityManager();
-
+			String getLotNumberQuery = "";
+			if (applicationId == null) {
+				getLotNumberQuery = "" + //
+						"  SELECT " + //
+						"    geom " + //
+						"  FROM " + //
+						"    f_lot_number " + //
+						"  WHERE " + //
+						"    chiban_id IN (:lotNumbers) ";
+			} else {
+				getLotNumberQuery = "" + //
+						"  SELECT " + //
+						"    geom " + //
+						"  FROM " + //
+						"    f_application_lot_number " + //
+						"  WHERE " + //
+						"    application_id = :applicationId ";
+			}
 			String sql = "" + //
 					"WITH lon_number_geom AS ( " + // 地番の特定
-					"  SELECT " + //
-					"    geom " + //
-					"  FROM " + //
-					"    f_lot_number " + //
-					"  WHERE " + //
-					"    chiban_id IN (:lotNumbers) " + //
+					getLotNumberQuery + //
 					") " + //
 					"SELECT DISTINCT " + //
 					"  a.ogc_fid AS oid " + //
@@ -69,8 +82,13 @@ public class JudgementLayerDao extends AbstractDao {
 					"ON " + //
 					"  ST_Intersects(a.wkb_geometry, b.geom) " + //
 					"ORDER BY a.ogc_fid ASC";
+			if (applicationId == null) {
+				return em.createNativeQuery(sql, Oid.class).setParameter("lotNumbers", lotNumberIdList).getResultList();
+			} else {
+				return em.createNativeQuery(sql, Oid.class).setParameter("applicationId", applicationId)
+						.getResultList();
+			}
 
-			return em.createNativeQuery(sql, Oid.class).setParameter("lotNumbers", lotNumberIdList).getResultList();
 		} finally {
 			if (em != null) {
 				em.close();
@@ -83,28 +101,44 @@ public class JudgementLayerDao extends AbstractDao {
 	 * 指定レイヤと指定地番図形が重なるか判定
 	 * 
 	 * @param lotNumberIdList 地番IDリスト
+	 * @param applicationId   申請ID
 	 * @param targetTableName 比較テーブル名
 	 * @return 比較テーブル内図形で地番と重なった図形のOID1件
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Oid> getBufferIntersectsOid(List<Integer> lotNumberIdList, String targetTableName, int epsg,
-			double buffer) {
+	public List<Oid> getBufferIntersectsOid(List<Integer> lotNumberIdList, Integer applicationId,
+			String targetTableName, int epsg, double buffer) {
 		LOGGER.debug("指定レイヤと指定地番図形(バッファ)が重なるか判定 開始");
 		EntityManager em = null;
 		try {
 			em = emf.createEntityManager();
-
+			String getLotNumberQuery = "";
+			if (applicationId == null) {
+				getLotNumberQuery = "" + //
+						"  SELECT " + //
+						"    ST_Transform(" + //
+						"      CAST(ST_Buffer(" + // 型変換を「::」で実施すると、フレームワークでエラーとなるので、cast関数を使用する。
+						"        CAST(ST_Transform(geom, 4612) AS geography), :buffer" + // 距離指定でバッファを発生させる場合は、一度地理座標系に変換し、geographyに変換すると精度の高いバッファができる
+						"      ) AS geometry), :epsg) AS geom " + // geographyは元のgeometryに戻し、さらに元の座標系に変換する
+						"  FROM " + //
+						"    f_lot_number " + //
+						"  WHERE " + //
+						"    chiban_id IN (:lotNumbers) ";
+			} else {
+				getLotNumberQuery = "" + //
+						"  SELECT " + //
+						"    ST_Transform(" + //
+						"      CAST(ST_Buffer(" + // 型変換を「::」で実施すると、フレームワークでエラーとなるので、cast関数を使用する。
+						"        CAST(ST_Transform(geom, 4612) AS geography), :buffer" + // 距離指定でバッファを発生させる場合は、一度地理座標系に変換し、geographyに変換すると精度の高いバッファができる
+						"      ) AS geometry), :epsg) AS geom " + // geographyは元のgeometryに戻し、さらに元の座標系に変換する
+						"  FROM " + //
+						"    f_application_lot_number " + //
+						"  WHERE " + //
+						"    application_id = :applicationId ";
+			}
 			String sql = "" + //
 					"WITH lon_number_geom AS ( " + // 地番を特定し、バッファを発生
-					"  SELECT " + //
-					"    ST_Transform(" + //
-					"      CAST(ST_Buffer(" + // 型変換を「::」で実施すると、フレームワークでエラーとなるので、cast関数を使用する。
-					"        CAST(ST_Transform(geom, 4612) AS geography), :buffer" + // 距離指定でバッファを発生させる場合は、一度地理座標系に変換し、geographyに変換すると精度の高いバッファができる
-					"      ) AS geometry), :epsg) AS geom " + // geographyは元のgeometryに戻し、さらに元の座標系に変換する
-					"  FROM " + //
-					"    f_lot_number " + //
-					"  WHERE " + //
-					"    chiban_id IN (:lotNumbers) " + //
+					getLotNumberQuery + //
 					") " + //
 					"SELECT DISTINCT " + //
 					"  a.ogc_fid AS oid " + //
@@ -115,9 +149,14 @@ public class JudgementLayerDao extends AbstractDao {
 					"ON " + //
 					"  ST_Intersects(a.wkb_geometry, b.geom) " + //
 					"ORDER BY a.ogc_fid ASC";
+			if (applicationId == null) {
+				return em.createNativeQuery(sql, Oid.class).setParameter("lotNumbers", lotNumberIdList)
+						.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
+			} else {
+				return em.createNativeQuery(sql, Oid.class).setParameter("applicationId", applicationId)
+						.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
+			}
 
-			return em.createNativeQuery(sql, Oid.class).setParameter("lotNumbers", lotNumberIdList)
-					.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
 		} finally {
 			if (em != null) {
 				em.close();
@@ -130,26 +169,56 @@ public class JudgementLayerDao extends AbstractDao {
 	 * 指定レイヤと指定地番図形が重ならない場合の距離取得
 	 * 
 	 * @param lotNumberIdList 地番IDリスト
+	 * @param applicationId   申請ID
 	 * @param targetTableName 比較テーブル名
 	 * @return 距離
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Distance> getDistance(List<Integer> lotNumberIdList, String targetTableName, int epsg) {
+	public List<Distance> getDistance(List<Integer> lotNumberIdList, Integer applicationId, String targetTableName,
+			int epsg) {
 		LOGGER.debug("指定レイヤと指定地番図形が重ならない場合の距離取得 開始");
 		EntityManager em = null;
 		try {
 			em = emf.createEntityManager();
-
+			String getLotNumberQuery = "";
+			if (applicationId == null) {
+				getLotNumberQuery = "" + //
+						" SELECT " + //
+						" ST_Union(geom) AS geom" + //
+						" FROM f_lot_number" + //
+						" WHERE chiban_id IN (:lotNumbers)";
+			} else {
+				getLotNumberQuery = "" + //
+						" SELECT " + //
+						" ST_Union(geom) AS geom" + //
+						" FROM f_application_lot_number" + //
+						" WHERE application_id = :applicationId";
+			}
 			String sql = "" + //
-					" WITH lot_number_geom AS" + " (" + " SELECT" + " ST_Union(geom) AS geom" + " FROM f_lot_number"
-					+ " WHERE chiban_id IN (:lotNumbers))," + " judgement_layer_geom AS" + " (" + " SELECT"
-					+ " ST_Union(wkb_geometry) AS geom" + " FROM " + targetTableName + " )" + " SELECT"
-					+ " ST_Distance(" + " CAST(ST_Transform(a.geom, :epsg) AS geography),"
-					+ " CAST(ST_Transform(b.geom, :epsg) AS geography))" + " AS distance" + " FROM lot_number_geom AS a"
-					+ " CROSS JOIN judgement_layer_geom AS b";
+					" WITH lot_number_geom AS" + //
+					" (" + //
+					getLotNumberQuery + //
+					")," + //
+					" judgement_layer_geom AS" + //
+					" (" + //
+					" SELECT" + //
+					" ST_Union(wkb_geometry) AS geom" + //
+					" FROM " + //
+					targetTableName + //
+					" )" + //
+					" SELECT" + //
+					" ST_Distance(" + " CAST(ST_Transform(a.geom, :epsg) AS geography)," + //
+					" CAST(ST_Transform(b.geom, :epsg) AS geography))" + " AS distance" + " FROM lot_number_geom AS a" + //
+					" CROSS JOIN judgement_layer_geom AS b";
 
-			return em.createNativeQuery(sql, Distance.class).setParameter("lotNumbers", lotNumberIdList)
-					.setParameter("epsg", epsg).getResultList();
+			if (applicationId == null) {
+				return em.createNativeQuery(sql, Distance.class).setParameter("lotNumbers", lotNumberIdList)
+						.setParameter("epsg", epsg).getResultList();
+			} else {
+				return em.createNativeQuery(sql, Distance.class).setParameter("applicationId", applicationId)
+						.setParameter("epsg", epsg).getResultList();
+			}
+
 		} finally {
 			if (em != null) {
 				em.close();
@@ -191,40 +260,65 @@ public class JudgementLayerDao extends AbstractDao {
 	 * 道路LOD2レイヤと指定地番図形バッファが重なるか判定
 	 * 
 	 * @param lotNumberIdList 地番IDリスト
+	 * @param applicationId   申請ID
 	 * @param epsg            データの座標系
 	 * @param buffer          バッファ
 	 * @return 重なった道路LOD2レイヤの属性情報
 	 */
 	@SuppressWarnings("unchecked")
-	public List<RoadLod2> getIntersectsRoadLod2(List<Integer> lotNumberIdList, int epsg, double buffer) {
+	public List<RoadLod2> getIntersectsRoadLod2(List<Integer> lotNumberIdList, Integer applicationId, int epsg,
+			double buffer) {
 		LOGGER.debug("道路LOD2バッファ重なり判定 開始");
 		EntityManager em = null;
 		try {
 			em = emf.createEntityManager();
+			String getLotNumberQuery = "";
+			if (applicationId == null) {
+				getLotNumberQuery = "" + //
+						"  SELECT " + //
+						"    ST_Transform(" + //
+						"      CAST(ST_Buffer(" + // 型変換を「::」で実施すると、フレームワークでエラーとなるので、cast関数を使用する。
+						"        CAST(ST_Transform(geom, 4612) AS geography), :buffer" + // 距離指定でバッファを発生させる場合は、一度地理座標系に変換し、geographyに変換すると精度の高いバッファができる
+						"      ) AS geometry), :epsg) AS geom " + // geographyは元のgeometryに戻し、さらに元の座標系に変換する
+						"  FROM " + //
+						"    f_lot_number " + //
+						"  WHERE " + //
+						"    chiban_id IN (:lotNumbers) ";
+			} else {
+				getLotNumberQuery = "" + //
+						"  SELECT " + //
+						"    ST_Transform(" + //
+						"      CAST(ST_Buffer(" + // 型変換を「::」で実施すると、フレームワークでエラーとなるので、cast関数を使用する。
+						"        CAST(ST_Transform(geom, 4612) AS geography), :buffer" + // 距離指定でバッファを発生させる場合は、一度地理座標系に変換し、geographyに変換すると精度の高いバッファができる
+						"      ) AS geometry), :epsg) AS geom " + // geographyは元のgeometryに戻し、さらに元の座標系に変換する
+						"  FROM " + //
+						"    f_application_lot_number " + //
+						"  WHERE " + //
+						"    application_id = :applicationId ";
+			}
 			String sql = "" + //
 					"WITH lon_number_geom AS ( " + // 地番を特定し、バッファを発生
-					"  SELECT " + //
-					"    ST_Transform( " + //
-					"      CAST(ST_Buffer( " + // 型変換を「::」で実施すると、フレームワークでエラーとなるので、cast関数を使用する。
-					"        CAST(ST_Transform(geom, 4612) AS geography), :buffer " + // 距離指定でバッファを発生させる場合は、一度地理座標系に変換し、geographyに変換すると精度の高いバッファができる
-					"        ) AS geometry), :epsg) AS geom   " + // geographyは元のgeometryに戻し、さらに元の座標系に変換する
-					"  FROM " + //
-					"    f_lot_number " + //
-					"  WHERE " + //
-					"    chiban_id IN (:lotNumbers) " + //
+					getLotNumberQuery + //
 					")   " + //
 					"  SELECT DISTINCT   " + //
-					"    a.object_id AS object_id, a.width AS width, a.line_number AS line_number ,a.function AS function" + //
+					"    a.object_id AS object_id, a.width AS width, a.line_number AS line_number ,a.function AS function"
+					+ //
 					"  FROM f_road_lod2 AS a   " + //
 					"  INNER JOIN   " + //
 					"    lon_number_geom AS b   " + // 接触確認
 					"  ON   " + //
 					"    ST_Intersects(a.geom, b.geom)   " + //
-					"    WHERE (a.t_function = 1000  OR a.t_function = 1020) " + // 車道部と車道交差部(t_function = 1000  OR t_function = 1020)のみ対象とする
+					"    WHERE (a.t_function = 1000  OR a.t_function = 1020) " + // 車道部と車道交差部(t_function = 1000 OR
+																					// t_function = 1020)のみ対象とする
 					"  ORDER BY a.object_id ASC";
 			// LOGGER.debug(sql);
-			return em.createNativeQuery(sql, RoadLod2.class).setParameter("lotNumbers", lotNumberIdList)
-					.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
+			if (applicationId == null) {
+				return em.createNativeQuery(sql, RoadLod2.class).setParameter("lotNumbers", lotNumberIdList)
+						.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
+			} else {
+				return em.createNativeQuery(sql, RoadLod2.class).setParameter("applicationId", applicationId)
+						.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
+			}
 		} finally {
 			if (em != null) {
 				em.close();
@@ -237,7 +331,7 @@ public class JudgementLayerDao extends AbstractDao {
 	 * 車道部に接する歩道を取得する
 	 * 
 	 * @param objectId オブジェクトID
-	 * @return　隣接歩道の道路LOD2フィーチャ
+	 * @return 隣接歩道の道路LOD2フィーチャ
 	 */
 	public List<RoadLod2> getWalkWaysIntersectsRoadWay(Integer objectId, String lineNumber) {
 		LOGGER.debug("道路LOD2歩道有無判定 開始");
@@ -252,7 +346,8 @@ public class JudgementLayerDao extends AbstractDao {
 						+ //
 						")" + //
 						"SELECT DISTINCT    " + //
-						"  a.object_id AS object_id, a.width AS width, a.line_number AS line_number, a.function AS function " + //
+						"  a.object_id AS object_id, a.width AS width, a.line_number AS line_number, a.function AS function "
+						+ //
 						"FROM f_road_lod2 AS a  " + //
 						"INNER JOIN    " + //
 						"  roadway_geom AS b     " + //
@@ -268,7 +363,8 @@ public class JudgementLayerDao extends AbstractDao {
 						"  SELECT geom, crossid FROM f_road_lod2 WHERE object_id = :objectId" + //
 						")" + //
 						"SELECT DISTINCT    " + //
-						"  a.object_id AS object_id, a.width AS width, a.line_number AS line_number, a.function AS function " + //
+						"  a.object_id AS object_id, a.width AS width, a.line_number AS line_number, a.function AS function "
+						+ //
 						"FROM f_road_lod2 AS a  " + //
 						"INNER JOIN    " + //
 						"  roadway_geom AS b     " + //
@@ -292,6 +388,7 @@ public class JudgementLayerDao extends AbstractDao {
 	 * 地番+バッファと道路LOD2レイヤに重なる区割り線を取得
 	 * 
 	 * @param lotNumberIdList 地番リスト
+	 * @param applicationId   申請ID
 	 * @param epsg            座標系
 	 * @param buffer          バッファ
 	 * @param objectId        オブジェクトID
@@ -299,8 +396,8 @@ public class JudgementLayerDao extends AbstractDao {
 	 * @return 重なった区割り線の属性情報
 	 */
 	@SuppressWarnings("unchecked")
-	public List<SplitLine> getSplitLineFromLotNumberAndRoadLod2(List<Integer> lotNumberIdList, int epsg, double buffer,
-			Integer objectId, String lineNumber) {
+	public List<SplitLine> getSplitLineFromLotNumberAndRoadLod2(List<Integer> lotNumberIdList, Integer applicationId,
+			int epsg, double buffer, Integer objectId, String lineNumber) {
 		LOGGER.debug("地番+バッファと道路LOD2レイヤに重なる区割り線取得 開始");
 		EntityManager em = null;
 		try {
@@ -310,18 +407,35 @@ public class JudgementLayerDao extends AbstractDao {
 					"SELECT geom FROM f_road_lod2 WHERE object_id = :objectId" :
 					// 路線番号が指定されている場合、同一路線番号（車道部）フィーチャをユニオンしたフィーチャを使用して区割り線を取得
 					" SELECT ST_UNION(geom) AS geom FROM f_road_lod2 WHERE line_number = :lineNumber AND (t_function = 1000  OR t_function = 1020) ";
+			String getLotNumberQuery = "";
+			if (applicationId == null) {
+				getLotNumberQuery = "" + //
+						"  SELECT " + //
+						"    ST_Transform(" + //
+						"      CAST(ST_Buffer(" + // 型変換を「::」で実施すると、フレームワークでエラーとなるので、cast関数を使用する。
+						"        CAST(ST_Transform(geom, 4612) AS geography), :buffer" + // 距離指定でバッファを発生させる場合は、一度地理座標系に変換し、geographyに変換すると精度の高いバッファができる
+						"      ) AS geometry), :epsg) AS geom " + // geographyは元のgeometryに戻し、さらに元の座標系に変換する
+						"  FROM " + //
+						"    f_lot_number " + //
+						"  WHERE " + //
+						"    chiban_id IN (:lotNumbers) ";
+			} else {
+				getLotNumberQuery = "" + //
+						"  SELECT " + //
+						"    ST_Transform(" + //
+						"      CAST(ST_Buffer(" + // 型変換を「::」で実施すると、フレームワークでエラーとなるので、cast関数を使用する。
+						"        CAST(ST_Transform(geom, 4612) AS geography), :buffer" + // 距離指定でバッファを発生させる場合は、一度地理座標系に変換し、geographyに変換すると精度の高いバッファができる
+						"      ) AS geometry), :epsg) AS geom " + // geographyは元のgeometryに戻し、さらに元の座標系に変換する
+						"  FROM " + //
+						"    f_application_lot_number " + //
+						"  WHERE " + //
+						"    application_id = :applicationId ";
+			}
+
 			String sql = "" + //
 			// 地番+バッファ
 					"WITH lon_number_geom AS (  " + //
-					"SELECT   " + //
-					"ST_Transform(  " + //
-					"   CAST(ST_Buffer(  " + //
-					"  CAST(ST_Transform(geom, 4612) AS geography), :buffer  " + //
-					"  ) AS geometry), :epsg) AS geom   " + //
-					"  FROM   " + //
-					"  f_lot_number   " + //
-					"    WHERE   " + //
-					"    chiban_id IN (:lotNumbers)" + //
+					getLotNumberQuery + //
 					")," + //
 					// 道路LOD2レイヤ
 					"lod2_geom AS (" + //
@@ -339,13 +453,27 @@ public class JudgementLayerDao extends AbstractDao {
 					"    lod2_geom AS c " + //
 					"ON  ST_Intersects(a.geom, c.geom)";
 			if (lineNumber == null) {
-				return em.createNativeQuery(sql, SplitLine.class).setParameter("lotNumbers", lotNumberIdList)
-						.setParameter("epsg", epsg).setParameter("buffer", buffer).setParameter("objectId", objectId)
-						.getResultList();
+				if (applicationId == null) {
+					return em.createNativeQuery(sql, SplitLine.class).setParameter("lotNumbers", lotNumberIdList)
+							.setParameter("epsg", epsg).setParameter("buffer", buffer)
+							.setParameter("objectId", objectId).getResultList();
+				} else {
+					return em.createNativeQuery(sql, SplitLine.class).setParameter("applicationId", applicationId)
+							.setParameter("epsg", epsg).setParameter("buffer", buffer)
+							.setParameter("objectId", objectId).getResultList();
+				}
+
 			} else {
-				return em.createNativeQuery(sql, SplitLine.class).setParameter("lotNumbers", lotNumberIdList)
-						.setParameter("epsg", epsg).setParameter("buffer", buffer)
-						.setParameter("lineNumber", lineNumber).getResultList();
+				if (applicationId == null) {
+					return em.createNativeQuery(sql, SplitLine.class).setParameter("lotNumbers", lotNumberIdList)
+							.setParameter("epsg", epsg).setParameter("buffer", buffer)
+							.setParameter("lineNumber", lineNumber).getResultList();
+				} else {
+					return em.createNativeQuery(sql, SplitLine.class).setParameter("applicationId", applicationId)
+							.setParameter("epsg", epsg).setParameter("buffer", buffer)
+							.setParameter("lineNumber", lineNumber).getResultList();
+				}
+
 			}
 		} finally {
 			if (em != null) {
@@ -359,13 +487,14 @@ public class JudgementLayerDao extends AbstractDao {
 	 * 最近接道路中心位置取得
 	 * 
 	 * @param lotNumberIdList 申請地番リスト
+	 * @param applicationId   申請ID
 	 * @param objectId        オブジェクトID
 	 * @param lineNumber      路線番号
-	 * @return　List<RoadCenterLinePosition>　最近接道路中心位置
+	 * @return List<RoadCenterLinePosition> 最近接道路中心位置
 	 */
 	@SuppressWarnings("unchecked")
-	public List<RoadCenterLinePosition> getRoadCenterLinePosition(List<Integer> lotNumberIdList, Integer objectId,
-			String lineNumber) {
+	public List<RoadCenterLinePosition> getRoadCenterLinePosition(List<Integer> lotNumberIdList, Integer applicationId,
+			Integer objectId, String lineNumber) {
 		LOGGER.debug("最近接道路中心位置取得 開始");
 		EntityManager em = null;
 		try {
@@ -375,10 +504,16 @@ public class JudgementLayerDao extends AbstractDao {
 					"SELECT geom FROM f_road_lod2 WHERE object_id = :objectId" :
 					// 路線番号が指定されている場合、同一路線番号フィーチャ（車道部）をユニオンしたフィーチャを使用して区割り線を取得
 					" SELECT ST_UNION(geom) AS geom FROM f_road_lod2 WHERE line_number = :lineNumber AND (t_function = 1000  OR t_function = 1020)";
+			// 地番取得
+			final String get_lot_number_query = (applicationId == null) ?
+			// 申請地番NULL -> F_地番
+					"    SELECT geom AS geom FROM f_lot_number WHERE chiban_id IN (:lotNumbers) " :
+					// 申請地番!=NULL -> F_申請地番
+					"    SELECT geom AS geom FROM f_application_lot_number WHERE application_id = :applicationId ";
 			String sql = "" + //
 			// 選択地番の集合
 					"WITH lot_numbers AS ( " + //
-					"    SELECT chiban_id, geom AS geom FROM f_lot_number WHERE chiban_id IN (:lotNumbers) " + //
+					get_lot_number_query + //
 					")," + //
 					// 選択地番の重心
 					"center_lot AS (" + //
@@ -413,14 +548,27 @@ public class JudgementLayerDao extends AbstractDao {
 					"SELECT " + //
 					"    ST_AsText(nearest_point.geom) AS wkt, nearest_road.object_id AS object_id " + //
 					"FROM nearest_point, nearest_road";
-			// LOGGER.debug(sql);
 			if (lineNumber == null) {
-				return em.createNativeQuery(sql, RoadCenterLinePosition.class)
-						.setParameter("lotNumbers", lotNumberIdList).setParameter("objectId", objectId).getResultList();
+				if (applicationId == null) {
+					return em.createNativeQuery(sql, RoadCenterLinePosition.class)
+							.setParameter("lotNumbers", lotNumberIdList).setParameter("objectId", objectId)
+							.getResultList();
+				} else {
+					return em.createNativeQuery(sql, RoadCenterLinePosition.class)
+							.setParameter("applicationId", applicationId).setParameter("objectId", objectId)
+							.getResultList();
+				}
+
 			} else {
-				return em.createNativeQuery(sql, RoadCenterLinePosition.class)
-						.setParameter("lotNumbers", lotNumberIdList).setParameter("lineNumber", lineNumber)
-						.getResultList();
+				if (applicationId == null) {
+					return em.createNativeQuery(sql, RoadCenterLinePosition.class)
+							.setParameter("lotNumbers", lotNumberIdList).setParameter("lineNumber", lineNumber)
+							.getResultList();
+				} else {
+					return em.createNativeQuery(sql, RoadCenterLinePosition.class)
+							.setParameter("applicationId", applicationId).setParameter("lineNumber", lineNumber)
+							.getResultList();
+				}
 			}
 
 		} finally {
@@ -435,6 +583,7 @@ public class JudgementLayerDao extends AbstractDao {
 	 * 地番バッファと重なる道路中心線の長さから最近接道路中心位置取得
 	 * 
 	 * @param lotNumberIdList 申請地番リスト
+	 * @param applicationId   申請ID
 	 * @param objectId        オブジェクトID
 	 * @param epsg            座標系
 	 * @param buffer          バッファ
@@ -443,7 +592,7 @@ public class JudgementLayerDao extends AbstractDao {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<RoadCenterLinePosition> getRoadCenterLinePositionWithBuffer(List<Integer> lotNumberIdList,
-			Integer objectId, int epsg, double buffer, String lineNumber) {
+			Integer applicationId, Integer objectId, int epsg, double buffer, String lineNumber) {
 		LOGGER.debug("バッファ重複長から最近接道路中心位置取得 開始");
 		EntityManager em = null;
 		try {
@@ -453,10 +602,16 @@ public class JudgementLayerDao extends AbstractDao {
 					"SELECT geom FROM f_road_lod2 WHERE object_id = :objectId" :
 					// 路線番号が指定されている場合、同一路線番号フィーチャ（車道部）をユニオンしたフィーチャを使用して区割り線を取得
 					" SELECT ST_UNION(geom) AS geom FROM f_road_lod2 WHERE line_number = :lineNumber AND (t_function = 1000  OR t_function = 1020)";
+			// 地番取得
+			final String get_lot_number_query = (applicationId == null) ?
+			// 申請地番NULL -> F_地番
+					"    SELECT geom AS geom FROM f_lot_number WHERE chiban_id IN (:lotNumbers) " :
+					// 申請地番!=NULL -> F_申請地番
+					"    SELECT geom AS geom FROM f_application_lot_number WHERE application_id = :applicationId ";
 			String sql = "" + //
 			// 選択地番の集合
 					"WITH lot_numbers AS ( " + //
-					"    SELECT chiban_id, geom AS geom FROM f_lot_number WHERE chiban_id IN (:lotNumbers) " + //
+					get_lot_number_query + //
 					")," + //
 					// 選択地番の重心
 					"center_lot AS (" + //
@@ -483,8 +638,10 @@ public class JudgementLayerDao extends AbstractDao {
 					"     " + //
 					"	road_center.object_id AS object_id, " + //
 					"    ST_LineMerge(road_center.geom) AS geom, " + //
-					//"    ST_Length(ST_Intersection(road_center.geom, buffer_lot.geom)) AS length" + //
-					"    ST_Length(ST_Intersection(ST_Intersection(road_center.geom, road_lod2.geom), buffer_lot.geom)) AS length" + //
+					// " ST_Length(ST_Intersection(road_center.geom, buffer_lot.geom)) AS length" +
+					// //
+					"    ST_Length(ST_Intersection(ST_Intersection(road_center.geom, road_lod2.geom), buffer_lot.geom)) AS length"
+					+ //
 					"   FROM road_center, road_lod2, buffer_lot " + //
 					"   WHERE " + //
 					"   ST_Intersects(road_center.geom, road_lod2.geom) = true " + //
@@ -502,15 +659,28 @@ public class JudgementLayerDao extends AbstractDao {
 					"SELECT " + //
 					"    ST_AsText(nearest_point.geom) AS wkt, intersect_roadcenter_line.object_id AS object_id " + //
 					"FROM nearest_point, intersect_roadcenter_line";
-			// LOGGER.debug(sql);
 			if (lineNumber == null) {
-				return em.createNativeQuery(sql, RoadCenterLinePosition.class)
-						.setParameter("lotNumbers", lotNumberIdList).setParameter("objectId", objectId)
-						.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
+				if (applicationId == null) {
+					return em.createNativeQuery(sql, RoadCenterLinePosition.class)
+							.setParameter("lotNumbers", lotNumberIdList).setParameter("objectId", objectId)
+							.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
+				} else {
+					return em.createNativeQuery(sql, RoadCenterLinePosition.class)
+							.setParameter("applicationId", applicationId).setParameter("objectId", objectId)
+							.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
+				}
+				
 			} else {
-				return em.createNativeQuery(sql, RoadCenterLinePosition.class)
-						.setParameter("lotNumbers", lotNumberIdList).setParameter("lineNumber", lineNumber)
-						.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
+				if (applicationId == null) {
+					return em.createNativeQuery(sql, RoadCenterLinePosition.class)
+							.setParameter("lotNumbers", lotNumberIdList).setParameter("lineNumber", lineNumber)
+							.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
+				} else {
+					return em.createNativeQuery(sql, RoadCenterLinePosition.class)
+							.setParameter("applicationId", applicationId).setParameter("lineNumber", lineNumber)
+							.setParameter("epsg", epsg).setParameter("buffer", buffer).getResultList();
+				}
+				
 			}
 		} finally {
 			if (em != null) {
@@ -523,10 +693,10 @@ public class JudgementLayerDao extends AbstractDao {
 	/**
 	 * 道路中心線を最近接道路中心位置で分割したジオメトリを取得する
 	 * 
-	 * @param wkt WKT
+	 * @param wkt      WKT
 	 * @param objectId オブジェクトID
-	 * @param buffer バッファ
-	 * @return　分割道路中心線
+	 * @param buffer   バッファ
+	 * @return 分割道路中心線
 	 */
 	@SuppressWarnings("unchecked")
 	public List<SplitRoadCenterLine> getSplitRoadCenterLine(String wkt, int epsg, Integer objectId, Double buffer) {
@@ -552,7 +722,6 @@ public class JudgementLayerDao extends AbstractDao {
 					"    ROW_NUMBER() OVER(ORDER BY dmp ASC) AS id, " + //
 					"    ST_AsText((dmp).geom) AS wkt " + //
 					"FROM split_dump";
-			// LOGGER.debug(sql);
 			return em.createNativeQuery(sql, SplitRoadCenterLine.class).setParameter("objectId", objectId)
 					.setParameter("epsg", epsg).setParameter("wkt", wkt).setParameter("buffer", buffer).getResultList();
 		} finally {
@@ -586,7 +755,6 @@ public class JudgementLayerDao extends AbstractDao {
 					"WHERE ST_Intersects(a.geom, " + //
 					"    ST_GeomFromText(:linewkt, :epsg)) = True" + //
 					"    ORDER BY  ST_Distance(ST_GeomFromText(:pointwkt, :epsg), ST_LineMerge(a.geom)) ASC";
-			// LOGGER.debug(sql);
 			return em.createNativeQuery(sql, SplitLine.class).setParameter("linewkt", roadCenterLineWkt)
 					.setParameter("pointwkt", roadCenterPositionWkt).setParameter("epsg", epsg).getResultList();
 		} finally {
@@ -692,11 +860,11 @@ public class JudgementLayerDao extends AbstractDao {
 			LOGGER.debug("道路LOD2のエクステント取得 終了");
 		}
 	}
-	
+
 	/**
 	 * 道路LOD2地物（複数オブジェクトIDを指定）のエクステントを取得する
 	 * 
-	 * @param epsg     EPSG
+	 * @param epsg    EPSG
 	 * @param oidList オブジェクトIDのリスト
 	 * @return List<SpiltLineExtent> 道路LOD2エクステント
 	 */

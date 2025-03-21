@@ -24,7 +24,7 @@ import webMapServiceCatalogItem from '../../../../Models/Catalog/Ows/WebMapServi
 import CustomStyleDistrict from "./scss/district-name-search.scss";
 import CustomStyleKana from "./scss/kana-district-name-search.scss";
 import sampleTerrainMostDetailed from "terriajs-cesium/Source/Core/sampleTerrainMostDetailed";
-
+import L from 'leaflet';
 /**
  * 地番検索画面
  */
@@ -282,6 +282,10 @@ class LotNumberSearch extends React.Component {
                 return (<>
                     {Object.keys(searchResult).map(idx => {
                         let flg = this.checkSelected(searchResult[idx]);
+                        // 行政の場合、他の画面から戻る時に、選択している地番に対する選択中地番レイヤを回復
+                        if(flg == true && this.props.terria.authorityJudgment()){
+                            this.changeApplicationPlace(searchResult[idx]?.maxlon,searchResult[idx]?.maxlat,searchResult[idx]?.minlon,searchResult[idx]?.minlat,searchResult[idx]?.lon, searchResult[idx]?.lat);
+                        }
                         return (<tr key={searchResult[idx].chibanId} onClick={
                                         evt => {
                                             if(evt.target.type !== 'checkbox'){
@@ -303,7 +307,6 @@ class LotNumberSearch extends React.Component {
                                     checked={flg}
                                 ></input>
                             </td>}
-                            {this.props.terria.authorityJudgment() && <td style={{ width: "20%" }}>{searchResult[idx]?.statusText}</td>}
                             {Object.keys(table).map(tableKey => (
                                 <>
                                     {searchResult[idx]?.attributes && table[tableKey]?.responseKey &&
@@ -311,28 +314,6 @@ class LotNumberSearch extends React.Component {
                                     }
                                 </>
                             ))}
-                            {/* マップにフォックス列がなくなる */}
-                            {/* <td style={{ width: "10%" }}>
-                                <button
-                                    className={ScreenButton.helpBtn}
-                                    onClick={evt => {
-                                        this.focusMapPlace(searchResult[idx]?.maxlon,searchResult[idx]?.maxlat,searchResult[idx]?.minlon,searchResult[idx]?.minlat,searchResult[idx]?.lon, searchResult[idx]?.lat);
-                                    }}
-                                    style={{ width: 80 + "px", lineHeight: 2 + "em", padding: 2 + "px", margin: "0 auto" }}
-                                >
-                                    <StyledIcon
-                                        styledWidth={"40px"}
-                                        fillColor={this.props.theme.textLight}
-                                        opacity={"0.5"}
-                                        glyph={Icon.GLYPHS.mapbutton}
-                                        css={`
-                                    cursor:pointer;
-                                    height: 20px;
-                                    width: 20px;
-                                `}
-                                    />
-                                </button>
-                            </td> */}
                         </tr>)
                     })}
                 </>);
@@ -351,6 +332,7 @@ class LotNumberSearch extends React.Component {
      * 初期描画
      */
     componentDidMount() {
+        this.props.viewState.triggerResizeEvent();
         document.getElementById("customloader").style.display = "none"
         // テーブル定義取得
         fetch(Config.config.apiUrl + "/lotnumber/columns")
@@ -407,12 +389,6 @@ class LotNumberSearch extends React.Component {
             }
         }
 
-        //　レイアウト変更のため、ドラッグ操作がなくなる
-        // if (this.props.viewState.islotNumberSearchViewIndependent) {
-        //     this.draggable(document.getElementById('LotNumberSearchFrameDrag'), document.getElementById('LotNumberSearchFrame'));
-        // } else {
-        //     this.draggable(document.getElementById('LotNumberSearchFrameDrag'), document.getElementById('CharacterSelection'));
-        // }
     }
 
     /*
@@ -423,10 +399,9 @@ class LotNumberSearch extends React.Component {
         document.getElementById("customloader").style.display = "block";
         let path = "/lotnumber/search/estabrishment";
         if (this.props.terria.authorityJudgment()) {
-            path = "/lotnumber/search/goverment";
+            path = "/lotnumber/search/estabrishment";
         }
         if ((!this.props.viewState.searchDistrictId || this.props.viewState.searchDistrictId === "") &&
-            // (!this.state.lotNumber || this.state.lotNumber === "")) {
             (!this.props.viewState.searchLotNum || this.props.viewState.searchLotNum === "")) {
             document.getElementById("customloader").style.display = "none";
             alert("町丁名または地番は必須入力です。");
@@ -459,15 +434,9 @@ class LotNumberSearch extends React.Component {
                         let displayName = "";
                         let paramName = "";
                         let layerFlg = false;
-                        if (this.props.terria.authorityJudgment()) {
-                            layrerName = Config.layer.lotnumberSearchLayerNameForGoverment;
-                            displayName = Config.layer.lotnumberSearchLayerDisplayNameForGoverment;
-                            paramName = Config.layer.lotnumberSearchViewParamNameForGoverment;
-                        } else {
-                            layrerName = Config.layer.lotnumberSearchLayerNameForBusiness;
-                            displayName = Config.layer.lotnumberSearchLayerDisplayNameForBusiness;
-                            paramName = Config.layer.lotnumberSearchViewParamNameForBusiness;
-                        }
+                        layrerName = Config.layer.lotnumberSearchLayerNameForBusiness;
+                        displayName = Config.layer.lotnumberSearchLayerDisplayNameForBusiness;
+                        paramName = Config.layer.lotnumberSearchViewParamNameForBusiness;
                         const wmsUrl = Config.config.geoserverUrl;
                         const items = this.state.terria.workbench.items;
                         try {
@@ -505,7 +474,6 @@ class LotNumberSearch extends React.Component {
                     }
                     if(!this.props.terria.authorityJudgment()){
                         this.props.viewState.setIsClickEvent();
-                        // this.props.viewState.setLotNumber(this.state.lotNumber);
                         this.props.viewState.changeShowLotNumberSelectedFlg(true);
                     }
                     this.setState({ searchResult: res });
@@ -540,54 +508,7 @@ class LotNumberSearch extends React.Component {
      * @param {boolean} isSelected 選択中地番であるか
      */
      focusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat, isSelected) {
-        // 3dmodeにセット
-        this.props.viewState.set3dMode();
-        if(!isSelected){
-            // 地点の経度緯度にピンにマークを付ける
-            this.clearSamplePoint();
-            const pointItem = new GeoJsonCatalogItem("対象地点", this.state.terria);
-            pointItem.setTrait(CommonStrata.user, "geoJsonData", {
-                type: "Feature",
-                properties: {
-                    "marker-color": "#dc143c",
-                    "id": 1,
-                    "経度": lon,
-                    "緯度": lat,
-                },
-                geometry: {
-                    type: "Point",
-                    coordinates: [lon, lat]
-                }
-            });
-            pointItem.loadMapItems();
-            this.state.terria.workbench.add(pointItem);
-        }
-        //現在のカメラ位置等を取得
-        const currentSettings = getShareData(this.state.terria, this.props.viewState);
-        const currentCamera = currentSettings.initSources[0].initialCamera;
-        let newCamera = Object.assign(currentCamera);
-        //新規の表示範囲を設定
-        let currentLonDiff = Math.abs(maxLon - minLon);
-        let currentLatDiff = Math.abs(maxLat - minLat);
-        newCamera.north = maxLon + currentLatDiff / 2;
-        newCamera.south = minLon - currentLatDiff / 2;
-        newCamera.east = maxLat + currentLonDiff / 2;
-        newCamera.west = minLat - currentLonDiff / 2;
-        //camera.positionを緯度経度に合わせて設定
-        const scene = this.props.terria.cesium.scene;
-        const terrainProvider = scene.terrainProvider;
-        const positions = [Cartographic.fromDegrees(lon, minLat)];
-        let height = 0;
-        sampleTerrainMostDetailed(terrainProvider, positions).then((updatedPositions) => {
-            height = updatedPositions[0].height
-            let coord_wgs84 = Cartographic.fromDegrees(lon, minLat, parseFloat(height) + parseInt((400000 * currentLatDiff )) + 200 );
-            let coord_xyz = Ellipsoid.WGS84.cartographicToCartesian(coord_wgs84);
-            newCamera.position = { x: coord_xyz.x, y: coord_xyz.y, z: coord_xyz.z - parseInt((300000 * currentLatDiff )) - 170 };
-            //カメラの向きは統一にさせる
-            newCamera.direction = { x: this.props.terria.focusCameraDirectionX, y: this.props.terria.focusCameraDirectionY, z: this.props.terria.focusCameraDirectionZ };
-            newCamera.up = { x: this.props.terria.focusCameraUpX, y: this.props.terria.focusCameraUpY, z:this.props.terria.focusCameraUpZ };
-            this.state.terria.currentViewer.zoomTo(newCamera, 3);
-        })
+        this.props.terria.focusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat, this.props.viewState);
     }
 
     /**
@@ -673,29 +594,6 @@ class LotNumberSearch extends React.Component {
         this.props.viewState.setLotNumber(null);
     }
 
-    // レイアウト変更のため、ドラッグ操作がなくなる
-    // /**
-    //  * コンポーネントドラッグ操作
-    //  * @param {Object} ドラッグ操作対象
-    //  * @param {Object} ドラッグ対象
-    //  */
-    // draggable(target, content) {
-    //     target.onmousedown = function (e) {
-    //         //町丁名入力欄、地番入力欄、検索ボタン、クリアボタンはドラッグ操作対象外とする
-    //         if(e.target.id !== "districtName" && e.target.id !=="lotNumber" && e.target.id !=="searchBtn" && e.target.id !=="lotNumberClearBtn"){
-    //             document.onmousemove = mouseMove;
-    //         }
-    //     };
-    //     document.onmouseup = function () {
-    //         document.onmousemove = null;
-    //     };
-    //     function mouseMove(e) {
-    //         var event = e ? e : window.event;
-    //         content.style.top = (event.clientY + (parseInt(content.clientHeight) / 2) - 5) + 'px';
-    //         content.style.left = (event.clientX) + 'px';
-    //     }
-    // }
-
     /**
      * 地番選択
      * @param {*} maxLon 最大経度
@@ -764,7 +662,6 @@ class LotNumberSearch extends React.Component {
         const topDiff = this.props.viewState.lotNumberSearchPosDiffTop;
         const leftDiff = this.props.viewState.lotNumberSearchPosDiffLeft;
         const isViewIndependent = this.props.viewState.islotNumberSearchViewIndependent;
-        // const lotNumber = this.state.lotNumber;
         const lotNumber = this.props.viewState.searchLotNum
         let searchResult = this.state.searchResult;
         const table = this.state.table;
@@ -858,24 +755,6 @@ class LotNumberSearch extends React.Component {
                                 </button>
                             </div>
                             <div style={{ width: 5 + "%", padding: 5 + "px", height: 100 + "%", textAlign: "right" }}>
-                                {/*　クローズボタンをなくなる */}
-                                {/* {isViewIndependent &&
-                                    <RawButton onClick={evt => {
-                                        evt.preventDefault();
-                                        evt.stopPropagation();
-                                        this.close();
-                                    }}>
-                                        <StyledIcon
-                                            styledWidth={"16px"}
-                                            fillColor={this.props.theme.textLight}
-                                            opacity={"0.5"}
-                                            glyph={Icon.GLYPHS.closeLight}
-                                            css={`
-                                                cursor:pointer;
-                                            `}
-                                        />
-                                    </RawButton>
-                                } */}
                             </div>
                         </Box>
                         <Box styledHeight={"45%"} styledWidth={"100%"}>
@@ -893,7 +772,6 @@ class LotNumberSearch extends React.Component {
                                     placeholder="地番を入力(例:1-1-1)"
                                     id="lotNumber"
                                     style={{ width: 100 + "%" }}
-                                    // onChange={e => this.setState({ lotNumber: e.target.value })}
                                     onChange={e => this.props.viewState.setLotNumber( e.target.value)}
                                     
                                 />
@@ -927,21 +805,16 @@ class LotNumberSearch extends React.Component {
                         <table className={CustomStyle.result_table}>
                             <thead>
                                 {Object.keys(table).length > 0 && (
-                                    <tr>
-                                        {/* {!isViewIndependent && <th style={{ width: "8%" }}></th>} */}
-                                        <th style={{ width: "8%" }}></th>
-                                        {this.props.terria.authorityJudgment() && <th style={{ width: "20%" }}>申請</th>}
+                                    <tr className="add-sort">
+                                        <th className="no-sort" style={{ width: "8%" }}></th>
                                         {Object.keys(table).map(tableKey => (
                                             <th key={"tableKey"+tableKey} style={{ width: table[tableKey].tableWidth + "%" }}>{table[tableKey].displayColumnName}</th>
                                         ))}
-                                        {/* レイアウト変更ために、マップにフォックスする列がなくなる */}
-                                        {/* <th style={{ width: "10%" }}><div style={{ width: "80px" }}></div></th> */}
                                     </tr>
                                 )}
                             </thead>
                             <tbody>
                                 {SearchRsultContent &&
-                                    // <SearchRsultContent table={table} searchResult={searchResult} isViewIndependent={isViewIndependent} />
                                     <SearchRsultContent table={table} searchResult={searchResult} isClickEvent={isClickEvent} selectLotCount={selectLotCount}/>
                                 }
                             </tbody>

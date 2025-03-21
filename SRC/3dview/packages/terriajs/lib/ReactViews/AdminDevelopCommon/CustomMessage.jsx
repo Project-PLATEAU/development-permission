@@ -51,10 +51,6 @@ class CustomMessage extends React.Component {
             }
         }
     
-        // 回答登録完了の場合、行政向けアンケート画面を開く
-        if (isAnswerCompleted) {
-            this.openQuestionnaire(Config.config.questionnaireUrlForGoverment, "admin_quessionaire");
-        }
     }
     
     /**
@@ -77,6 +73,10 @@ class CustomMessage extends React.Component {
         if (this.props.viewState.isAnswerCompleted) {
             this.props.viewState.nextApplicationDetailsView(this.props.viewState.applicationInformationSearchForApplicationId);
         } 
+        // 回答通知完了画面を閉じると、申請情報詳細リフレッシュ処理を行う
+        if(this.props.viewState.isNotifiedCompleted){
+            this.props.viewState.refreshConfirmApplicationDetails();
+        }
     }
 
     render() {
@@ -120,7 +120,7 @@ class CustomMessage extends React.Component {
                     className={CustomStyle.custom_content}
                 >
                     <p className={CustomStyle.center}>
-                        <h1 dangerouslySetInnerHTML={{ __html: this.props.viewState.customMessageTitle }}></h1>
+                        <h2 dangerouslySetInnerHTML={{ __html: this.props.viewState.customMessageTitle }}></h2>
                     </p>
                     <p className={CustomStyle.center}>
                         <span dangerouslySetInnerHTML={{ __html: this.props.viewState.customMessageContent }}></span>

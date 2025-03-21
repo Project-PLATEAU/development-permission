@@ -53,8 +53,8 @@ public class ApplicationCategorySelectionView implements Serializable {
 	/** 説明文 */
 	@Column(name = "description")
 	private String description;
-	
-	/** 概況診断タイプ(1=開発許可関連, 0=土地相談) */
+
+	/** 申請種類(1=開発許可, 0=建築確認) */
 	@Column(name = "judgement_type")
 	private String judgementType;
 

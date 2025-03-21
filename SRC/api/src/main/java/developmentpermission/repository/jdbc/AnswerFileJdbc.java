@@ -35,10 +35,13 @@ public class AnswerFileJdbc extends AbstractJdbc {
 		try {
 			String sql = "" + //
 					"INSERT INTO o_answer_file " + //
-					"(answer_file_id, answer_id, answer_file_name, delete_unnotified_flag, delete_flag) " + //
-					"VALUES (nextval('seq_answer_file'), ?, ?, '0', '0')";
+					"(answer_file_id, answer_id, application_id, application_step_id, department_id, answer_file_name, delete_unnotified_flag, delete_flag) " + //
+					"VALUES (nextval('seq_answer_file'), ?, ?, ?, ?, ?, '0', '0')";
 			jdbcTemplate.update(sql, //
 					form.getAnswerId(), //
+					form.getApplicationId(), //
+					form.getApplicationStepId(), //
+					form.getDepartmentId(), //
 					form.getAnswerFileName());
 			return jdbcTemplate.queryForObject("SELECT lastval()", Integer.class);
 		} finally {
@@ -117,9 +120,6 @@ public class AnswerFileJdbc extends AbstractJdbc {
 	public int delete(AnswerFile answerFile) {
 		LOGGER.debug("回答ファイル削除 開始");
 		try {
-			// String sql = "" + //
-			// "DELETE FROM o_answer_file " + //
-			// "WHERE answer_file_id=?";
 			// 履歴で参照するため、論理削除する
 			String sql = "" + //
 					"UPDATE o_answer_file " + //

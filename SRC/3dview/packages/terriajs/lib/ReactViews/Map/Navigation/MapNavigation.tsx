@@ -24,6 +24,18 @@ import withControlledVisibility from "../../HOCs/withControlledVisibility";
 import MapIconButton from "../../MapIconButton/MapIconButton";
 import { Control, MapNavigationItem } from "./Items/MapNavigationItem";
 import { registerMapNavigations } from "./registerMapNavigations";
+import ViewerMode, {
+  MapViewers,
+  setViewerMode
+} from "../../../Models/ViewerMode";
+import Button, { RawButton } from "../../../Styled/Button";
+import {getShareData} from "../Panels/SharePanel/BuildShareLink";
+import MapFitButton from "../../DevelopmentPermissionSystem/Views/Map/MapFitButton";
+import MapFitButtonForAChatView from "../../DevelopmentPermissionSystem/Views/Map/MapFitButtonForAChatView";
+import Config from "../../../../customconfig.json";
+import { BaseModel } from "../../../Models/Definition/Model";
+import CommonStrata from "../../../Models/Definition/CommonStrata";
+import { borderRadius } from "react-select/src/theme";
 
 const OVERFLOW_ACTION_SIZE = 42;
 
@@ -75,6 +87,21 @@ const ControlWrapper = styled(Box)`
   }
 `;
 
+type IButtonProps = {
+  isActive: boolean;
+};
+
+const SettingsButton = styled(Button)<IButtonProps>`
+  background-color: ${props =>
+    props.isActive ? props.theme.colorPrimary : "#ededed"};
+  color: ${props => (props.isActive ? "#fff" : "#444444")};
+  border: none;
+  border-radius: 0;
+  width:10px;
+  min-height: 35px;
+  padding: 0 14px;
+`;
+
 interface PropTypes extends WithTranslation {
   viewState: ViewState;
   theme: DefaultTheme;
@@ -124,6 +151,7 @@ class MapNavigation extends React.Component<PropTypes> {
     this.computeSizes();
     this.updateNavigation();
     window.addEventListener("resize", this.resizeListener, false);
+    this.changeBuildingModelShow();
   }
 
   isTablet(){
@@ -137,11 +165,55 @@ class MapNavigation extends React.Component<PropTypes> {
     }
   }
 
+  /**
+   * 建物モデル表示・非表示
+   */
+  changeBuildingModelShow(){
+      try{
+          const currentViewer =
+          this.viewState.terria.mainViewer.viewerMode === ViewerMode.Cesium
+            ? this.viewState.terria.mainViewer.viewerOptions.useTerrain
+              ? "3d"
+              : "3dsmooth"
+            : "2d";
+          const cesium3DTiles:any = this.viewState.terria.getModelById(BaseModel, Config.buildingModel.id);
+          const leaflet2DModel:any = this.viewState.terria.getModelById(BaseModel, Config.buildingModelFor2d.id);
+          if(currentViewer === '3d' && cesium3DTiles && leaflet2DModel){
+            this.viewState.terria.workbench.remove(leaflet2DModel);
+            this.viewState.terria.workbench.add(cesium3DTiles);
+          }else if(currentViewer === '2d' && cesium3DTiles && leaflet2DModel){
+            this.viewState.terria.workbench.remove(cesium3DTiles);
+            this.viewState.terria.workbench.add(leaflet2DModel);
+          }
+      } catch (error) {
+          console.error('処理に失敗しました', error);
+      }
+  }
+
   componentWillUnmount() {
     window.removeEventListener("resize", this.resizeListener);
     if (this.viewerModeReactionDisposer) {
       this.viewerModeReactionDisposer();
     }
+  }
+
+  @action
+  selectViewer(
+    viewer: keyof typeof MapViewers,
+    event: any
+  ) {
+    const mainViewer = this.viewState.terria.mainViewer;
+    event.stopPropagation();
+    setViewerMode(viewer, mainViewer);
+    if(this.viewState.terria.authorityJudgment()){
+      this.viewState.terria.setLocalProperty("goverment.viewermode", viewer);
+    }else{
+      this.viewState.terria.setLocalProperty("business.viewermode", viewer);
+    }
+    this.changeBuildingModelShow();
+    setTimeout(() => {
+      this.viewState.terria.cameraReset();
+    }, 2000);
   }
 
   @computed
@@ -270,6 +342,12 @@ class MapNavigation extends React.Component<PropTypes> {
   render() {
     const { viewState, t } = this.props;
     const terria = viewState.terria;
+    const currentViewer =
+      terria.mainViewer.viewerMode === ViewerMode.Cesium
+        ? terria.mainViewer.viewerOptions.useTerrain
+          ? "3d"
+          : "3dsmooth"
+        : "2d";
     let items = terria.mapNavigationModel.visibleItems.filter(
       item =>
         !item.controller.collapsed &&
@@ -342,6 +420,58 @@ class MapNavigation extends React.Component<PropTypes> {
                 >
                   {t("mapNavigation.additionalTools")}
                 </MapIconButton>
+              </Control>
+            )}
+            <Control style={{width:"56px",display:"block"}}>
+            {Object.entries(MapViewers).map(([key, viewerMode]) => {
+              switch (key) {
+                case '3d':
+                  return <SettingsButton
+                            key={key}
+                            isActive={String(key) === String(currentViewer)}
+                            onClick={(event: any) => this.selectViewer(key as any, event)}
+                            title={"3D"}
+                            style={{float:"left",borderRadius:"5px 0 0 5px"}}
+                          >
+                            3D
+                          </SettingsButton>;
+                case '2d':
+                  return <SettingsButton
+                            key={key}
+                            isActive={String(key) === String(currentViewer)}
+                            onClick={(event: any) => this.selectViewer(key as any, event)}
+                            title={"2D"}
+                            style={{float:"right",borderRadius:"0 5px 5px 0"}}
+                          >
+                            2D
+                          </SettingsButton>;
+                // 他のケースに対する処理
+                default:
+                  return <></>;
+              }
+            })}
+            </Control>
+            {(viewState.adminTabActive === "applySearch" && 
+              (viewState.applyPageActive === "applyDetail" 
+              || viewState.applyPageActive === "answerRegister") &&
+              !viewState.showPdfViewer) && (
+                <Control>
+                  <MapFitButton terria={terria} viewState={viewState} />
+                </Control>
+            )}
+            {(!terria.authorityJudgment() && 
+              (viewState.showInputApplyConditionView
+                 || viewState.showGeneralAndRoadJudgementResultView
+                 || viewState.showApplyInformationView
+                 || viewState.showConfirmAnswerInformationView)) && (
+                <Control>
+                  <MapFitButton terria={terria} viewState={viewState} />
+                </Control>
+            )}
+            {((viewState.adminTabActive === "applySearch" && viewState.applyPageActive === "chat") 
+            || (!terria.authorityJudgment() && viewState.showChatView)) && (
+              <Control>
+                <MapFitButtonForAChatView terria={terria} viewState={viewState} />
               </Control>
             )}
           </ControlWrapper>

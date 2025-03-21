@@ -36,4 +36,21 @@ public interface ApplicationFileMasterRepository extends JpaRepository<Applicati
 	@Query(value = "SELECT application_file_id, judgement_item_id, require_flag, upload_file_name, extension FROM m_application_file WHERE application_file_id = :applicationFileId ORDER BY application_file_id", nativeQuery = true)
 	List<ApplicationFileMaster> getApplicationFile(@Param("applicationFileId") String applicationFileId);
 
+	/**
+	 * カテゴリ名取得
+	 * 
+	 * @param applicationFileId 申請ファイルID
+	 * @return カテゴリ名
+	 */
+	@Query(value = "SELECT DISTINCT upload_file_name AS category_name FROM m_application_file WHERE application_file_id = :applicationFileId LIMIT 1", nativeQuery = true)
+	String getCategoryName(@Param("applicationFileId") String applicationFileId);
+
+	/**
+	 * 開発登録簿対象申請ファイルID一覧取得
+	 * 
+	 * @return List<String>
+	 */
+	@Query(value = "SELECT DISTINCT application_file_id FROM m_application_file WHERE application_file_type = '1' ORDER BY application_file_id", nativeQuery = true)
+	List<String> getDevelopmentRegisterFileList();
+
 }

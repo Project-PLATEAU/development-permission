@@ -442,19 +442,21 @@
     "tipsForLotNumberSearch": "・申請したい地番を検索し、検索結果の行をクリックしてください。",
     "tipsForSelectLotNumberAtMap": "・地図上で申請地番をクリック　もしくはALTキーを押しながらドラッグし、申請地番を囲んでください。",
     "tipsForSelectApplicationCategory": "・各種申請区分を選択し、概況診断実施ボタンを押してください。",
-    "tipsForInputAnswerLoginInfo": "・申請内容に対する回答確認・再申請はID・パスワードを入力してください。",
+    "tipsForInputAnswerLoginInfo": "・申請内容に対する回答確認・再申請は照合ID・パスワードを入力してください。",
     "tipsForGeneralAndRoadJudgementResul": "概況診断結果の行をクリックすると、診断結果の詳細・関連地図が画面に表示されます。<br/>・概況診断結果データ出力：出力ボタンクリック<br/>・市への相談　　　　　　：申請ボタンクリック<br/>・検索に戻る　　　　　　：閉じるボタンクリック",
     "tipsForInputApplicationInformation":"申請者の情報を入力してください。<br/>入力が完了したら「次へ」を選択してください。",
     "tipsForRegistApplicationFile":"添付ファイルを登録してください。<br/>登録が完了したら「次へ」を選択してください。",
     "tipsForConfirmApplicationDetails":"入力内容を確認してください。<br/>問題がなければ、「申請」を選択してください。",
-    "tipsForConfirmAnswer":"回答内容を確認してください。<br/>回答一覧の添付にチェックのある回答は、添付ファイルがございますので、行をクリックし添付ファイル一覧をご確認ください。<br/>「問い合わせ」よりファイルの追加送信とチャット画面を開くことができます。",
+    "tipsForConfirmAnswer":"「事前相談」「事前協議」「許可判定」のいずれかを選択して、回答内容を確認してください。回答一覧の添付にチェックのある回答は、添付ファイルがございますので、行をクリックし添付ファイル一覧をご確認ください。「問い合わせ」よりファイルの追加送信とチャット画面を開くことができます。",
     "tipsForInputMessage":"問い合わせ内容を入力してください。",
-    "tipsForLayerTab": "・各カテゴリより地図上に表示したいレイヤを選択してください"
+    "tipsForLayerTab": "・各カテゴリより地図上に表示したいレイヤを選択してください",
+    "tipsForInputAddInformation":"申請の追加情報を入力してください。<br/>入力が完了したら「次へ」を選択してください。"
   },
   "adminInfoMessage":{
     "tipsForApplyList": "・問い合わせ・申請に対する回答要請が下記の事案で求められております。",
     "tipsForApplySearch":"・検索条件を入力し、「検索」を選択してください",
-    "tipsForAnswerReister":"・「回答登録」より回答を入力し「回答通知」より送信してください",
+    "tipsForAnswerReister":"・ 「事前相談」 「事前協議」 「許可判定」から選択した申請区分の詳細情報を閲覧できます。 <br/>・「回答登録」より回答を入力し「回答通知」より送信してください。",
+    "tipsForAnswerInput":"・「回答登録」より回答を入力し「回答通知」より送信してください。",
     "tipsForAnswerNotice":"・問い合わせ内容を確認し、回答を入力・送信してください。"
   }  
 }

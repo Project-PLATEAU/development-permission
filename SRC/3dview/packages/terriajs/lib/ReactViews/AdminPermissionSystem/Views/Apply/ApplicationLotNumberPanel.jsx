@@ -97,10 +97,7 @@ class ApplicationLotNumberPanel extends React.Component {
     @action.bound
     details(applicationId){
         this.props.viewState.nextApplicationDetailsView(applicationId);
-        const htmlElement = document.getElementById("refreshConfirmApplicationDetails");
-        if(htmlElement){
-            htmlElement.click();
-        }
+        this.props.viewState.refreshConfirmApplicationDetails();
     }
 
     render(){

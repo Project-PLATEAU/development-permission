@@ -27,6 +27,14 @@ public class ApplicationRegisterForm implements Serializable {
 	@ApiModelProperty(value = "一時フォルダ名", example = "XXXXXXXX")
 	private String folderName;
 	
+	/** 申請種類ID */
+	@ApiModelProperty(value = "申請種類ID", example = "1")
+	private Integer applicationTypeId;
+	
+	/** 申請段階ID */
+	@ApiModelProperty(value = "申請段階ID", example = "1")
+	private Integer applicationStepId;
+	
 	/** 申請地番一覧 */
 	@ApiModelProperty(value = "申請地番一覧")
 	private List<LotNumberForm> lotNumbers;

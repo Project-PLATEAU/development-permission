@@ -8,13 +8,11 @@
     transform: translate(-50%, -50%);
 }
 
-.scrollContainer1 {
-    min-height: 250px;
-    width: 100%;
-    // padding-left: 5px;
-    // padding-right: 5px;
-    overflow-y: auto;
-    overflow-x: hidden;
+.scroll_container {
+    height: 44vh !important;;
+    overflow-y: auto !important;;
+    overflow-x: hidden !important;;
+    flex-flow:column;
 }
 
 .custom_nuv {
@@ -112,6 +110,7 @@
 
 .item {
     word-wrap: break-word;
+    align-items: center;
 }
 
 .caption {
@@ -306,8 +305,37 @@
     border-color: #E3E3E3;
 }
 
-.scrollContainer{
+.scroll_container{
     overflow-x: hidden;
     overflow-y: auto;
-    height: calc(100vh - 335px);
+    height: calc(100vh - 220px);
+}
+
+.custom_selection {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: left;
+    background-color: $view-main-pale-color;
+    color: black;
+    padding-left: 1em;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content:space-between;
+    width: 100%;
+    border: none;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.checked_button {
+   background-color: $view-main-pale-color;
+}
+
+.disabled_button {
+    background:$view-gray-color !important;
+    color: #fff;
+ }
+
+.checked_file_button {
+    background-color: $view-main-color;
 }

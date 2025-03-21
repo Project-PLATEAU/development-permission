@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -16,8 +17,10 @@ import java.util.Map;
 
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -31,6 +34,7 @@ import org.springframework.stereotype.Component;
 import developmentpermission.entity.CategoryJudgement;
 import developmentpermission.form.ApplicationCategoryForm;
 import developmentpermission.form.ApplicationCategorySelectionViewForm;
+import developmentpermission.form.ApplyLotNumberForm;
 import developmentpermission.form.GeneralConditionDiagnosisReportRequestForm;
 import developmentpermission.form.GeneralConditionDiagnosisResultForm;
 import developmentpermission.form.LotNumberForm;
@@ -111,17 +115,25 @@ public class ExportJudgeForm extends AbstractExportForm {
 						new TextValue(nowDateText, TARGET_SHEET_INDEX, param.getDateRow(), param.getDateCol()));
 				LOGGER.trace("出力日出力 終了");
 
-				// 概況図出力
-				LOGGER.trace("概況図出力 開始");
-				Picture overviewPic = new Picture();
-				overviewPic.setType(Workbook.PICTURE_TYPE_PNG);
-				overviewPic.setFilePath(param.getFolderPath() + PATH_SPLITTER + OVERVIEW_FILE_NAME);
-				overviewPic.setStartCol(param.getOverviewStartCol());
-				overviewPic.setEndCol(param.getOverviewEndCol() + 1);
-				overviewPic.setStartRow(param.getOverviewStartRow());
-				overviewPic.setEndRow(param.getOverviewEndRow() + 1);
-				writePicture(wb, overviewPic);
-				LOGGER.trace("概況図出力 終了");
+				// キャプチャがある場合概況図出力
+				if(param.getFolderPath() != null) {
+					LOGGER.trace("概況図出力 開始");
+					Picture overviewPic = new Picture();
+					overviewPic.setType(Workbook.PICTURE_TYPE_PNG);
+					overviewPic.setFilePath(param.getFolderPath() + PATH_SPLITTER + OVERVIEW_FILE_NAME);
+					overviewPic.setStartCol(param.getOverviewStartCol());
+					overviewPic.setEndCol(param.getOverviewEndCol() + 1);
+					overviewPic.setStartRow(param.getOverviewStartRow());
+					overviewPic.setEndRow(param.getOverviewEndRow() + 1);
+					writePicture(wb, overviewPic);
+					LOGGER.trace("概況図出力 終了");
+				}else {
+					LOGGER.trace("概況図出力 なし");
+					int startC = param.getOverviewStartCol();
+					int startR = param.getOverviewStartRow();
+					//　文字列入力
+					writeTextValue(wb, new TextValue("画像なし", TARGET_SHEET_INDEX, startR, startC));
+				}
 
 				// 区分出力
 				LOGGER.trace("区分出力 開始");
@@ -159,8 +171,19 @@ public class ExportJudgeForm extends AbstractExportForm {
 
 				// 地番出力
 				LOGGER.trace("地番出力 開始");
+				String addressText = "";
 				List<LotNumberForm> lotNumbers = generalConditionDiagnosisReportRequestForm.getLotNumbers();
-				String addressText = getAddressText(lotNumbers, param.getLotNumberSeparators(), param.getSeparator());
+				if (lotNumbers != null && lotNumbers.size() > 0) {
+					// 初回申請
+					addressText = getAddressText(lotNumbers, param.getLotNumberSeparators(), param.getSeparator());
+				} else {
+					// 2回目以降申請
+					List<ApplyLotNumberForm> applyLotNumbers = generalConditionDiagnosisReportRequestForm.getApplyLotNumbers();
+					if (applyLotNumbers != null && applyLotNumbers.size() > 0) {
+						addressText = applyLotNumbers.get(0).getLot_numbers();
+					}
+				}
+				
 
 				writeTextValue(wb,
 						new TextValue(addressText, TARGET_SHEET_INDEX, param.getAddressRow(), param.getAddressCol()));
@@ -188,7 +211,8 @@ public class ExportJudgeForm extends AbstractExportForm {
 	 * @throws Exception
 	 */
 	public Workbook createAnswerReportWorkBook(String tempFilePath, Map<Integer, String> answerNotifiedTextMap,
-			ExportJudgeFormParam param) throws Exception {
+			ExportJudgeFormParam param,Integer applicationStepId,
+			GeneralConditionDiagnosisReportRequestForm generalConditionDiagnosisReportRequestForm) throws Exception {
 		LOGGER.debug(" 行政から回答レポート帳票生成 開始");
 		try {
 			
@@ -203,34 +227,172 @@ public class ExportJudgeForm extends AbstractExportForm {
 			
 			if (wb != null) {
 				Sheet worksheet = wb.getSheetAt(TARGET_SHEET_INDEX);
-
+				
+				org.apache.poi.ss.usermodel.CellStyle newStyle = wb.createCellStyle();
 				int answerTitleMergeRow = param.getJudgeResultDescriptionAnswerTitleMergerow(); // 判定結果詳細 回答タイトル結合行数
 				int answerContentCol = param.getJudgeResultDescriptionAnswerContentCol(); // 判定結果詳細 回答内容出力列
 				int answerContentMergeRow = param.getJudgeResultDescriptionAnswerContentMergeRow(); // 判定結果詳細 回答内容結合行数
 				String answerTitleTemplateTextStart = param.getJudgeResultDescriptionAnswerTitleTemplateText1(); // 判定結果詳細 回答タイトルテンプレート文字列1
 				String answerTitleTemplateTextEnd = param.getJudgeResultDescriptionAnswerTitleTemplateText2(); // 判定結果詳細 回答タイトルテンプレート文字列2
-				
+				String answerTitleTemplateTextNot = param.getJudgeResultDescriptionAnswerTitleTemplateText3(); // 判定結果(非該当)
+				// 概要が始まる行を記憶する用
+				int startCount = -1;
+				// 何行目サマリか判断用
+				int summaryRow = 0;
 				// テンプレートファイルの行数を取得
 				int lastRowNum = worksheet.getLastRowNum();
 				for (int rowNum = 1; rowNum < lastRowNum; rowNum++) {
 
 					// 回答タイトルのセルを取得
 					Row titleRow = worksheet.getRow(rowNum);
-					Cell titleCell = titleRow.getCell(answerContentCol);
-					String value = titleCell.getStringCellValue();
-					// セルの値は「回答(ID=」で始まる場合、回答内容を書き込む
-					if (value != null && value.startsWith(answerTitleTemplateTextStart)) {
-						// 回答タイトルから回答IDを取得する
-						String answerIdStr = value.replace(answerTitleTemplateTextStart, "").replace(answerTitleTemplateTextEnd, "");
-						int answerId = Integer.parseInt(answerIdStr.trim());
+					if (titleRow != null) {
+						Cell titleCell = titleRow.getCell(answerContentCol);
+						if (titleCell != null) {
+							String value = titleCell.getStringCellValue();
+							if (value != null && value.startsWith(answerTitleTemplateTextNot)) {
+								summaryRow += 1;
+							}
+							// セルの値は「回答(ID=」で始まる場合、回答内容を書き込む
+							if (value != null && value.startsWith(answerTitleTemplateTextStart)) {
+								if (startCount == -1) {
+									startCount = rowNum - param.getJudgeResultDescriptionMergeRow() + 1;
+								}
+								// 回答タイトルから回答IDを取得する
+								String answerIdStr = value.replace(answerTitleTemplateTextStart, "")
+										.replace(answerTitleTemplateTextEnd, "");
+								int answerId = Integer.parseInt(answerIdStr.trim());
+								// 事前協議の場合
+								if (applicationStepId.equals(APPLICATION_STEP_ID_2)) {
+									// 回答内容を設定
+									String answerContent = answerNotifiedTextMap.get(answerId);
+									if (answerContent != null) {
+										Row contentRow = worksheet.getRow(rowNum + answerTitleMergeRow);
+										Cell contentCell = contentRow.getCell(answerContentCol);
+										contentCell.setCellValue(answerContent);
+									} else {
+										// もしanswerNotifiedTextMapから値を取得できなかった場合は、セルを削除する
+										for (int i = 0; i < 2; i++) {
+											Row contentRow = worksheet.getRow(rowNum + answerTitleMergeRow - i);
+											Cell contentCell = contentRow.getCell(answerContentCol);
+											if (i == 0) {
+												contentCell.setCellValue(param.getJudgeResultDescriptionAnswerDelete());
+											}
+											if (contentCell != null) {
+												// グレーアウトを定義
+												newStyle.cloneStyleFrom(contentCell.getCellStyle());
+												newStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+												newStyle.setFillForegroundColor(
+														IndexedColors.GREY_25_PERCENT.getIndex());
+												contentCell.setCellStyle(newStyle); // セルをグレーアウト
+											}
+										}
+										Row contentRow2 = worksheet
+												.getRow(rowNum + answerTitleMergeRow - answerContentMergeRow - 1);
+										Cell contentCell = contentRow2.getCell(answerContentCol);
+										if (contentCell != null) {
+											// グレーアウトを定義
+											newStyle.cloneStyleFrom(contentCell.getCellStyle());
+											newStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+											newStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+											contentCell.setCellStyle(newStyle); // セルをグレーアウト
+										}
+										Cell contentCell2 = contentRow2.getCell(0);
+										if (contentCell2 != null) {
+											// グレーアウトを定義
+											newStyle.cloneStyleFrom(contentCell2.getCellStyle());
+											newStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+											newStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+											contentCell2.setCellStyle(newStyle); // セルをグレーアウト
+											// 該当するサマリもグレーアウト
+											Row contentRow3 = worksheet
+													.getRow(summaryRow + param.getJudgeResultStartRow() - 1);
+											Cell contentCell3 = contentRow3.getCell(0);
+											newStyle.cloneStyleFrom(contentCell3.getCellStyle());
+											newStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+											newStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+											contentCell3.setCellStyle(newStyle); // セルをグレーアウト
+											Cell contentCell4 = contentRow3.getCell(param.getJudgeResultSummaryCol());
+											newStyle.cloneStyleFrom(contentCell4.getCellStyle());
+											newStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+											newStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+											contentCell4.setCellStyle(newStyle); // セルをグレーアウト
+										}
+									}
+									// 削除もしくは回答が新しくなったものをmapから削除(新規追加の回答のみ残るように)
+									answerNotifiedTextMap.remove(answerId);
+								} else {
+									// 回答内容を設定
+									Row contentRow = worksheet.getRow(rowNum + answerTitleMergeRow);
+									Cell contentCell = contentRow.getCell(answerContentCol);
+									contentCell.setCellValue(answerNotifiedTextMap.get(answerId));
 
-						// 回答内容を設定
-						Row contentRow = worksheet.getRow(rowNum + answerTitleMergeRow );
-						Cell contentCell = contentRow.getCell(answerContentCol);
-						contentCell.setCellValue(answerNotifiedTextMap.get(answerId));
+									// 回答内容の結合行数をループ行数に追加
+									rowNum = rowNum + answerContentMergeRow;
+								}
+
+							}
+						}
+					}
+				}
+				// 事前協議の場合
+				if (applicationStepId.equals(APPLICATION_STEP_ID_2)) {
+					// mapのサイズが0より大きい場合=新規追加された回答がある場合
+					if (answerNotifiedTextMap.size() != 0) {
+						// パラメータで貰ったAnswerJudgementMapの中から今回削除したものを除いた追加分だけを新たにセットする処理
+						Map<Integer, Map<String, String>> answerJudgementMap = generalConditionDiagnosisReportRequestForm
+								.getAnswerJudgementMap();
+						// キーのリスト作成
+						List<Integer> keys = new ArrayList<>(answerJudgementMap.keySet());
+						for (Integer key : keys) {
+							Map<String, String> answerJudgement = answerJudgementMap.get(key);
+							String answerId = answerJudgement.get("answerId");
+							if (!(answerId == null)) {
+								String text = answerNotifiedTextMap.get(Integer.parseInt(answerId));
+								if (text == null) {
+									answerJudgementMap.remove(key);
+								}
+							}
+						}
+						// 上記で新規作成した追加分のリストをセット
+						generalConditionDiagnosisReportRequestForm.setAnswerJudgementMap(answerJudgementMap);
+						List<Integer> newKeys = new ArrayList<>(answerJudgementMap.keySet());
+						List<GeneralConditionDiagnosisResultForm> newGeneralConditionDiagnosisResults = new ArrayList<GeneralConditionDiagnosisResultForm>();
+						// GeneralConditionDiagnosisResultsも再び再作成
+						List<GeneralConditionDiagnosisResultForm> generalConditionDiagnosisResults = generalConditionDiagnosisReportRequestForm
+								.getGeneralConditionDiagnosisResults();
+						for (Integer key : newKeys) {
+							for (GeneralConditionDiagnosisResultForm generalConditionDiagnosisResult : generalConditionDiagnosisResults) {
+								if (generalConditionDiagnosisResult.getJudgeResultItemId().equals(key)) {
+									GeneralConditionDiagnosisResultForm generalConditionDiagnosisResultForm = new GeneralConditionDiagnosisResultForm();
+									// 区分判定ID
+									generalConditionDiagnosisResultForm
+											.setJudgementId(generalConditionDiagnosisResult.getJudgementId());
+									// 判定結果項目ID
+									generalConditionDiagnosisResultForm.setJudgeResultItemId(
+											generalConditionDiagnosisResult.getJudgeResultItemId());
+									// 文言
+									generalConditionDiagnosisResultForm
+											.setDescription(generalConditionDiagnosisResult.getDescription());
+									// タイトル
+									generalConditionDiagnosisResultForm
+											.setTitle(generalConditionDiagnosisResult.getTitle());
+									// サマリ
+									generalConditionDiagnosisResultForm
+											.setSummary(generalConditionDiagnosisResult.getSummary());
+									newGeneralConditionDiagnosisResults.add(generalConditionDiagnosisResultForm);
+								}
+							}
+						}
+						generalConditionDiagnosisReportRequestForm
+								.setGeneralConditionDiagnosisResults(newGeneralConditionDiagnosisResults);
 						
-						// 回答内容の結合行数をループ行数に追加
-						rowNum = rowNum + answerContentMergeRow;
+						setRowBreak(wb, TARGET_SHEET_INDEX, worksheet.getLastRowNum());
+						param.setJudgeResultStartRow(worksheet.getLastRowNum()+1);
+						// 判定結果summary出力
+						int currentRow = writeJudgeResultSummary(wb, generalConditionDiagnosisReportRequestForm, param);
+						// 判定結果description出力
+						writeJudgeResultDescription(wb, generalConditionDiagnosisReportRequestForm, param,
+								currentRow );
 					}
 				}
 			}
@@ -281,6 +443,9 @@ public class ExportJudgeForm extends AbstractExportForm {
 			if (!lotNumberName.equals(preLotNumberName)) {
 				addressText += lot.getChiban();
 			}
+			if (lot.getFullFlag() != null && lot.getFullFlag().equals("1")) {
+				addressText += "の一部";
+			}
 
 			preCityName = cityName;
 			preDistrictName = districtName;
@@ -327,6 +492,8 @@ public class ExportJudgeForm extends AbstractExportForm {
 			Font summaryFont = wb.createFont(); // サマリ用フォント
 			summaryFont.setFontName(param.getFontName());
 			summaryFont.setFontHeightInPoints(param.getJudgeResultSummaryFontSize());
+			int resultCount = 1;
+			int sumResult = 1;
 
 			for (GeneralConditionDiagnosisResultForm generalConditionDiagnosisResult : generalConditionDiagnosisResults) {
 				LOGGER.trace("セルスタイル設定 開始: " + currentRow);
@@ -345,18 +512,35 @@ public class ExportJudgeForm extends AbstractExportForm {
 
 				// 罫線
 				for (int row = currentRow; row < currentRow + mergeRow; row++) {
-					// title
-					for (int col = titleCol; col < titleCol + titleMergeCol; col++) {
-						CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+					// 偶数個目の判定だけ行載せるすべてにスタイルセット
+					LOGGER.debug(String.valueOf(sumResult) + "   " + String.valueOf(generalConditionDiagnosisResults.size()));
+					if(resultCount%2 == 1 && (pageRow + mergeRow * 2) != param.getPageMaxRow() && sumResult < generalConditionDiagnosisResults.size()) {
+						// 右端
+						CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, titleCol);
 						tmpCellStyle.setFont(titleFont);
 						setStyle(wb, tmpCellStyle);
-					}
-
-					// summary
-					for (int col = summaryCol; col < summaryCol + summaryMergeCol; col++) {
-						CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+						// 真ん中
+						tmpCellStyle.setCol(summaryCol);
 						tmpCellStyle.setFont(summaryFont);
 						setStyle(wb, tmpCellStyle);
+						// 左端
+						tmpCellStyle.setCol((summaryCol + summaryMergeCol - 1));
+						tmpCellStyle.setFont(summaryFont);
+						setStyle(wb, tmpCellStyle);
+					}else {
+						// title
+						for (int col = titleCol; col < titleCol + titleMergeCol; col++) {
+							CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+							tmpCellStyle.setFont(titleFont);
+							setStyle(wb, tmpCellStyle);
+						}
+	
+						// summary
+						for (int col = summaryCol; col < summaryCol + summaryMergeCol; col++) {
+							CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+							tmpCellStyle.setFont(summaryFont);
+							setStyle(wb, tmpCellStyle);
+						}
 					}
 				}
 				LOGGER.trace("セルスタイル設定 終了: " + currentRow);
@@ -378,6 +562,11 @@ public class ExportJudgeForm extends AbstractExportForm {
 				currentRow += mergeRow;
 				pageRow += mergeRow;
 
+				resultCount++;
+				sumResult++;
+				if (pageRow - param.getPageMaxRow() >= 1) {
+					pageRow -= currentRow;
+				}
 				if ((pageRow + mergeRow) >= param.getPageMaxRow()) {
 					LOGGER.trace("改ページ 開始: " + currentPage);
 					// 最大値を超えるので、ページが変わる
@@ -388,6 +577,7 @@ public class ExportJudgeForm extends AbstractExportForm {
 					// 改ページ設定
 					setRowBreak(wb, TARGET_SHEET_INDEX, currentRow - 1);
 					rowBreakFlg = true;
+					resultCount = 0;
 
 					LOGGER.trace("改ページ 終了: " + currentPage);
 					currentPage++;
@@ -424,8 +614,8 @@ public class ExportJudgeForm extends AbstractExportForm {
 		try {
 			List<GeneralConditionDiagnosisResultForm> generalConditionDiagnosisResults = generalConditionDiagnosisReportRequestForm
 					.getGeneralConditionDiagnosisResults();
-			// 回答IDと概況診断結果IDの紐づけ対応 ： 申請登録時の帳票作成時のみ使用。
-			Map<Integer, Integer> answerJudgementMap = generalConditionDiagnosisReportRequestForm
+			// 回答IDと回答内容-概況診断結果IDの紐づけ対応 ： 申請登録時の帳票作成時のみ使用。
+			Map<Integer, Map<String, String>> answerJudgementMap = generalConditionDiagnosisReportRequestForm
 					.getAnswerJudgementMap();
 			Font titleFont = wb.createFont(); // タイトル用フォント
 			titleFont.setFontName(param.getFontName());
@@ -472,13 +662,20 @@ public class ExportJudgeForm extends AbstractExportForm {
 					sheet.addMergedRegion(new CellRangeAddress(tmpCurrentRow, tmpCurrentRow + mergeRowCount - 1,
 							titleCol, titleCol + titleMergeCol - 1));
 				}
-
-				// description用の結合処理 description
-				sheet.addMergedRegion(new CellRangeAddress(tmpCurrentRow, tmpCurrentRow + mergeRowCount - 1,
-						descriptionCol, descriptionCol + descriptionMergeCol - 1));
-				// description用の結合処理 image
-				sheet.addMergedRegion(new CellRangeAddress(tmpCurrentRow, tmpCurrentRow + mergeRowCount - 1, imageCol,
-						imageCol + imageMergeCol - 1));
+				//枠なし
+				if(param.getFolderPath() != null) {
+					// description用の結合処理 description
+					sheet.addMergedRegion(new CellRangeAddress(tmpCurrentRow, tmpCurrentRow + mergeRowCount - 1,
+							descriptionCol, descriptionCol + descriptionMergeCol - 1));
+					// description用の結合処理 image
+					sheet.addMergedRegion(new CellRangeAddress(tmpCurrentRow, tmpCurrentRow + mergeRowCount - 1, imageCol,
+							imageCol + imageMergeCol - 1));
+				}else {
+					// description用の結合処理 imageがないのでdescriptionとimageのセルを結合
+					sheet.addMergedRegion(new CellRangeAddress(tmpCurrentRow, tmpCurrentRow + mergeRowCount - 1,
+							descriptionCol, imageCol + imageMergeCol - 1));
+				}
+				
 				if (answerJudgementMap != null) {
 					// description用の結合処理 回答タイトル
 					sheet.addMergedRegion(new CellRangeAddress(tmpCurrentRow + mergeRowCount,
@@ -495,44 +692,92 @@ public class ExportJudgeForm extends AbstractExportForm {
 				// description用のセルスタイル処理
 				LOGGER.trace("各セルスタイル設定処理 開始: " + tmpCurrentRow);
 				for (int row = tmpCurrentRow; row < tmpCurrentRow + mergeRowCount; row++) {
-					for (int col = titleCol; col < descriptionCol; col++) {
-						CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+					if((tmpCount == 0 && row == tmpCurrentRow) || row == (tmpCurrentRow + mergeRowCount - 1)) {
+						for (int col = titleCol; col < descriptionCol; col++) {
+							CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+							tmpCellStyle.setFont(titleFont);
+							setStyle(wb, tmpCellStyle);
+						}
+						//枠なし
+						if(param.getFolderPath() != null) {
+							for (int col = descriptionCol; col < imageCol; col++) {
+								CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+								tmpCellStyle.setFont(descriptionFont);
+								setStyle(wb, tmpCellStyle);
+							}
+							for (int col = imageCol; col < imageCol + imageMergeCol; col++) {
+								setStyle(wb, new CellStyle(TARGET_SHEET_INDEX, row, col));
+							}
+						}else {
+							for (int col = descriptionCol; col < imageCol + imageMergeCol; col++) {
+								CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+								tmpCellStyle.setFont(descriptionFont);
+								setStyle(wb, tmpCellStyle);
+							}
+						}
+					}else {
+						CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, titleCol);
+						// 左端
 						tmpCellStyle.setFont(titleFont);
 						setStyle(wb, tmpCellStyle);
-					}
-					for (int col = descriptionCol; col < imageCol; col++) {
-						CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+						// 真ん中
+						tmpCellStyle.setCol(descriptionCol);
 						tmpCellStyle.setFont(descriptionFont);
 						setStyle(wb, tmpCellStyle);
-					}
-					for (int col = imageCol; col < imageCol + imageMergeCol; col++) {
-						setStyle(wb, new CellStyle(TARGET_SHEET_INDEX, row, col));
+						if(param.getFolderPath() != null) {
+							tmpCellStyle.setCol(imageCol);
+							setStyle(wb, tmpCellStyle);
+						}
+						// 右端
+						tmpCellStyle.setCol((imageCol + imageMergeCol - 1));
+						tmpCellStyle.setFont(descriptionFont);
+						setStyle(wb, tmpCellStyle);
 					}
 				}
 				if (answerJudgementMap != null) {
 					for (int row = tmpCurrentRow + mergeRowCount; row < tmpCurrentRow + mergeRowCount
 							+ answerTitleMergeRow; row++) {
-						for (int col = titleCol; col < descriptionCol; col++) {
-							CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+						if(row == (tmpCurrentRow + mergeRowCount + answerTitleMergeRow - 1)) {
+							for (int col = titleCol; col < descriptionCol; col++) {
+								CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+								tmpCellStyle.setFont(titleFont);
+								setStyle(wb, tmpCellStyle);
+							}
+							for (int col = answerTitleCol; col < answerTitleCol + answerTitleMergeCol; col++) {
+								CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+								tmpCellStyle.setFont(titleFont);
+								setStyle(wb, tmpCellStyle);
+							}
+						}else {
+							CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, titleCol);
 							tmpCellStyle.setFont(titleFont);
 							setStyle(wb, tmpCellStyle);
-						}
-						for (int col = answerTitleCol; col < answerTitleCol + answerTitleMergeCol; col++) {
-							CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
-							tmpCellStyle.setFont(titleFont);
+							tmpCellStyle.setCol(descriptionCol);
+							setStyle(wb, tmpCellStyle);
+							tmpCellStyle.setCol(answerTitleCol + answerTitleMergeCol - 1);
 							setStyle(wb, tmpCellStyle);
 						}
 					}
 					for (int row = tmpCurrentRow + mergeRowCount + answerTitleMergeRow; row < tmpCurrentRow
 							+ mergeRowCount + answerTitleMergeRow + answerContentMergeRow; row++) {
-						for (int col = titleCol; col < descriptionCol; col++) {
-							CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
-							tmpCellStyle.setFont(titleFont);
-							setStyle(wb, tmpCellStyle);
-						}
-						for (int col = answerContentCol; col < answerContentCol + answerContentMergeCol; col++) {
-							CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+						if(row == (tmpCurrentRow + mergeRowCount + answerTitleMergeRow + answerContentMergeRow - 1)) {
+							for (int col = titleCol; col < descriptionCol; col++) {
+								CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+								tmpCellStyle.setFont(titleFont);
+								setStyle(wb, tmpCellStyle);
+							}
+							for (int col = answerContentCol; col < answerContentCol + answerContentMergeCol; col++) {
+								CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+								tmpCellStyle.setFont(descriptionFont);
+								setStyle(wb, tmpCellStyle);
+							}
+						}else {
+							CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, titleCol);
 							tmpCellStyle.setFont(descriptionFont);
+							setStyle(wb, tmpCellStyle);
+							tmpCellStyle.setCol(descriptionCol);
+							setStyle(wb, tmpCellStyle);
+							tmpCellStyle.setCol(answerContentCol + answerContentMergeCol -1);
 							setStyle(wb, tmpCellStyle);
 						}
 					}
@@ -560,75 +805,69 @@ public class ExportJudgeForm extends AbstractExportForm {
 					}
 				}
 
-				if (isGisJudge) {
-					// 画像出力
-					LOGGER.trace("画像出力 開始: " + tmpCurrentRow);
-					Picture descriptionPic = new Picture();
-					String imagePath = param.getFolderPath();
-					imagePath += PATH_SPLITTER + generalConditionDiagnosisResult.getJudgeResultItemId();
-					imagePath += PATH_SPLITTER + generalConditionDiagnosisResult.getJudgeResultItemId()
-							+ JUDGEMENT_IMAGE_EXTENTION;
-					Path p = Paths.get(imagePath);
-					if (Files.exists(p)) {
-						descriptionPic.setFilePath(imagePath);
-						descriptionPic.setType(Workbook.PICTURE_TYPE_PNG);
-						descriptionPic.setStartCol(imageCol);
-						descriptionPic.setEndCol(imageCol + imageMergeCol);
-						descriptionPic.setStartRow(tmpCurrentRow);
-						descriptionPic.setEndRow(tmpCurrentRow + mergeRowCount);
-						writePicture(wb, descriptionPic);
-						LOGGER.trace("画像出力 終了: " + tmpCurrentRow);
-					} else {
-						// 非該当かつ非該当時レイヤ表示無効の場合ここに遷移
-						// 「画像なし 非該当」文字列出力
-						LOGGER.trace("「画像なし 非該当」文字列出力 開始: " + tmpCurrentRow);
-						writeTextValue(wb, new TextValue(param.getJudgeResultDescriptionNoApplyLabel(),
-								TARGET_SHEET_INDEX, tmpCurrentRow, imageCol));
-						LOGGER.trace("「画像なし 非該当」文字列出力 終了: " + tmpCurrentRow);
-
-						// セルスタイル更新
-						LOGGER.trace("セルスタイル更新 開始: " + tmpCurrentRow);
-						for (int row = tmpCurrentRow; row < tmpCurrentRow + mergeRowCount; row++) {
-							for (int col = imageCol; col < imageCol + imageMergeCol; col++) {
-								CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
-								// 中央揃えに変更
-								tmpCellStyle.setHalign(HorizontalAlignment.CENTER);
-								tmpCellStyle.setValign(VerticalAlignment.CENTER);
-								tmpCellStyle.setFont(labelFont);
-								setStyle(wb, tmpCellStyle);
-							}
-						}
-						LOGGER.trace("セルスタイル更新 終了: " + tmpCurrentRow);
-					}
-
-				} else {
-					// 「画像なし 区分判定」文字列出力
-					LOGGER.trace("「画像なし 区分判定」文字列出力 開始: " + tmpCurrentRow);
-					writeTextValue(wb, new TextValue(param.getJudgeResultDescriptionNoGisLabel(), TARGET_SHEET_INDEX,
-							tmpCurrentRow, imageCol));
-					LOGGER.trace("「画像なし 区分判定」文字列出力 終了: " + tmpCurrentRow);
-
-					// セルスタイル更新
-					LOGGER.trace("セルスタイル更新 開始: " + tmpCurrentRow);
-					for (int row = tmpCurrentRow; row < tmpCurrentRow + mergeRowCount; row++) {
-						for (int col = imageCol; col < imageCol + imageMergeCol; col++) {
-							CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, row, col);
+				if(param.getFolderPath() != null) {
+					if (isGisJudge) {
+						// 画像出力
+						LOGGER.trace("画像出力 開始: " + tmpCurrentRow);
+						Picture descriptionPic = new Picture();
+						String imagePath = param.getFolderPath();
+						imagePath += PATH_SPLITTER + generalConditionDiagnosisResult.getJudgeResultItemId();
+						imagePath += PATH_SPLITTER + generalConditionDiagnosisResult.getJudgeResultItemId()
+								+ JUDGEMENT_IMAGE_EXTENTION;
+						Path p = Paths.get(imagePath);
+						if (Files.exists(p)) {
+							descriptionPic.setFilePath(imagePath);
+							descriptionPic.setType(Workbook.PICTURE_TYPE_PNG);
+							descriptionPic.setStartCol(imageCol);
+							descriptionPic.setEndCol(imageCol + imageMergeCol);
+							descriptionPic.setStartRow(tmpCurrentRow);
+							descriptionPic.setEndRow(tmpCurrentRow + mergeRowCount);
+							writePicture(wb, descriptionPic);
+							LOGGER.trace("画像出力 終了: " + tmpCurrentRow);
+						} else {
+							// 非該当かつ非該当時レイヤ表示無効の場合ここに遷移
+							// 「画像なし 非該当」文字列出力
+							LOGGER.trace("「画像なし 非該当」文字列出力 開始: " + tmpCurrentRow);
+							writeTextValue(wb, new TextValue(param.getJudgeResultDescriptionNoApplyLabel(),
+									TARGET_SHEET_INDEX, tmpCurrentRow, imageCol));
+							LOGGER.trace("「画像なし 非該当」文字列出力 終了: " + tmpCurrentRow);
+	
+							// セルスタイル更新
+							LOGGER.trace("セルスタイル更新 開始: " + tmpCurrentRow);
+							CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, tmpCurrentRow, imageCol);
 							// 中央揃えに変更
 							tmpCellStyle.setHalign(HorizontalAlignment.CENTER);
 							tmpCellStyle.setValign(VerticalAlignment.CENTER);
 							tmpCellStyle.setFont(labelFont);
 							setStyle(wb, tmpCellStyle);
+							LOGGER.trace("セルスタイル更新 終了: " + tmpCurrentRow);
 						}
+	
+					} else {
+						// 「画像なし 区分判定」文字列出力
+						LOGGER.trace("「画像なし 区分判定」文字列出力 開始: " + tmpCurrentRow);
+						writeTextValue(wb, new TextValue(param.getJudgeResultDescriptionNoGisLabel(), TARGET_SHEET_INDEX,
+								tmpCurrentRow, imageCol));
+						LOGGER.trace("「画像なし 区分判定」文字列出力 終了: " + tmpCurrentRow);
+	
+						// セルスタイル更新
+						LOGGER.trace("セルスタイル更新 開始: " + tmpCurrentRow);
+						CellStyle tmpCellStyle = new CellStyle(TARGET_SHEET_INDEX, tmpCurrentRow, imageCol);
+						// 中央揃えに変更
+						tmpCellStyle.setHalign(HorizontalAlignment.CENTER);
+						tmpCellStyle.setValign(VerticalAlignment.CENTER);
+						tmpCellStyle.setFont(labelFont);
+						setStyle(wb, tmpCellStyle);
+						LOGGER.trace("セルスタイル更新 終了: " + tmpCurrentRow);
 					}
-					LOGGER.trace("セルスタイル更新 終了: " + tmpCurrentRow);
 				}
 				// 回答出力箇所生成
 				if (answerJudgementMap != null) {
 					// 回答タイトル
 					LOGGER.trace("回答タイトル出力 開始: " + tmpCurrentRow);
-					Integer answerId = (answerJudgementMap
+					String answerId = (answerJudgementMap
 							.containsKey(generalConditionDiagnosisResult.getJudgeResultItemId()))
-									? answerJudgementMap.get(generalConditionDiagnosisResult.getJudgeResultItemId())
+									? answerJudgementMap.get(generalConditionDiagnosisResult.getJudgeResultItemId()).get("answerId")
 									: null;
 					String answerTitleText = (answerId != null)
 							? param.getJudgeResultDescriptionAnswerTitleTemplateText1() + answerId
@@ -639,8 +878,10 @@ public class ExportJudgeForm extends AbstractExportForm {
 					LOGGER.trace("回答タイトル出力 終了: " + tmpCurrentRow);
 					LOGGER.trace("回答内容出力 開始: " + tmpCurrentRow);
 					// 回答任意の区分判定には初期回答をセット
-					String answerContent = (generalConditionDiagnosisResult.getAnswerRequireFlag()) ? ""
-							: (generalConditionDiagnosisResult.getDefaultAnswer() != null) ? generalConditionDiagnosisResult.getDefaultAnswer(): "";
+					String answerContent = (answerJudgementMap
+							.containsKey(generalConditionDiagnosisResult.getJudgeResultItemId()))? 
+							(answerJudgementMap.get(generalConditionDiagnosisResult.getJudgeResultItemId()).get("answerContent") != null)?answerJudgementMap.get(generalConditionDiagnosisResult.getJudgeResultItemId()).get("answerContent") 
+							: "":"";
 					if (answerId == null) {
 						answerContent = param.getJudgeResultDescriptionAnswerContentNoApply();
 					}

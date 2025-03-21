@@ -2,6 +2,7 @@ import React from "react";
 import createReactClass from "create-react-class";
 import PropTypes from "prop-types";
 import "mutationobserver-shim";
+import Config from "../../../customconfig.json";
 
 import TerriaViewerWrapper from "../Map/TerriaViewerWrapper";
 import DistanceLegend from "../Map/Legend/DistanceLegend";
@@ -23,6 +24,9 @@ import SlideUpFadeIn from "../Transitions/SlideUpFadeIn/SlideUpFadeIn";
 import TerriaCesiumLogo from "./TerriaCesiumLogo";
 import i18next from "i18next";
 import { googleAnalyticsNotification } from "../Notification/googleAnalyticsNotification";
+import Icon, { StyledIcon } from "../../Styled/Icon";
+import { action, runInAction } from "mobx";
+import { notification } from "../drag-drop-notification.scss";
 
 const isIE = FeatureDetection.isInternetExplorer();
 const chromeVersion = FeatureDetection.chromeVersion();
@@ -49,7 +53,7 @@ const MapColumn = observer(
     },
 
     getInitialState() {
-      return {};
+      return {innerWidth:0,innerHeight:0};
     },
 
     /* eslint-disable-next-line camelcase */
@@ -85,7 +89,14 @@ const MapColumn = observer(
       }
     },
 
+    componentDidMount() {
+      this.updateDimensions();
+      this.props.viewState.setUpdateMapDimensions(()=>{this.updateDimensions(false);});
+      window.addEventListener('resize', this.updateDimensions,false);
+    },
+
     componentWillUnmount() {
+      window.removeEventListener('resize', this.updateDimensionss,false);
       if (isIE) {
         window.removeEventListener("resize", this.resizeMapCell, false);
         this.observer.disconnect();
@@ -109,6 +120,70 @@ const MapColumn = observer(
       });
     },
 
+    showNotification(e, title, message) {
+      e.preventDefault();
+      this.props.terria.notificationState.addNotificationToQueue({
+        title: title,
+        message: message
+      });
+    },
+
+    updateDimensions: function(resizeEvent=true) {
+      try{
+        if (resizeEvent && this.state.innerWidth === window.innerWidth && this.state.innerHeight === window.innerHeight) return;
+        this.setState({innerWidth:window.innerWidth,innerHeight:window.innerHeight});
+        if (this.props.viewState.isSidePanelFullScreen) {
+          const mapBaseContainerElement = this.props.viewState.mapBaseContainerElement;
+          const mapBaseElement = this.props.viewState.mapBaseElement;
+          if(mapBaseContainerElement && mapBaseElement){
+            if(this.props.viewState.mapExpansionFlag){
+              const rect = mapBaseContainerElement.current.getBoundingClientRect();
+              const width = rect.width;
+              const height = rect.height;
+              const top = rect.top;
+              const left = rect.left;
+              runInAction(() => {
+                this.props.viewState.setMapBottom("");
+                this.props.viewState.setMapRight("");
+                this.props.viewState.setMapTop(top + "px");
+                this.props.viewState.setMapLeft(left + "px");
+                this.props.viewState.setMapWidth((width-10) + "px");
+                this.props.viewState.setMapHeight((height-10) + "px");
+              });
+            }else{
+              const rect = mapBaseElement.current.getBoundingClientRect();
+              const width = rect.width;
+              const height = rect.height;
+              const top = rect.top;
+              const left = rect.left;
+              runInAction(() => {
+                this.props.viewState.setMapBottom("");
+                this.props.viewState.setMapRight("");
+                this.props.viewState.setMapTop(top + "px");
+                this.props.viewState.setMapLeft(left + "px");
+                this.props.viewState.setMapWidth(width + "px");
+                this.props.viewState.setMapHeight(height + "px");
+              });
+            }
+            this.props.viewState.triggerResizeEvent();
+          }
+        }
+      }catch(e){
+        console.error(e);
+        //エラーの場合はデフォ位置に配置
+        runInAction(() => {
+          this.props.viewState.setMapExpansionFlag(false);
+          this.props.viewState.setMapBottom("");
+          this.props.viewState.setMapRight("2vh");
+          this.props.viewState.setMapTop("72vh");
+          this.props.viewState.setMapLeft("");
+          this.props.viewState.setMapWidth("21vw");
+          this.props.viewState.setMapHeight("23vh");
+        });
+        this.props.viewState.triggerResizeEvent();
+      }
+    },
+    
     render() {
       const { customElements } = this.props;
       // const { t } = this.props;
@@ -118,8 +193,13 @@ const MapColumn = observer(
       const mapCellClass = classNames(Styles.mapCell, {
         [Styles.mapCellChrome]: isAboveChrome75
       });
+      const isSidePanelFullScreen = this.props.viewState.isSidePanelFullScreen;
+      const mapExpansionFlag = this.props.viewState.mapExpansionFlag;
+      const isMapPartsShow = (!isSidePanelFullScreen) || (isSidePanelFullScreen && mapExpansionFlag);
+      const notifications = Config.notifications;
       return (
         <div
+          ref={(el) => (this.wrapperRef = el)} 
           className={classNames(Styles.mapInner, {
             [Styles.mapInnerChrome]: isAboveChrome75
           })}
@@ -129,7 +209,7 @@ const MapColumn = observer(
               className={classNames(mapCellClass, Styles.mapCellMap)}
               ref={this.newMapCell}
             >
-              <If condition={!this.props.viewState.hideMapUi}>
+              <If condition={!this.props.viewState.hideMapUi && isMapPartsShow}>
                 <div
                   css={`
                     ${(this.props.viewState.explorerPanelIsVisible && 
@@ -157,6 +237,7 @@ const MapColumn = observer(
                 </div>
               </If>
               <div
+                id="terriaViewer"
                 className={Styles.mapWrapper}
                 style={{
                   height: this.state.height || (isIE ? "100vh" : "100%")
@@ -166,15 +247,47 @@ const MapColumn = observer(
                   terria={this.props.terria}
                   viewState={this.props.viewState}
                 />
+                <If condition={isSidePanelFullScreen}>
+                  <button onClick={() => {
+                    this.props.viewState.setMapExpansionFlag(!mapExpansionFlag);
+                    this.updateDimensions(false);
+                    }} css={`
+                      z-index: 99999999999;
+                      position: absolute;
+                      background: none;
+                      border: none;
+                      width: 30px;
+                      height: 30px;
+                      ${!mapExpansionFlag &&
+                       `
+                      top: 15px;
+                      left: 5px;
+                      transform: rotate(-90deg);
+                      `}
+                      ${mapExpansionFlag &&
+                        `
+                       top: 5px;
+                       left: 15px;
+                       transform: rotate(90deg);
+                       `}
+                  `}>
+                    <StyledIcon styledWidth={"12px"} fillColor={"white"} glyph={Icon.GLYPHS.externalLink} css={`
+                      width: 30px;
+                      height: 30px;
+                  `}/>
+                  </button>
+                </If>
               </div>
-              <If condition={!this.props.viewState.hideMapUi}>
-                <MapDataCount
-                  terria={this.props.terria}
-                  viewState={this.props.viewState}
-                  elementConfig={this.props.terria.elements.get(
-                    "map-data-count"
-                  )}
-                />
+              <If condition={!this.props.viewState.hideMapUi && isMapPartsShow}>
+                <If condition={!isSidePanelFullScreen}>
+                  <MapDataCount
+                    terria={this.props.terria}
+                    viewState={this.props.viewState}
+                    elementConfig={this.props.terria.elements.get(
+                      "map-data-count"
+                    )}
+                  />
+                </If>
                 <SlideUpFadeIn isVisible={this.props.viewState.isMapZooming}>
                   <Toast>
                     <Loader
@@ -187,32 +300,39 @@ const MapColumn = observer(
                     />
                   </Toast>
                 </SlideUpFadeIn>
-                <div className={Styles.mapBottomBar}>
-                  <a href="#" onClick={this.showGoogleAnalyticsExplanation}>
-                    Google Analyticsの利用について
-                  </a>
-                  <a href="#" onClick={this.showTerrainDataAttributes}>
-                    地形データ
-                  </a>
-                </div>
-                <div className={Styles.locationDistance}>
-                  <LocationBar
-                    terria={this.props.terria}
-                    mouseCoords={this.props.terria.currentViewer.mouseCoords}
+                <If condition={!isSidePanelFullScreen}>
+                  <div className={Styles.mapBottomBar}>
+                    <a href="#" onClick={this.showGoogleAnalyticsExplanation}>
+                      Google Analyticsの利用について
+                    </a>
+                    <a href="#" onClick={this.showTerrainDataAttributes}>
+                      地形データ
+                    </a>
+                    {Object.keys(notifications).map(key => (
+                      <a href="#" onClick={e => {this.showNotification(e, notifications[key].title, notifications[key].message)}}>
+                        {notifications[key].tag}
+                      </a>
+                    ))}
+                  </div>
+                  <div className={Styles.locationDistance}>
+                    <LocationBar
+                      terria={this.props.terria}
+                      mouseCoords={this.props.terria.currentViewer.mouseCoords}
+                    />
+                    <DistanceLegend terria={this.props.terria} />
+                  </div>
+                  <TerriaCesiumLogo
+                    css={`
+                      position: absolute;
+                      right: 30px;
+                      bottom: 35px;
+                      @media (max-width: 770px) {
+                        right: unset;
+                        left: 30px;
+                      }
+                    `}
                   />
-                  <DistanceLegend terria={this.props.terria} />
-                </div>
-                <TerriaCesiumLogo
-                  css={`
-                    position: absolute;
-                    right: 30px;
-                    bottom: 35px;
-                    @media (max-width: 770px) {
-                      right: unset;
-                      left: 30px;
-                    }
-                  `}
-                />
+                </If>
               </If>
               {/* TODO: re-implement/support custom feedbacks */}
               {/* <If

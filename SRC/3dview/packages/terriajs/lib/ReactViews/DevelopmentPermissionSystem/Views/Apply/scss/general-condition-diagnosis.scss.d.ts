@@ -12,6 +12,10 @@ interface CssExports {
   'custom_nuv': string;
   'customloader': string;
   'customloaderParent': string;
+  'dataTypeStyleBackgroundGray': string;
+  'dataTypeStyleColorRed': string;
+  'data_type_style_background_gray': string;
+  'data_type_style_color_red': string;
   'description': string;
   'descriptionDiv': string;
   'descriptionInner': string;

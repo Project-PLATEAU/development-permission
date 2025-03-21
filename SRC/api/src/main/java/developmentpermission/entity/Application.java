@@ -41,19 +41,15 @@ public class Application implements Serializable {
 	/** ステータス */
 	@Column(name = "status")
 	private String status;
-	
+
 	/** 登録ステータス */
-	@Column(name="register_status")
+	@Column(name = "register_status")
 	private String registerStatus;
-	
+
 	/** 照合文字列 */
-	@Column(name="collation_text")
+	@Column(name = "collation_text")
 	private String collationText;
 
-	/** 版情報 */
-	@Column(name = "version_information")
-	private Integer versionInformation;
-	
 	/** 登録日時 */
 	@Column(name = "register_datetime")
 	private LocalDateTime registerDatetime;
@@ -62,4 +58,7 @@ public class Application implements Serializable {
 	@Column(name = "update_datetime")
 	private LocalDateTime updateDatetime;
 
+	/** 申請種類ID */
+	@Column(name = "application_type_id")
+	private Integer applicationTypeId;
 }

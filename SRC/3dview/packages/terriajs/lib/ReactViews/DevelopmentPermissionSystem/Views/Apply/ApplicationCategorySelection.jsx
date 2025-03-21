@@ -29,7 +29,7 @@ class ApplicationCategorySelection extends React.Component {
             terria: props.terria,
             //画面
             screen: [{}],
-            //画面(概況診断タイプを問わず、全て画面)
+            //画面(申請種類を問わず、全て画面)
             screenAll: [{}],
             //申請区分
             applicationCategory: [[{}]],
@@ -39,12 +39,12 @@ class ApplicationCategorySelection extends React.Component {
             disabledFlg: false,
             //申請区分選択入力エリアの高さ
             height:0,
-            //選択中概況診断タイプ
-            currentJudgementType:"",
-            // 概況診断タイプ選択肢
-            judgementTypeList: [],
-            // 概況診断タイプのデフォルト選択肢
-            defaultJudgementType:""
+            //選択中申請種類ID
+            currentApplicationTypeId: -1,
+            // 申請種類選択肢
+            applicationTypeList: [],
+            // 申請種類のデフォルト選択肢
+            defaultApplicationTypeId: -1
         };
     }
 
@@ -58,6 +58,9 @@ class ApplicationCategorySelection extends React.Component {
         let screenAll = this.state.screenAll;
         let applicationCategory = this.state.applicationCategory;
         let checkedApplicationCategory = this.state.checkedApplicationCategory;
+        // [R6]:再申請処理に、申請区分が再選択可能になる
+        let isReApply = this.props.viewState.isReApply;
+
         // APIへのリクエスト・レスポンス結果取得処理
         fetch(Config.config.apiUrl + "/category/views/")
         .then(res => res.json())
@@ -75,16 +78,73 @@ class ApplicationCategorySelection extends React.Component {
                 alert("区分選択画面の項目一覧の取得に失敗しました。再度操作をやり直してください。");
                 this.props.viewState.backFromInputApplyConditionView(); 
             }
-            this.getJudgementTypes(screenAll);
+            
+            if(isReApply){
+                // 再申請の場合、申請種類が申請時には選択した申請種類で変更不可ので、申請種類リストを取得しない
+                // 再申請連携実装時に、申請情報の申請種類で設定、選択済み申請区分を申請回答情報から取得
+                const defaultApplicationTypeId = this.props.viewState.reApplication.applicationTypeId;
+                
+                screen = this.getScreenList(screenAll, defaultApplicationTypeId, defaultApplicationTypeId);
+                const checkedApplicationCategoryLocalSave = this.props.viewState.checkedApplicationCategoryLocalSave;
+                const checkedApplicationCategory = this.state.checkedApplicationCategory;
+                //　選択済みの申請区分リストが空の場合、DBから取得した申請区分を選択済みリストにセット
+                if(Object.keys(checkedApplicationCategoryLocalSave).length < 1){
+                    this.setCheckedApplicationCategoryLocalSave(screen);
+                }
+                this.setState({ applicationTypeList: [], defaultApplicationTypeId: defaultApplicationTypeId, currentApplicationTypeId: defaultApplicationTypeId});
+                // 画面初期表示内容設定
+                this.initScreenData(screen,applicationCategory,checkedApplicationCategory);
+
+            }else{
+                
+                // 申請種類リストを取得
+                this.getJudgementTypes(screenAll);
+            }
         }).catch(error => {
             console.error('通信処理に失敗しました', error);
             alert('通信処理に失敗しました');
+        }).finally(()=>{
+            setTimeout(() => {
+                this.getWindowSize();
+                document.getElementById("loading").style.display = "none";
+            }, 3000)
         });
     }
 
     /**
+     * 前回選択した内容を保存
+     */
+    setCheckedApplicationCategoryLocalSave(screen){
+        //選択済み申請区分
+        let checkedApplicationCategory=[[{}]];
+        const applicationCategories = this.props.viewState.reApplication.applicationCategories;
+
+        Object.keys(screen).map(key => {
+            let indexOfView = applicationCategories.findIndex(view => screen[key].screenId == view.screenId);
+            if(indexOfView>-1){
+                checkedApplicationCategory[key]=[];
+                let applicationCategory = screen[key].applicationCategory;
+                Object.keys(applicationCategory).map(categoryKey => {
+                    let indexOfCategory = applicationCategories[indexOfView].applicationCategory.findIndex(category => applicationCategory[categoryKey].id == category.id);
+                    if(indexOfCategory>-1){
+                        applicationCategories[indexOfView].applicationCategory[indexOfCategory].checked = true;
+                        checkedApplicationCategory[key][categoryKey] = Object.assign({}, applicationCategories[indexOfView].applicationCategory[indexOfCategory]);
+                    }
+                })
+            }
+        });
+
+        // 選択される申請区分を保存
+        this.props.viewState.checkedApplicationCategoryLocalSave = checkedApplicationCategory;
+
+        // 申請済みの申請地番
+        const lotNumber = this.props.viewState.reApplication.lotNumbers;
+        this.props.viewState.applicationPlace = Object.assign({},lotNumber);
+    }
+
+    /**
      * 申請区分の初期値設定
-     * @param {*} screen 選択中概況診断タイプに対する画面
+     * @param {*} screen 選択中申請種類に対する画面
      * @param {*} applicationCategory 申請区分
      * @param {*} checkedApplicationCategory 選択中申請区分
      */
@@ -130,17 +190,17 @@ class ApplicationCategorySelection extends React.Component {
     }
 
     /**
-     * 概況診断タイプの選択肢取得
+     * 申請種類の選択肢取得
      * @param {*} screenAll 全て申請区分選択画面
      */
     getJudgementTypes(screenAll){
-        let judgementTypeList = this.state.judgementTypeList;
-        let defaultJudgementType = this.state.defaultJudgementType;
+        let applicationTypeList = this.state.applicationTypeList;
+        let defaultApplicationTypeId = this.state.defaultApplicationTypeId;
         let screen = this.state.screen;
         let applicationCategory = this.state.applicationCategory;
         let checkedApplicationCategory = this.state.checkedApplicationCategory;
         //APIへのリクエスト・レスポンス結果取得処理
-        fetch(Config.config.apiUrl + "/category/judgementTypes")
+        fetch(Config.config.apiUrl + "/application/applicationType")
         .then(res => res.json())
         .then(res => {
             if(res.status === 401){
@@ -149,29 +209,30 @@ class ApplicationCategorySelection extends React.Component {
                 return null;
             }
             if (Object.keys(res).length > 0) {
-                judgementTypeList = res;
+                applicationTypeList = res;
                 Object.keys(res).map(key => {
                     // check boxの場合初期化
                     if(res[key].checked){
-                        defaultJudgementType = res[key].value;
+                        defaultApplicationTypeId = res[key].applicationTypeId;
                     }
                 });
  
-                screen = this.getScreenList(screenAll, defaultJudgementType, defaultJudgementType);
-                this.setState({ judgementTypeList: res, defaultJudgementType: defaultJudgementType, currentJudgementType: defaultJudgementType});
+                // デフォルト選択値がないの場合、選択肢リストの一番目で設定
+                if(!defaultApplicationTypeId || defaultApplicationTypeId < 0){
+                    defaultApplicationTypeId = res[0].applicationTypeId;
+                }
+
+                screen = this.getScreenList(screenAll, defaultApplicationTypeId, defaultApplicationTypeId);
+                this.setState({ applicationTypeList: res, defaultApplicationTypeId: defaultApplicationTypeId, currentApplicationTypeId: defaultApplicationTypeId});
                 // 画面初期表示内容設定
                 this.initScreenData(screen,applicationCategory,checkedApplicationCategory);
             }else{
-                alert("概況診断タイプの選択肢取得に失敗しました。");
+                alert("申請種類の選択肢取得に失敗しました。");
             }
         }).catch(error => {
             console.error('通信処理に失敗しました', error);
             alert('通信処理に失敗しました');
         }).finally(() => {
-            setTimeout(() => {
-                this.getWindowSize();
-                document.getElementById("loading").style.display = "none";
-            }, 3000)
         });
     }
 
@@ -187,7 +248,7 @@ class ApplicationCategorySelection extends React.Component {
             let h = win.innerHeight|| e.clientHeight|| g.clientHeight;
     
             const getRect = document.getElementById("ApplicationCategorySelectionArea");
-            let height = h - getRect.getBoundingClientRect().top - 75;
+            let height = h - getRect.getBoundingClientRect().top - 85;
             this.setState({height: height});
         }
     }
@@ -283,6 +344,17 @@ class ApplicationCategorySelection extends React.Component {
     moveToGeneralAndRoadJudgementResultView() {
         const screen = this.state.screen;
         const checkedApplicationCategory = this.state.checkedApplicationCategory;
+        const applicationTypeList = this.state.applicationTypeList;
+        let selectedApplicationType = {};
+        if(this.props.viewState.isReApply){
+            selectedApplicationType = this.props.viewState.reApplication.applicationType;
+        }else{
+            Object.keys(applicationTypeList).map(index => {            
+                if(applicationTypeList[index].checked == true){
+                    selectedApplicationType = applicationTypeList[index];
+                }
+            });
+        }
  
         let checkedApplicationCategoryCopy = Object.assign({}, checkedApplicationCategory);
         Object.keys(checkedApplicationCategoryCopy).map(key => {
@@ -294,39 +366,53 @@ class ApplicationCategorySelection extends React.Component {
             checkedApplicationCategoryResult[key]["applicationCategory"] = checkedApplicationCategoryCopy[key];
         });
         // 選択済みの項目を保持して画面遷移
-        this.props.viewState.moveToGeneralAndRoadJudgementResultView(checkedApplicationCategoryResult,checkedApplicationCategory);
+        this.props.viewState.moveToGeneralAndRoadJudgementResultView(checkedApplicationCategoryResult,checkedApplicationCategory, selectedApplicationType);
     }
 
     /**
      * トップ画面に戻る
      */
     back() {
-        try{
-            const items = this.state.terria.workbench.items;
-            for (const aItem of items) {
-                if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationTarget) {
-                    this.state.terria.workbench.remove(aItem);
-                    aItem.loadMapItems();
+        if(this.props.viewState.isReApply){
+            // 再申請の場合、申請回答確認画面へ戻る
+            this.state.viewState.moveToConfirmAnswerInformationView(null);
+        }else{
+            try{
+                const items = this.state.terria.workbench.items;
+                for (const aItem of items) {
+                    if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationTarget) {
+                        this.state.terria.workbench.remove(aItem);
+                        aItem.loadMapItems();
+                    }
                 }
+            }catch(error){
+                console.error('処理に失敗しました', error);
             }
-        }catch(error){
-            console.error('処理に失敗しました', error);
+            this.props.viewState.backFromInputApplyConditionView();
         }
-        this.props.viewState.backFromInputApplyConditionView();
     }
 
     /**
-     * 選択中概況診断タイプを切り替える
+     * 選択中申請種類を切り替える
      * @param {*} event イベント
      */
     changeJudgementType(event){
-        let currentJudgementType = event.target.value;
-        let defaultJudgementType = this.state.defaultJudgementType; 
-        this.setState({currentJudgementType:currentJudgementType});
+        let currentApplicationTypeId = event.target.value;
+        let applicationTypeList = this.state.applicationTypeList;
+        Object.keys(applicationTypeList).map(index => {
+            applicationTypeList[index].checked = false;
+            
+            if(applicationTypeList[index].applicationTypeId == currentApplicationTypeId){
+                applicationTypeList[index].checked = true;
+            }
+        });
+
+        let defaultApplicationTypeId = this.state.defaultApplicationTypeId; 
+        this.setState({currentApplicationTypeId:currentApplicationTypeId,applicationTypeList:applicationTypeList});
         let screenAll = this.state.screenAll;
  
-        // 選択された概況診断タイプに対する申請区分選択画面リストを抽出
-        let screen = this.getScreenList(screenAll, defaultJudgementType, currentJudgementType);
+        // 選択された申請種類に対する申請区分選択画面リストを抽出
+        let screen = this.getScreenList(screenAll, defaultApplicationTypeId, currentApplicationTypeId);
         //画面に表示できるの申請区分選択画面の入力値をクリアする
         this.initScreenData(screen,[[{}]],[[{}]]);
 
@@ -336,25 +422,25 @@ class ApplicationCategorySelection extends React.Component {
     }
  
     /**
-     * 選択された概況診断タイプに対する申請区分選択画面リストを抽出
+     * 選択された申請種類に対する申請区分選択画面リストを抽出
      * @param {*} screenAll 全て申請区分選択画面
-     * @param {*} defaultJudgementType デフォルト選択中の概況診断タイプ
-     * @param {*} currentJudgementType 選択された概況診断タイプ
+     * @param {*} defaultApplicationTypeId デフォルト選択中の申請種類ID
+     * @param {*} currentApplicationTypeId 選択された申請種類ID
      * @returns 
      */
-    getScreenList(screenAll, defaultJudgementType, currentJudgementType){
+    getScreenList(screenAll, defaultApplicationTypeId, currentApplicationTypeId){
         let screenList = [];
         Object.keys(screenAll).map( key => {
             let judgementTypeStr = screenAll[key]["judgementType"];
-            // DBから取得したM_申請区分選択画面のレコードの概況診断タイプが空の場合、
-            //デフォルト概況診断タイプを選択すれば、該当申請区分選択画面が表示できます
+            // DBから取得したM_申請区分選択画面のレコードの申請種類が空の場合、
+            //デフォルト申請種類を選択すれば、該当申請区分選択画面が表示できます
             if(judgementTypeStr === null || judgementTypeStr === ""){
-                if(currentJudgementType == defaultJudgementType){
+                if(currentApplicationTypeId == defaultApplicationTypeId){
                     screenList.push(screenAll[key]);
                 }
             }else{
                let judgementTypeAry = judgementTypeStr.split(",");
-               let index= judgementTypeAry.findIndex((type) =>  type == currentJudgementType);
+               let index= judgementTypeAry.findIndex((type) =>  type == currentApplicationTypeId);
                if(index >-1){
                 screenList.push(screenAll[key]);
                }
@@ -374,7 +460,7 @@ class ApplicationCategorySelection extends React.Component {
         });
 
         const heigth = this.state.height;
-        const judgementTypeList = this.state.judgementTypeList;
+        const applicationTypeList = this.state.applicationTypeList;
         return (
             <>
             <div className={`${CustomStyle.div_area} ${CustomStyle.fullHeight}`} >
@@ -385,55 +471,24 @@ class ApplicationCategorySelection extends React.Component {
                     <div id="loading" className={CustomStyle.customloaderParent} >
                         <img className={CustomStyle.customloader} src="./images/loader.gif" />
                     </div>
-                    <div className={CustomStyle.div_area}>
+                    <div className={CustomStyle.div_area} style={{display: this.props.viewState.isReApply? "none":""}}>
+                        <h1 className={CustomStyle.title}>申請種類</h1>
                         <div className={CustomStyle.applyType_div_area}>
-                            {/* <div css={`width:40%`}>
-                                <label className={CustomStyle.radio_label}>
-                                    <input
-                                        className={CustomStyle.radio_input}
-                                        type="radio"
-                                        value="0"
-                                        onChange={e => this.changeJudgementType(e)}
-                                        checked={this.state.currentJudgementType == 0}
-                                    />
-                                    <span className={CustomStyle.custom_radio}/>
-                                    {"：" + judgementTypeText_0}
-                                </label>
-                            </div>
-                            <div css={`width:40%`}>
-                                <label className={CustomStyle.radio_label}>
-                                    <input
-                                        className={CustomStyle.radio_input}
-                                        type="radio"
-                                        value="1"
-                                        onChange={e => this.changeJudgementType(e)}
-                                        checked={this.state.currentJudgementType == 1}
-                                    />
-                                    <span className={CustomStyle.custom_radio} />
-                                    {"：" + judgementTypeText_1}
-                                </label>
-                            </div> */}
-                            {Object.keys(judgementTypeList).map(key => (
-                                <label className={CustomStyle.radio_label}>
-                                    <input
-                                        name="judgementType"
-                                        className={CustomStyle.radio_input}
-                                        type="radio"
-                                        value={judgementTypeList[key].value}
-                                        onChange={e => this.changeJudgementType(e)}
-                                        checked={this.state.currentJudgementType == judgementTypeList[key].value}
-                                    />
-                                    <span className={CustomStyle.custom_radio} />
-                                    {"：" + judgementTypeList[key].text}
-                                    {Object.keys(judgementTypeList).length > (Number(key)+1) && (
-                                        <span className={CustomStyle.spaceWith}></span>
-                                    )}
-                                </label>
-                            ))}
+                            <Select
+                                id="judgementType"
+                                light={true}
+                                dark={false}
+                                onChange={e => this.changeJudgementType(e)}
+                                style={{ color: "#000", width: "100%", minHeight: "28px" }}>
+                                {Object.keys(applicationTypeList).map(key => (
+                                    <option key={"judgetypesnumberis" + key} value={applicationTypeList[key].applicationTypeId}
+                                     selected={applicationTypeList[key].checked}>{applicationTypeList[key].applicationTypeName}</option>
+                                ))}
+                            </Select>
 
                         </div>
                     </div>
-
+                    <div className={CustomStyle.div_area}>
                     <Box id="ApplicationCategorySelectionArea" overflowY={"auto"} styledMinHeight={"300px"} styledHeight={heigth + "px"}  css={`display:block; overflow-x:hidden `} >
                     {Object.keys(screen).map(index => (
                         <div key={index}>
@@ -503,6 +558,7 @@ class ApplicationCategorySelection extends React.Component {
                         </div>
                     ))}
                     </Box>
+                    </div>
                 </Box >
             </div>
             <div className={CustomStyle.div_area} >
@@ -529,7 +585,6 @@ class ApplicationCategorySelection extends React.Component {
                     </button>
                 </Box>
             </div>
-            {/* <Box paddedRatio={2}></Box> */}
             </>
         );
     }

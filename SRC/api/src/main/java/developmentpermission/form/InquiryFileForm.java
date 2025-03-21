@@ -47,5 +47,18 @@ public class InquiryFileForm implements Serializable {
 	/** アップロードファイル */
 	@ApiModelProperty(value = "アップロードファイル")
 	private MultipartFile uploadFile;
+	
+	/** ログインID（事業者のみ） */
+	@ApiModelProperty(value = "ログインID", example = "00111223344")
+	private String loginId;
+
+	/** パスワード（事業者のみ） */
+	@ApiModelProperty(value = "パスワード", example = "password")
+	private String password;
+
+	/** 申請ID */
+	@ApiModelProperty(value = "申請ID")
+	private Integer applicationId;
+
 
 }

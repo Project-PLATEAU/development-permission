@@ -20,10 +20,20 @@ public class ResponsibleInquiryFrom implements Serializable {
 	/** シリアルバージョンUID */
 	private static final long serialVersionUID = 1L;
 	
-	/** 回答（申請）一覧 */
-	@ApiModelProperty(value = "回答一覧")
-	private List<ApplyAnswerForm> answers;
 	/** 問合せ一覧 */
 	@ApiModelProperty(value = "問合せ一覧")
 	private List<ChatSearchResultForm> inquiries;
+	
+	/** 申請一覧（事前相談、未回答あり） */
+	@ApiModelProperty(value = "申請一覧（事前相談、未回答あり）")
+	private List<ApplyAnswerSearchResultForm> consultationApplys;
+	
+	/** 申請一覧（事前協議、未回答あり） */
+	@ApiModelProperty(value = "申請一覧（事前協議、未回答あり）")
+	private List<ApplyAnswerSearchResultForm> discussionApplys;
+	
+	/** 申請一覧（事前協議、未回答あり） */
+	@ApiModelProperty(value = "申請一覧（事前協議、未回答あり）")
+	private List<ApplyAnswerSearchResultForm> permissionApplys;
+	
 }

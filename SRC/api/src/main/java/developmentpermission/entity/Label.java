@@ -25,18 +25,18 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-@IdClass(value=LabelKey.class)
+@IdClass(value = LabelKey.class)
 public class Label implements Serializable {
-	
+
 	/** シリアルバージョンUID */
 	private static final long serialVersionUID = 1L;
-	
+
 	/** ラベルID */
 	@Id
 	@Column(name = "label_id")
 	private String labelId;
 
-	/** 画面コード  */
+	/** 画面コード */
 	@Id
 	@Column(name = "view_code")
 	private String viewCode;
@@ -52,4 +52,8 @@ public class Label implements Serializable {
 	/** テキスト */
 	@Column(name = "label_text")
 	private String labelText;
+
+	/** 申請段階(申請段階IDはカンマ区切りで保持) */
+	@Column(name = "application_step")
+	private String applicationStep;
 }

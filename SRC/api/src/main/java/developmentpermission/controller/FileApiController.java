@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -20,10 +19,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,7 +33,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import developmentpermission.entity.AnswerFile;
+import developmentpermission.entity.ApplicationFile;
 import developmentpermission.form.ResponseEntityForm;
+import developmentpermission.repository.AnswerFileRepository;
+import developmentpermission.repository.AnswerRepository;
+import developmentpermission.repository.ApplicationFileRepository;
+import developmentpermission.util.AuthUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -55,8 +62,13 @@ public class FileApiController extends AbstractApiController {
 	@Value("${app.file.service.rootpath}")
 	private String serviceFileBasePath;
 	
+	/** 回答ファイル管理フォルダパス */
 	@Value("${app.file.answer.folder}")
 	private String answerFolder;
+	
+	/** 申請ファイル管理フォルダパス */
+	@Value("${app.file.application.folder}")
+	private String applicationFileFolder;
 	
 	@Value("${app.file.rootpath}")
 	private String applicationFolder;
@@ -69,6 +81,14 @@ public class FileApiController extends AbstractApiController {
 	
 	@Value("${app.file.manual.goverment.file}")
 	private String GovermentManual;
+	
+	/** O_回答ファイルRepositoryインスタンス */
+	@Autowired
+	private AnswerFileRepository answerFileRepository;
+	
+	/** O_申請ファイルRepositoryインスタンス */
+	@Autowired
+	private ApplicationFileRepository applicationFileRepository;
 	
 	/**
 	 * ファイルダウンロード
@@ -144,9 +164,10 @@ public class FileApiController extends AbstractApiController {
 	@ApiOperation(value = "回答ファイル取得", notes = "回答ファイルを取得する.")
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class),
 			@ApiResponse(code = 404, message = "回答ファイルが存在しない場合", response = ResponseEntityForm.class),
 			@ApiResponse(code = 500, message = "回答ファイルの取得に失敗した場合", response = ResponseEntityForm.class), })
-	public HttpEntity<byte[]> getApplicantAnserFile(HttpServletRequest request) {
+	public HttpEntity<byte[]> getApplicantAnserFile(HttpServletRequest request, @CookieValue(value = "token", required = false) String token) {
 		LOGGER.info("回答ファイル取得 開始");
 		try {
 			// ファイルパスを取得
@@ -154,6 +175,14 @@ public class FileApiController extends AbstractApiController {
 			final String[] targetDir = {"file", "viewapp"};
 			String fileName = extractAccessFilePath(uri, targetDir);
 			LOGGER.info("取得するファイル名:" + URLDecoder.decode(fileName, "UTF-8"));
+
+			// ロールチェック
+			// ファイルパスに対するレコードがO_回答ファイル・O_申請ファイルテーブルに存在するかチェック
+			HttpStatus status = validateFilePath(AuthUtil.getRole(token), URLDecoder.decode(fileName, "UTF-8"));
+			if (status != null) {
+				throw new ResponseStatusException(status);
+			}
+			
 			// 絶対ファイルパス
 			String absoluteFilePath = applicationFolder + "/" + URLDecoder.decode(fileName, "UTF-8");
 			Path filePath = Paths.get(absoluteFilePath);
@@ -209,12 +238,14 @@ public class FileApiController extends AbstractApiController {
 	@ApiOperation(value = "ファイル変換", notes = "ファイルを変換する.")
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class),
+			@ApiResponse(code = 403, message = "ロール不適合", response = ResponseEntityForm.class),
 			@ApiResponse(code = 404, message = "ファイルが存在しない場合", response = ResponseEntityForm.class),
 			@ApiResponse(code = 500, message = "ファイルの取得に失敗した場合", response = ResponseEntityForm.class), })
 	public HttpEntity<byte[]> convertPdfFile(
 			HttpServletRequest request, 
 			@RequestParam(name = "page", required = false, defaultValue = "1") int page,
-			@RequestParam(name = "version", required = false) String version
+			@RequestParam(name = "version", required = false) String version,
+			@CookieValue(value = "token", required = false) String token
 	) {
 		LOGGER.info("ファイル変換 開始");
 		try {
@@ -227,6 +258,13 @@ public class FileApiController extends AbstractApiController {
 			LOGGER.info("変換するファイル名:" + filePath);
 			String dirPath = filePath.replaceAll("/[^/]+\\.[^/]+$", "");
 			String absoluteFilePath = applicationFolder + "/" + filePath;
+			
+			// ロールチェック
+			// ファイルパスに対するレコードがO_回答ファイル・O_申請ファイルテーブルに存在するかチェック
+			HttpStatus status = validateFilePath(AuthUtil.getRole(token), filePath);
+			if (status != null) {
+				throw new ResponseStatusException(status);
+			}
 
 			File file = new File(absoluteFilePath);
 			String fileName = file.getName();
@@ -390,5 +428,46 @@ public class FileApiController extends AbstractApiController {
 			return null;
 		}
 		
+	}
+	
+	/**
+	 * ロールチェック（行政のみ）、ファイルパスに対するレコードが存在するかチェック
+	 * 
+	 * @param role     ロール
+	 * @param filePath ファイルパス
+	 * @return
+	 */
+	private HttpStatus validateFilePath(String role, String filePath) {
+		// ロールチェック：行政のみ
+		if (AuthUtil.ROLE_GOVERMENT.equals(role)) {
+			// ファイルパスからファイル管理フォルダパスを抽出
+			String[] files = filePath.split("/");
+			String fileManagmentFolder = "/" + files[0];
+
+			// ファイル管理パスより、回答ファイルまたは、申請ファイルを判定します。
+			if (answerFolder.equals(fileManagmentFolder)) {
+				// 回答ファイル管理フォルダパスである場合、
+				List<AnswerFile> answerFileList = answerFileRepository.findByFilePath("/" + filePath);
+				if (answerFileList.size() == 0) {
+					LOGGER.error("O_回答ファイルテーブルに、ファイルパスに対するレコードが存在しない");
+					return HttpStatus.NOT_FOUND;
+				}
+			} else if (applicationFileFolder.equals(fileManagmentFolder)) {
+				// 申請ファイル管理フォルダパスである場合、
+				List<ApplicationFile> applicationFileList = applicationFileRepository.findByFilePath("/" + filePath);
+				if (applicationFileList.size() == 0) {
+					LOGGER.error("O_申請ファイルテーブルに、ファイルパスに対するレコードが存在しない");
+					return HttpStatus.NOT_FOUND;
+				}
+			} else {
+				LOGGER.error("ファイルパス中のファイル管理フォルダパス不正：" + fileManagmentFolder);
+				return HttpStatus.BAD_REQUEST;
+			}
+
+		} else {
+			LOGGER.warn("ロール不適合: " + role);
+			return HttpStatus.FORBIDDEN;
+		}
+		return null;
 	}
 }

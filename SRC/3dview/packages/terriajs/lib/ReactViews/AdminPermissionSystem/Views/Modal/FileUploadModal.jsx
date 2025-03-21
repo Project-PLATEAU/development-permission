@@ -7,7 +7,7 @@ import Box from "../../../../Styled/Box";
 import Styles from "./scss/FileUploadModal.scss"
 import { RawButton } from "../../../../Styled/Button";
 import Icon, { StyledIcon } from "../../../../Styled/Icon";
-
+import Config from "../../../../../customconfig.json";
 /**
  * 行政用コンポーネント：回答ファイル選択ダイアログ
  */
@@ -17,8 +17,7 @@ class FileUploadModal extends React.Component {
     static displayName = "FileUploadModal"
     static propsType = {
         terria: PropTypes.object.isRequired,
-        viewState: PropTypes.object.isRequired,
-        t: PropTypes.func.isRequired,
+        viewState: PropTypes.object.isRequired
     }
 
     constructor(props) {
@@ -31,11 +30,12 @@ class FileUploadModal extends React.Component {
             // 申請ファイル版情報一覧
             applicationVersions: [],
             // 回答ファイル一覧
-            answerFiles: props.answerFiles,
+            answerFiles: props.viewState.answerQuoteFile,
             // 引用テーブル表示モード
             quoteUpload: false,
             // ファイルアップロードコールバック関数
-            callback: this.props.callback
+            // callback: this.props.callback
+            callback: props.viewState.callBackFunction
         }
         this.CallBackFunction = this.CallBackFunction.bind(this);
     }
@@ -85,6 +85,24 @@ class FileUploadModal extends React.Component {
         const file = e.target.files[0];
         if (file.size > 10485760) {
             alert("10M以下のファイルをアップロードできます");
+            return false;
+        }
+        // 拡張子チェック
+        let extension = file.name.split('.').pop();
+        if(Config.extension.answerFile){
+            let allowExts = Config.extension.answerFile.split(',')
+            if(allowExts.indexOf(extension) === -1){
+                alert(Config.extension.answerFile + " のいずれかのファイル形式のファイルをアップロードしてください。");
+                return false;
+            }
+        }
+        // ファイル名チェック
+        const fileNameWithoutExtension = file.name.split(".").slice(0, -1).join(".");
+        const regex = /[\"\'<>\&]/;
+        const reg = new RegExp(regex);
+        const result = reg.exec(fileNameWithoutExtension);
+        if (result != null) {
+            alert("ファイル名に禁止文字("+'"'+",',<,>,&"+")のいずれか含めていますので、ファイル名を修正してアップロードしてください。");
             return false;
         }
         this.CallBackFunction(file, null, null);
@@ -187,15 +205,25 @@ class FileUploadModal extends React.Component {
                                             </thead>
                                             <tbody>
                                             {Object.keys(this.state.applicationFiles).map(index => {
-                                                const applicationFileHistorys = this.state.applicationFiles[index]?.applicationFileHistorys;
-                                                
+
+                                                //申請段階を問わず、全ての申請ファイルが引用できる
+                                                const applicationFileHistorys = this.state.applicationFiles[index]?.applicationFileAllHistorys;
+
                                                 // applicationFileHistorysが存在しない or 空の場合は表示しない
                                                 if (!applicationFileHistorys || Object.keys(applicationFileHistorys).length === 0) return null;
 
-                                                // 最大のversionInformationを持つデータのキーを取得
+                                                // 最大の申請段階ID、versionInformationを持つデータのキーを取得
                                                 const maxVersionKey = Object.keys(applicationFileHistorys).reduce((maxKey, currentKey) => {
                                                     if (!maxKey) return currentKey;
-                                                    return applicationFileHistorys[maxKey].versionInformation > applicationFileHistorys[currentKey].versionInformation ? maxKey : currentKey;
+                                                    if(applicationFileHistorys[maxKey].applicationStepId > applicationFileHistorys[currentKey].applicationStepId ){
+                                                        return maxKey;
+                                                    }else{
+                                                        if(applicationFileHistorys[maxKey].applicationStepId == applicationFileHistorys[currentKey].applicationStepId ){
+                                                            return applicationFileHistorys[maxKey].versionInformation > applicationFileHistorys[currentKey].versionInformation ? maxKey : currentKey;
+                                                        }else{
+                                                            return currentKey;
+                                                        }
+                                                    }
                                                 }, null);
 
                                                 return (
@@ -267,26 +295,28 @@ class FileUploadModal extends React.Component {
                                     <table className={Styles.selection_table}>
                                         <thead className={Styles.table_header}>
                                             <tr>
+                                                <th style={{width: "15%"}}>申請種別</th>
                                                 <th style={{width: "10%"}}>版</th>
                                                 <th style={{width: "25%"}}>アップロード日時</th>
-                                                <th style={{width: "50%"}}>ファイル名</th>
+                                                <th style={{width: "35%"}}>ファイル名</th>
                                                 <th style={{width: "15%"}}></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {Object.keys(applicationFileHistories).map(index => (
                                                 <tr>    
-                                                <td>{applicationFileHistories[index].versionInformation}</td>
-                                                <td>{applicationFileHistories[index].uploadDatetime}</td>
-                                                <td>{applicationFileHistories[index].uploadFileName}</td>
-                                                <td>
-                                                    <button
-                                                        className={Styles.upload_button}
-                                                        onClick={(e) => this.quote(applicationFileHistories[index])}
-                                                    >引用
-                                                    </button>
-                                                </td>
-                                            </tr>
+                                                    <td>{applicationFileHistories[index].applicationStepName}</td>
+                                                    <td>{applicationFileHistories[index].versionInformation}</td>
+                                                    <td>{applicationFileHistories[index].uploadDatetime}</td>
+                                                    <td>{applicationFileHistories[index].uploadFileName}</td>
+                                                    <td>
+                                                        <button
+                                                            className={Styles.upload_button}
+                                                            onClick={(e) => this.quoteApplicationFile(applicationFileHistories[index])}
+                                                        >引用
+                                                        </button>
+                                                    </td>
+                                                </tr>
                                             ))}
                                             
                                         </tbody>

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { withTranslation } from "react-i18next";
 import { withTheme } from "styled-components";
-import Icon, { StyledIcon } from "../../../../Styled/Icon";
+import Icon, {GLYPHS, StyledIcon } from "../../../../Styled/Icon";
 import Spacing from "../../../../Styled/Spacing";
 import Text from "../../../../Styled/Text";
 import Input from "../../../../Styled/Input";
@@ -23,6 +23,20 @@ import sampleTerrainMostDetailed from "terriajs-cesium/Source/Core/sampleTerrain
 import Styles from "../../../DevelopmentPermissionSystem/PageViews/scss/pageStyle.scss";
 import ApplicationDetails from "./ApplicationDetails";
 import Common from "../../../AdminDevelopCommon/CommonFixedValue.json";
+import MultiSelect from "react-select";
+
+const DropdownIndicator = props => {
+    return(
+        <div className={`${CustomStyle.select_box_icon}`}>
+            <StyledIcon
+                // light bg needs dark icon
+                fillColor={"#000"}
+                styledWidth="16px"
+                glyph={GLYPHS.arrowDown}
+            />
+        </div>
+    )
+}
 
 /**
  * 申請情報検索画面
@@ -50,7 +64,7 @@ class ApplicationInformationSearch extends React.Component {
             applicantInformation: [],
             //申請状態(検索値)
             status: [],
-            //回答状態(検索値)
+            //問合せの回答状態(検索値)
             answerStatus: [],
             //部署(検索値)
             department: [],
@@ -72,6 +86,24 @@ class ApplicationInformationSearch extends React.Component {
             searchValue: [],
             //申請情報詳細表示
             showApplyDetail: false, 
+            // 申請種類(検索値)
+            applicationType: [],
+            // 申請段階（検索値）
+            applicationStep: [],
+            //申請追加情報（検索値）(検索条件1～3にセットする値)
+            applicationAddInfo: [[], [], []],
+            // 各申請段階に対する申請追加情報（申請段階IDをキーとしたマップ）
+            allApplicationAddInfo: {},
+            //申請追加情報(検索値)の表示フラグ
+            applicationAddInfoDisplay: false,
+            //条文ステータス情報(検索値)
+            itemAnswerStatus: [],
+            //条文ステータス(検索値)の表示フラグ
+            itemAnswerStatusDisplay: false,
+            // ソート対象カラム
+            sortColumn: "",
+            //　昇順/降順
+            sortType: ""
         };
     }
 
@@ -124,6 +156,32 @@ class ApplicationInformationSearch extends React.Component {
                         selectedScreen[key] = JSON.parse(JSON.stringify(res.applicationCategories));
                     })
                     document.getElementById("customloaderSearch").style.display = "none";
+                    let applicationType = res.applicationTypes;
+                    let applicationStep = res.applicationSteps;
+                    
+                    // 0:1行のみの入力欄で表示、
+                    // 1:複数行の入力欄で表示、
+                    // 2:日付（カレンダー）、
+                    // 3:数値、
+                    // 4:ドロップダウン単一選択
+                    // 5:ドロップダウン複数選択
+                    let resApplicationAddInfoList = {};
+                    let applicationAddInfoList = res.applicantAddInformationItemForm;
+                    Object.keys(applicationStep).map(applicationStepIndex => {
+                        let mapKey = applicationStep[applicationStepIndex].applicationStepId;
+                        resApplicationAddInfoList[mapKey] = [];
+                        applicationAddInfoList.forEach(applicationAddInfoListVal => {
+                            applicationAddInfoListVal.applicationStep = applicationAddInfoListVal.applicationSteps;
+                            Object.keys(applicationAddInfoListVal.applicationSteps).map(applicationAddInfoStepIndex => {
+                                if(applicationAddInfoListVal.applicationSteps[applicationAddInfoStepIndex].applicationStepId == mapKey) {
+                                    resApplicationAddInfoList[mapKey].push(JSON.parse(JSON.stringify(applicationAddInfoListVal)));
+                                }
+                            })
+                        })
+                    })
+                    // 回答条文ステータス
+                    let itemAnswerStatus = res.itemAnswerStatus;
+
                     this.setState({
                         applicantInformation: res.applicantInformationItemForm,
                         screen: res.applicationCategories,
@@ -131,7 +189,13 @@ class ApplicationInformationSearch extends React.Component {
                         answerStatus: res.answerStatus,
                         department: res.department,
                         answerName: res.answerName,
-                        selectedScreen: selectedScreen
+                        selectedScreen: selectedScreen,
+                        applicationType: applicationType,
+                        applicationStep: applicationStep,
+                        applicationAddInfoDisplay: false,
+                        itemAnswerStatus: itemAnswerStatus,
+                        itemAnswerStatusDisplay: false,
+                        allApplicationAddInfo: resApplicationAddInfoList
                     });
                     
                 } else {
@@ -212,6 +276,158 @@ class ApplicationInformationSearch extends React.Component {
         this.setState({ selectedScreen: selectedScreen });
     }
 
+    
+    /**
+     * 申請区分選択時（複数選択）
+     * @param {*} index 申請区分条件のindex（条件１～３）
+     * @param {*} categoryIndex 対象区分key（左側のプルダウンの選択肢のindex）
+     * @param {*} selectedValue 選択中選択肢
+     */
+    handleMultiSelectApplicationCategory(index, categoryIndex, selectedValue){
+
+        if(!selectedValue){
+            return;
+        }
+
+        let selectedScreen = this.state.selectedScreen;
+        // 前回選択したの結果をクリアする
+        Object.keys(selectedScreen[index][categoryIndex].applicationCategory).map(i => {
+            selectedScreen[index][categoryIndex].applicationCategory[i].checked = false;
+        })
+        
+        // 今回の選択結果を設定
+        Object.keys(selectedValue).map(key => {
+            let value = selectedValue[key].value;
+            selectedScreen[index][categoryIndex].applicationCategory[Number(value)].checked = true;
+        })
+
+        this.setState({ selectedScreen: selectedScreen });
+    }
+
+    /**
+     * 申請追加情報項目選択時
+     * @param {*} index　申請追加情報検索条件index 
+     * @param {*} key 対象申請追加情報項目key
+     */
+    handleSelectApplicationAddInfo(index, key){
+        let applicationAddInfo = this.state.applicationAddInfo;
+        Object.keys(applicationAddInfo[index]).map(itemKey => {
+            applicationAddInfo[index][itemKey].checked = false;
+        })
+        if (key >= 0) {
+            applicationAddInfo[index][key].checked = true;
+        }
+        this.setState({ applicationAddInfo: applicationAddInfo });
+    }
+
+    /**
+     * 申請追加情報項目の入力値(テキスト、数値)が変わる時
+     * @param {*} index 申請追加情報検索条件index 
+     * @param {*} key 対象申請追加情報項目key
+     * @param {*} value 対象申請追加情報項目の入力値
+     */
+    inputChangeApplicationAddInfoItem(index, key, value){
+        let applicationAddInfo = this.state.applicationAddInfo;
+        applicationAddInfo[index][key].value = value;
+        this.setState({ applicationAddInfo: applicationAddInfo });
+    }
+
+       /**
+     * 申請追加情報項目の入力値(日付)が変わる時
+     * @param {*} index 申請追加情報検索条件index 
+     * @param {*} key 対象申請追加情報項目key
+     * @param {string} date 対象申請追加情報項目の入力値
+     */
+    changeApplicationAddInfoItemDate(index, key, dateStr){
+        let applicationAddInfo = this.state.applicationAddInfo;
+        if(dateStr){
+            let date = new Date(dateStr);
+            let formated = date.toLocaleDateString("ja-JP",{year: "numeric", month:"2-digit", day:"2-digit"}).split("/").join("-");
+            applicationAddInfo[index][key].value = formated;
+        }else{
+            applicationAddInfo[index][key].value = "";
+        }
+
+        this.setState({ applicationAddInfo: applicationAddInfo });
+    }
+
+    /**
+     * 申請追加情報項目選択時(単一選択)
+     * @param {*} index 申請追加情報検索条件index
+     * @param {*} key 対象申請追加情報項目key
+     * @param {*} itemKey 対象申請追加情報項目の選択肢Key
+     */
+    handleSelectApplicationAddInfoItem(index, key, itemKey){
+        let applicationAddInfo = this.state.applicationAddInfo;
+        Object.keys(applicationAddInfo[index][key].itemOptions).map(i => {
+            applicationAddInfo[index][key].itemOptions[i].checked = false;
+        })
+        if (itemKey >= 0) {
+            applicationAddInfo[index][key].itemOptions[itemKey].checked = true;
+        }
+        this.setState({ applicationAddInfo: applicationAddInfo });
+    }
+
+    /**
+     * 選択肢リストを、multiSelectに利用可能の形に整形する 
+     * @param {*} itemOptions 複数選択の追加情報の選択肢
+     * @returns 
+     */
+    getMultiSelectOptions(itemOptions){
+
+        let options = [];
+        Object.keys(itemOptions).map(index => {
+            let option = {"value": index, "label": itemOptions[index].content};
+            options.push(option);
+        });
+
+        return options;
+    }
+
+    /**
+     * 選択肢リストを、multiSelectに利用可能の形に整形する 
+     * @param {*} itemOptions 複数選択の追加情報の選択肢
+     * @returns 
+     */
+    getMultiSelectDefaultValue(itemOptions){
+
+        let options = [];
+        Object.keys(itemOptions).map(index => {
+            if(itemOptions[index].checked){
+                let option = {"value": index, "label": itemOptions[index].content};
+                options.push(option);
+            }
+        });
+
+        return options;
+    }
+
+    /**
+     * 申請追加情報項目選択時（複数選択）
+     * @param {*} index 申請追加情報検索条件index(条件１～３)
+     * @param {*} itemIndex 申請追加情報項目index（左側のプルダウンの選択肢のindex）
+     * @param {*} selectedValue 選択中選択肢(選択中選択肢リスト)
+     */
+    handleMultiSelectApplicationAddInfoItem(index, itemIndex, selectedValue){
+
+        if(!selectedValue){
+            return;
+        }
+
+        let applicationAddInfo = this.state.applicationAddInfo;
+        // 前回選択したの結果をクリアする
+        Object.keys(applicationAddInfo[index][itemIndex].itemOptions).map(i => {
+            applicationAddInfo[index][itemIndex].itemOptions[i].checked = false;
+        })
+        
+        // 今回の選択結果を設定
+        Object.keys(selectedValue).map(key => {
+            let value = selectedValue[key].value;
+            applicationAddInfo[index][itemIndex].itemOptions[Number(value)].checked = true;
+        })
+
+        this.setState({ applicationAddInfo: applicationAddInfo });
+    }
 
     /**
      * ステータス選択時
@@ -273,6 +489,113 @@ class ApplicationInformationSearch extends React.Component {
     }
 
     /**
+     * 申請種類選択時
+     * @param {number} 対象index
+     */
+    handleSelectApplicationType(index){
+        let applicationType = this.state.applicationType;
+
+        Object.keys(applicationType).map(key => {
+            applicationType[key].checked = false;
+        })
+        if (index >= 0) {
+            applicationType[index].checked = true;
+
+            let applicationStep = this.state.applicationStep;
+            let checkedApplicationStep = -1; 
+            Object.keys(applicationStep).map(key => {
+                if(applicationStep[key].checked){
+                    checkedApplicationStep = applicationStep[key].applicationStepId; 
+                }
+            })
+
+            applicationStep = applicationType[index].applicationSteps;
+            Object.keys(applicationStep).map(key => {
+                    applicationStep[key].checked = false; 
+            })
+            // 申請段階選択状態をリセット
+            let itemAnswerStatusDisplay = applicationType[index].applicationSteps[0] == 2;
+            const allApplicationAddInfo = this.state.allApplicationAddInfo;
+            const applicationAddInfoDisplay = allApplicationAddInfo[applicationType[index].applicationSteps[0].applicationStepId].length > 0;
+            let applicationAddInfo = [
+                JSON.parse(JSON.stringify(allApplicationAddInfo[applicationStep[index].applicationStepId])),
+                JSON.parse(JSON.stringify(allApplicationAddInfo[applicationStep[index].applicationStepId])),
+                JSON.parse(JSON.stringify(allApplicationAddInfo[applicationStep[index].applicationStepId]))
+            ];
+            /// 申請段階の選択肢リストを選択可能値に更新
+            this.setState({ applicationType: applicationType, applicationStep:applicationType[index].applicationSteps,  applicationAddInfo: applicationAddInfo,applicationAddInfoDisplay: applicationAddInfoDisplay, itemAnswerStatusDisplay: itemAnswerStatusDisplay});
+        }else{
+            this.setState({ applicationType: applicationType });
+        }
+    }
+
+     /**
+     * 申請段階選択時
+     * @param {number} 対象index
+     */
+     handleSelectapplicationStep(index){
+        let applicationStep = this.state.applicationStep;
+
+        Object.keys(applicationStep).map(key => {
+            applicationStep[key].checked = false;
+        })
+        if (index >= 0) {
+            applicationStep[index].checked = true;
+
+
+            let itemAnswerStatusDisplay = false;
+            //選択された申請段階が事前協議の場合、
+            if(applicationStep[index].applicationStepId == 2){
+                itemAnswerStatusDisplay = true;
+            }
+            const allApplicationAddInfo = this.state.allApplicationAddInfo;
+            // 申請段階にひもづく申請追加情報が存在する場合検索を有効にする
+            const applicationAddInfoDisplay = allApplicationAddInfo[applicationStep[index].applicationStepId].length > 0;
+            // 検索条件入力値リセット
+            let applicationAddInfo = [
+                JSON.parse(JSON.stringify(allApplicationAddInfo[applicationStep[index].applicationStepId])),
+                JSON.parse(JSON.stringify(allApplicationAddInfo[applicationStep[index].applicationStepId])),
+                JSON.parse(JSON.stringify(allApplicationAddInfo[applicationStep[index].applicationStepId]))
+            ];
+            this.setState({ applicationStep: applicationStep, applicationAddInfo: applicationAddInfo,applicationAddInfoDisplay: applicationAddInfoDisplay, itemAnswerStatusDisplay: itemAnswerStatusDisplay});
+        }else{
+            this.setState({ applicationStep: applicationStep, applicationAddInfoDisplay: false, itemAnswerStatusDisplay: false});
+        }
+    }
+
+    /**
+     * 条文ステータス選択時
+     * @param {*} index 対象index
+     */
+    changeItemAnswerStatus(index){
+        let itemAnswerStatus = this.state.itemAnswerStatus;
+        itemAnswerStatus[index].checked = !itemAnswerStatus[index].checked;
+        this.setState({itemAnswerStatus :itemAnswerStatus });
+    }
+
+    /**
+     * 申請IDの値変更時
+     * @param {*} value 入力値
+     * @param {*} stateApplicationId　入力前の申請ID 
+     */
+    inputChangeApplicationId(value, stateApplicationId){
+
+        // 未入力・クリアの場合、
+        if(value == null || value == ""){
+            this.setState({applicationId: ""});
+        }else{
+            // 正規表現：数字だけ
+            const onlyNumberRegex = new RegExp(/^[0-9]*$/);
+            if(onlyNumberRegex.exec(value) == null){
+                // 数字以外入力する場合、入力値無視して、元々値のまま
+                this.setState({applicationId: stateApplicationId});
+            }else{
+                this.setState({applicationId: value});
+            }
+        }
+    }
+    
+    /**
      * クリア
      */
     clear() {
@@ -311,25 +634,56 @@ class ApplicationInformationSearch extends React.Component {
             answerName[index].checked = false;
         })
 
-        this.setState({ status: status, department: department, selectedScreen: selectedScreen, applicantInformation: applicantInformation });
+        let applicationType = this.state.applicationType;
+        Object.keys(applicationType).map(key => {
+            applicationType[key].checked = false;
+        })
+        let applicationStep = this.state.applicationStep;
+        Object.keys(applicationStep).map(key => {
+            applicationStep[key].checked = false;
+        })
+        let applicationAddInfo = this.state.applicationAddInfo;
+        Object.keys(applicationAddInfo).map(index => {
+            Object.keys(applicationAddInfo[index]).map(key => {
+                applicationAddInfo[index][key].checked = false;
+                applicationAddInfo[index][key].value =  "";
+                Object.keys(applicationAddInfo[index][key]["itemOptions"]).map(optionKey => {
+                    applicationAddInfo[index][key]["itemOptions"][optionKey].checked = false;
+                });
+            })
+        })
+
+        let itemAnswerStatus = this.state.itemAnswerStatus;
+        Object.keys(itemAnswerStatus).map(key => {
+            itemAnswerStatus[key].checked = false;
+        })
+
+        this.setState({ status: status, department: department, selectedScreen: selectedScreen, applicantInformation: applicantInformation,
+            applicationType: applicationType, applicationStep: applicationStep, applicationAddInfo: applicationAddInfo, applicationAddInfoDisplay: false,
+            itemAnswerStatus: itemAnswerStatus, itemAnswerStatusDisplay: false
+         });
 
     }
     
-    /**
-     * 検索
-     */
-    search() {
-        this.setState({
-            searchConditionShow: false,
-            searcResultShow: true,
-        });
-
-        //document.getElementById("searchFrame").scrollTop = 0;
-        document.getElementById("customloaderSearch").style.display = "block";
-        
+    setSearchRequestBody(searchResultCategory, resultSearchCategory) {
         const selectedScreen = this.state.selectedScreen;
         let resultScreen = new Array();
-        
+        // 申請種別
+        let resultApplicationType = new Array();
+        const applicationType = this.state.applicationType;
+        Object.keys(applicationType).map(index => {
+            if (applicationType[index].checked) {
+                resultApplicationType[resultApplicationType.length] = JSON.parse(JSON.stringify(applicationType[index]));
+            }
+        })
+        // 申請段階
+        let resultApplicationStep = new Array();
+        const applicationStep = this.state.applicationStep;
+        Object.keys(applicationStep).map(index => {
+            if (applicationStep[index].checked) {
+                resultApplicationStep[resultApplicationStep.length] = JSON.parse(JSON.stringify(applicationStep[index]));
+            }
+        })
         // 申請区分
         Object.keys(selectedScreen).map(index => {
             Object.keys(selectedScreen[index]).map(screenKey => {
@@ -371,21 +725,7 @@ class ApplicationInformationSearch extends React.Component {
             if (applicantInformation[index].value) {
                 resultApplicantInformation[resultApplicantInformation.length] = JSON.parse(JSON.stringify(applicantInformation[index]));
             }
-        })
-
-        // 区分
-        let searchResultCategory = "";
-        const searchCategory = this.state.searchCategory;
-        let resultSearchCategory = new Array();
-        Object.keys(searchCategory).map(index => {
-            if(searchCategory[index].checked){
-                resultSearchCategory[resultSearchCategory.length] = JSON.parse(JSON.stringify(searchCategory[index]));
-                this.setState({ searchResultCategory: index});
-                searchResultCategory= index;
-            }
-        })
-
-        
+        })        
         // ステータス（問い合わせ情報）
         const answerStatus = this.state.answerStatus;
         let resultAnswerStatus = new Array();
@@ -404,26 +744,109 @@ class ApplicationInformationSearch extends React.Component {
             }
         })
 
-        // console.log(resultScreen);
-        // console.log(resultStatus);
-        // console.log(resultDepartment);
-        // console.log(resultApplicantInformation);
-        // console.log(resultSearchCategory);
-        // console.log(resultAnswerStatus);
-        // console.log(resultAnswerName);
+        // 申請ID
+        let applicationId = null;
+        if(this.state.applicationId){
+            applicationId = parseInt(this.state.applicationId);
+        }
 
+        // 条文ステータス
+        let resultAnswerItemStatus = new Array();
+        if (this.state.itemAnswerStatusDisplay == true) {
+            const itemAnswerStatus = this.state.itemAnswerStatus;
+            Object.keys(itemAnswerStatus).map(index => {
+                if (itemAnswerStatus[index].checked) {
+                    resultAnswerItemStatus[resultAnswerItemStatus.length] = JSON.parse(JSON.stringify(itemAnswerStatus[index]));
+                }
+            })
+        }
+        // 申請追加情報
+        let resultApplicationAddInfo = new Array();
+        if (this.state.applicationAddInfoDisplay == true) {
+            const applicationAddInfo = this.state.applicationAddInfo;
+            Object.keys(applicationAddInfo).map(index => {
+                Object.keys(applicationAddInfo[index]).map(condKey =>{
+                    if (applicationAddInfo[index][condKey].checked) {
+                        //const resultApplicationAddInfoIndex = resultApplicationAddInfo.length;
+                        if (applicationAddInfo[index][condKey].itemType == "4" || applicationAddInfo[index][condKey].itemType == "5") {
+                            // ドロップダウン単一選択または複数選択
+                            Object.keys(applicationAddInfo[index][condKey].itemOptions).map(itemKey => {
+                                if (applicationAddInfo[index][condKey].itemOptions[itemKey]?.checked) {
+                                    let selectResult = JSON.parse(JSON.stringify(applicationAddInfo[index][condKey]));
+                                    selectResult["value"] = applicationAddInfo[index][condKey].itemOptions[itemKey]?.id;
+                                    resultApplicationAddInfo.push(selectResult);     
+                                }
+                            })
+                        } else {
+                            // それ以外の項目型
+                            resultApplicationAddInfo.push(JSON.parse(JSON.stringify(applicationAddInfo[index][condKey])));
+                        }
+                    }
+                })
+            })
+        }
+        let res = {}
+        if (searchResultCategory === "0") {
+            res = {
+                applicantInformationItemForm: resultApplicantInformation,
+                applicationCategories: resultScreen,
+                status: resultStatus,
+                department: resultDepartment,
+                searchCategory : resultSearchCategory,
+                answerName: resultAnswerName,
+                applicationTypes: resultApplicationType,
+                applicationSteps: resultApplicationStep,
+                itemAnswerStatus: resultAnswerItemStatus,
+                applicantAddInformationItemForm: resultApplicationAddInfo,
+                applicationId: applicationId
+            };
+        } else if (searchResultCategory === "1") {
+            res = {
+                applicantInformationItemForm: resultApplicantInformation,
+                applicationCategories: resultScreen,
+                answerStatus: resultAnswerStatus,
+                department: resultDepartment,
+                searchCategory : resultSearchCategory,
+                answerName: resultAnswerName,
+                applicationTypes: resultApplicationType,
+                applicationSteps: resultApplicationStep,
+                itemAnswerStatus: resultAnswerItemStatus,
+                applicantAddInformationItemForm: resultApplicationAddInfo,
+                applicationId: applicationId
+            };
+        }
+        
+        return res;
+    }
+
+    /**
+     * 検索
+     */
+    search() {
+        this.setState({
+            searchConditionShow: false,
+            searcResultShow: true,
+        });
+
+        document.getElementById("customloaderSearch").style.display = "block";
+        // 検索区分
+        let searchResultCategory = "";
+        const searchCategory = this.state.searchCategory;
+        let resultSearchCategory = new Array();
+        Object.keys(searchCategory).map(index => {
+            if(searchCategory[index].checked){
+                resultSearchCategory[resultSearchCategory.length] = JSON.parse(JSON.stringify(searchCategory[index]));
+                this.setState({ searchResultCategory: index});
+                searchResultCategory= index;
+            }
+        })
+        // リクエストボディ取得
+        let requestBody = this.setSearchRequestBody(searchResultCategory, resultSearchCategory);
         // 申請情報検索
         if(searchResultCategory === "0"){
             fetch(Config.config.apiUrl + "/application/search", {
                 method: 'POST',
-                body: JSON.stringify({
-                    applicantInformationItemForm: resultApplicantInformation,
-                    applicationCategories: resultScreen,
-                    status: resultStatus,
-                    department: resultDepartment,
-                    searchCategory : resultSearchCategory,
-                    answerName: resultAnswerName
-                }),
+                body: JSON.stringify(requestBody),
                 headers: new Headers({ 'Content-type': 'application/json' }),
             })
             .then(res => {
@@ -444,6 +867,8 @@ class ApplicationInformationSearch extends React.Component {
                         searchValue: res,
                         searchConditionShow: false,
                         searcResultShow: true,
+                        sortColumn: "",
+                        sortType: ""
                     });
                 } else if (res.status) {
                     this.setState({ searchValue: [] });
@@ -462,14 +887,7 @@ class ApplicationInformationSearch extends React.Component {
         if(searchResultCategory === "1"){
             fetch(Config.config.apiUrl + "/chat/search", {
                 method: 'POST',
-                body: JSON.stringify({
-                    applicantInformationItemForm: resultApplicantInformation,
-                    applicationCategories: resultScreen,
-                    answerStatus: resultAnswerStatus,
-                    department: resultDepartment,
-                    searchCategory : resultSearchCategory,
-                    answerName: resultAnswerName
-                }),
+                body: JSON.stringify(requestBody),
                 headers: new Headers({ 'Content-type': 'application/json' }),
             })
             .then(res => {
@@ -482,12 +900,13 @@ class ApplicationInformationSearch extends React.Component {
                 return res.json();
             })
             .then(res => {
-                // console.log(res);
                 if (Object.keys(res).length > 0 && !res.status) {
                     this.setState({
                         searchConditionShow: false,
                         searcResultShow: true,
-                        searchValue: res
+                        searchValue: res,
+                        sortColumn: "",
+                        sortType: ""
                     });
                 } else if (res.status) {
                     this.setState({ searchValue: [] });
@@ -514,44 +933,47 @@ class ApplicationInformationSearch extends React.Component {
 
     /**
      * 申請地レイヤーの表示
-     * @param {object} lotNumbers 申請地情報
+     * @param {object} searchResult 検索結果
      */
-    showLayers(lotNumbers) {
-        console.log("地番情報");
-        console.log(lotNumbers);
+    showLayers(searchResult) {
         try{
             const wmsUrl = Config.config.geoserverUrl;
             const items = this.state.terria.workbench.items;
             let layerFlg = false;
-            for (const aItem of items) {
-                if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget) {
-                    aItem.setTrait(CommonStrata.user,
-                        "parameters",
-                        {
-                            "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + Object.keys(lotNumbers)?.map(key => { return lotNumbers[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_"),
-                        });
-                    aItem.loadMapItems();
-                    layerFlg = true;
+            if (searchResult.applicationId) {
+                for (const aItem of items) {
+                    if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget) {
+                        aItem.setTrait(CommonStrata.user,
+                            "parameters",
+                            {
+                                "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + searchResult.applicationId,
+                            });
+                        aItem.loadMapItems();
+                        layerFlg = true;
+                    }
                 }
             }
-
-            this.focusMapPlaceDriver(lotNumbers);
+            if (searchResult.lotNumbers) {
+                this.focusMapPlaceDriver(searchResult.lotNumbers);
+            }
 
             if(!layerFlg){
-                const item = new webMapServiceCatalogItem(Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget, this.state.terria);
-                item.setTrait(CommonStrata.definition, "url", wmsUrl);
-                item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForApplicationSearchTarget);
-                item.setTrait(
-                    CommonStrata.user,
-                    "layers",
-                    Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget);
-                item.setTrait(CommonStrata.user,
-                    "parameters",
-                    {
-                        "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + Object.keys(lotNumbers)?.map(key => { return lotNumbers[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_"),
-                    });
-                item.loadMapItems();
-                this.state.terria.workbench.add(item);
+                if (searchResult.applicationId) {
+                    const item = new webMapServiceCatalogItem(Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget, this.state.terria);
+                    item.setTrait(CommonStrata.definition, "url", wmsUrl);
+                    item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForApplicationSearchTarget);
+                    item.setTrait(
+                        CommonStrata.user,
+                        "layers",
+                        Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget);
+                    item.setTrait(CommonStrata.user,
+                        "parameters",
+                        {
+                            "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + searchResult.applicationId,
+                        });
+                    item.loadMapItems();
+                    this.state.terria.workbench.add(item);
+                }
             }
         } catch (error) {
             console.error('処理に失敗しました', error);
@@ -607,34 +1029,7 @@ class ApplicationInformationSearch extends React.Component {
      * @param {number} lat 緯度
      */
     outputFocusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat) {
-        // 3dmodeにセット
-        this.props.viewState.set3dMode();
-        //現在のカメラ位置等を取得
-        const currentSettings = getShareData(this.state.terria, this.props.viewState);
-        const currentCamera = currentSettings.initSources[0].initialCamera;
-        let newCamera = Object.assign(currentCamera);
-        //新規の表示範囲を設定
-        let currentLonDiff = Math.abs(maxLon - minLon);
-        let currentLatDiff = Math.abs(maxLat - minLat);
-        newCamera.north = maxLon + currentLatDiff / 2;
-        newCamera.south = minLon - currentLatDiff / 2;
-        newCamera.east = maxLat + currentLonDiff / 2;
-        newCamera.west = minLat - currentLonDiff / 2;
-        //camera.positionを緯度経度に合わせて設定
-        const scene = this.props.terria.cesium.scene;
-        const terrainProvider = scene.terrainProvider;
-        const positions = [Cartographic.fromDegrees(lon, minLat)];
-        let height = 0;
-        sampleTerrainMostDetailed(terrainProvider, positions).then((updatedPositions) => {
-            height = updatedPositions[0].height
-            let coord_wgs84 = Cartographic.fromDegrees(lon, minLat, parseFloat(height) + parseInt((400000 * currentLatDiff )) + 200 );
-            let coord_xyz = Ellipsoid.WGS84.cartographicToCartesian(coord_wgs84);
-            newCamera.position = { x: coord_xyz.x, y: coord_xyz.y, z: coord_xyz.z - parseInt((300000 * currentLatDiff )) - 170 };
-            //カメラの向きは統一にさせる
-            newCamera.direction = { x: this.props.terria.focusCameraDirectionX, y: this.props.terria.focusCameraDirectionY, z: this.props.terria.focusCameraDirectionZ };
-            newCamera.up = { x: this.props.terria.focusCameraUpX, y: this.props.terria.focusCameraUpY, z:this.props.terria.focusCameraUpZ };
-            this.state.terria.currentViewer.zoomTo(newCamera, 5);
-        })
+        this.props.terria.focusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat, this.props.viewState);
     }
 
     /**
@@ -709,7 +1104,7 @@ class ApplicationInformationSearch extends React.Component {
      * 問い合わせステータスに対するラベルを取得
      * @param {Number} status ステータスコード
      */
-      getAnswerStatusLabel(status){
+    getAnswerStatusLabel(status){
 
         return Common.answerstatus[status];
      }
@@ -725,6 +1120,225 @@ class ApplicationInformationSearch extends React.Component {
         this.state.viewState.setAdminBackPage("applySearch", "applyList");
     }
 
+    /**
+     * 一覧をCSV出力
+     * @param {*} searchValue 
+     */
+    outPutCSVFile(searchValue){
+        const searchResultCategory = this.state.searchResultCategory;
+        const sortType = this.state.sortType;
+        const sortColumn = this.state.sortColumn;
+        const table = this.state.table;
+        const searchResult = this.state.searchValue;
+        if(searchResultCategory === "0"){
+
+            var res = confirm("申請情報一覧をCSVで出力してよろしいでしょうか？");
+            if(res == true){
+                // 申請情報CSV出力
+                let requestBody = this.setSearchRequestBody(searchResultCategory);
+                fetch(Config.config.apiUrl + "/application/searchresult/output", {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        dataType: "application",
+                        sortColumn: null,
+                        sortType: null,
+                        conditions: requestBody,
+                        applicationSearchResults: searchResult
+                    }),
+                    headers: new Headers({ 'Content-type': 'application/json' }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('ファイルの取得に失敗しました');
+                    }
+                    return response.blob(); // ファイルをBlobとして返す
+                })
+                .then(blob => {
+                    //CSVファイルの出力
+                    const now = new Date();
+                    const filename = Config.config.applicationSearchResultFileName + "_" + now.toLocaleDateString();
+                    let anchor = document.createElement("a");
+                    anchor.href = window.URL.createObjectURL(blob);
+                    anchor.download = filename;
+                    anchor.click();
+                })
+                .catch(error => {
+                    console.error('処理に失敗しました', error);
+                });
+            }
+        }
+
+        if(searchResultCategory === "1"){
+
+            var res = confirm("問合せ情報一覧をCSVで出力してよろしいでしょうか？");
+            if(res == true){
+                // 問合せ情報CSV出力
+                let requestBody = this.setSearchRequestBody(searchResultCategory);
+                fetch(Config.config.apiUrl + "/application/searchresult/output", {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        dataType: "inquiry",
+                        sortColumn: null,
+                        sortType: null,
+                        conditions: requestBody,
+                        chatSearchResults: searchResult
+                    }),
+                    headers: new Headers({ 'Content-type': 'application/json' }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('ファイルの取得に失敗しました');
+                    }
+                    return response.blob(); // ファイルをBlobとして返す
+                })
+                .then(blob => {
+                    //CSVファイルの出力
+                    const now = new Date();
+                    const filename = Config.config.inquirySearchResultFileName + "_" + now.toLocaleDateString();
+                    let anchor = document.createElement("a");
+                    anchor.href = window.URL.createObjectURL(blob);
+                    anchor.download = filename;
+                    anchor.click();
+                })
+                .catch(error => {
+                    console.error('処理に失敗しました', error);
+                });
+            }
+        }
+
+    }
+
+    /**
+     * 申請情報一覧のソート処理
+     * @param {*} key 
+     * @param {*} orderType 
+     */
+    sortApplicationList(key, orderType){
+
+        const table = this.state.table;
+        const searchValue = this.state.searchValue;
+
+        let sortList =[];
+        sortList= searchValue.sort((e1, e2) => {
+           
+            let text1 = e1.attributes[table[key].resonseKey].map(text => { return text }).filter(text => { return text !== null }).join(",");
+            let text2 = e2.attributes[table[key].resonseKey].map(text => { return text }).filter(text => { return text !== null }).join(",");
+            if (table[key].resonseKey == "status") {
+                // ステータスの場合ステータスコードでソート
+                text1 = e1.statusCode;
+                text2 = e2.statusCode;
+            }
+            if (!isNaN(text1) && !isNaN(text2)) {
+                text1 = Number(text1);
+                text2 = Number(text2);
+            } else if (this.isDate(text1) && this.isDate(text2)) {
+                text1 = new Date(text1);
+                text2 = new Date(text2);
+            }
+            if( orderType === "asc" ){
+
+                if(text1 < text2){
+                    return -1;
+                }
+
+                if(text1 > text2){
+                    return 1;
+                }
+
+                return 0;
+            }else{
+                if(text1 < text2){
+                    return 1;
+                }
+
+                if(text1 > text2){
+                    return -1;
+                }
+
+                return 0;
+            }
+            
+        })
+
+        this.setState({sortColumn: key,sortType: orderType,searchValue: sortList});
+
+    }
+    /**
+     * 日付型かどうかチェック
+     * @param {*} value 
+     * @returns 
+     */
+    isDate(value) {
+        return !isNaN(new Date(value).getDate());
+    }
+    /**
+     * ソートアイコンが選択されたか判断
+     * @param {*} key 
+     * @param {*} orderType 
+     * @returns 
+     */
+    isSorted(key, orderType){
+        const sortColumn = this.state.sortColumn;
+        const sortType = this.state.sortType;
+
+        if(sortColumn == key && sortType == orderType){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
+    /**
+     * 問合せ一覧をソート
+     * @param {*} colum ソート対象カラム名称
+     * @param {*} orderType 昇順/降順
+     */
+    sortChatMessageList(colum, orderType){
+
+        const searchValue = this.state.searchValue;
+
+        let sortList =[];
+        sortList= searchValue.sort((e1, e2) => {
+
+            let text1 = e1[colum];
+            let text2 = e2[colum];
+            if (!isNaN(text1) && !isNaN(text2)) {
+                text1 = Number(text1);
+                text2 = Number(text2);
+            } else if (this.isDate(text1) && this.isDate(text2)) {
+                text1 = new Date(text1);
+                text2 = new Date(text2);
+            }
+            if( orderType === "asc" ){
+
+                if(text1 < text2){
+                    return -1;
+                }
+
+                if(text1 > text2){
+                    return 1;
+                }
+
+                return 0;
+            }else{
+                if(text1 < text2){
+                    return 1;
+                }
+
+                if(text1 > text2){
+                    return -1;
+                }
+
+                return 0;
+            }
+            
+        })
+
+        this.setState({sortColumn: colum,sortType: orderType,searchValue: sortList});
+    }
+
+
     render() {
         const searchCategory = this.state.searchCategory;
         const applicantInformation = this.state.applicantInformation;
@@ -737,7 +1351,18 @@ class ApplicationInformationSearch extends React.Component {
         const searchValue = this.state.searchValue;
         const showApplyDetail = this.state.showApplyDetail;
         const searchResultCategory = this.state.searchResultCategory;
-        console.log(showApplyDetail);
+
+        const applicationType = this.state.applicationType;
+        const applicationStep = this.state.applicationStep;
+        const applicationAddInfo = this.state.applicationAddInfo;
+        const applicationAddInfoDisplay = this.state.applicationAddInfoDisplay;
+        const itemAnswerStatusDisplay = this.state.itemAnswerStatusDisplay;
+        const itemAnswerStatus = this.state.itemAnswerStatus;
+        // console.log(showApplyDetail);
+
+        const sortColumn = this.state.sortColumn;
+        const sortType = this.state.sortType;
+        const applicationId = this.state.applicationId;
         return(
 
             <Box
@@ -764,37 +1389,61 @@ class ApplicationInformationSearch extends React.Component {
                     className={CustomStyle.custom_content}
                 >
                     <Spacing bottom={1} />
-                    {/* <button
-                        className={CustomStyle.close_button}
-                        onClick={e => {
-                            this.close();
-                        }}
-                    >
-                        <span>戻る</span>
-                    </button>
-                    <Spacing bottom={2} /> */}
                     
                     <div style={{ width: "100%"}}>
                         { this.state.searchConditionShow && (
                         <>
                         <div className={CustomStyle.clear_left}></div>
                         {/* 検索項目に区分を追加する場合 */}
-                        <div className={CustomStyle.applicant_status_box} style={{marginBottom: "5px"}}>
-                            <div className={CustomStyle.applicant_status_box_div}>
-                                <div><Text>■区分</Text></div>
-                                <Select
-                                    light={true}
-                                    dark={false}
-                                    onChange={e => this.handleSelectSearchCategory(e.target.value)}
-                                    style={{ color: "#000", width: "100%", minHeight: "28px"}}>
-                                    {Object.keys(searchCategory).map(key => (
-                                        <option key={"category" + key} value={key} selected={searchCategory[key]?.checked}>
-                                            {searchCategory[key]?.text}
-                                        </option>
-                                    ))}
-                                </Select>
+                        <div style={{marginBottom: "5px"}}>
+                            <div><Text>■区分</Text></div>
+                            <div className={CustomStyle.applicant_status_box}>
+                                <div className={CustomStyle.applicant_status_box_div}>
+                                    <Select
+                                        light={true}
+                                        dark={false}
+                                        onChange={e => this.handleSelectSearchCategory(e.target.value)}
+                                        style={{ color: "#000", width: "100%", minHeight: "28px"}}>
+                                        {Object.keys(searchCategory).map(key => (
+                                            <option key={"category" + key} value={key} selected={searchCategory[key]?.checked}>
+                                                {searchCategory[key]?.text}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                </div>
+                                <div className={CustomStyle.applicant_status_box_div}>
+                                    <div className={CustomStyle.applicant_status_box}>
+                                        <div className={CustomStyle.applicant_type_box_div} style={{marginRight:"7px"}}>
+                                            <Select
+                                                light={true}
+                                                dark={false}
+                                                onChange={e => this.handleSelectApplicationType(e.target.value)}
+                                                style={{ color: "#000", width: "100%", minHeight: "28px"}}>
+                                                <option value={-1}></option>
+                                                {Object.keys(applicationType).map(key => (
+                                                    <option key={"applicationType" + key} value={key} selected={applicationType[key]?.checked}>
+                                                        {applicationType[key]?.applicationTypeName}
+                                                    </option>
+                                                ))}
+                                            </Select>
+                                        </div>
+                                        <div className={CustomStyle.applicant_type_box_div}>
+                                            <Select
+                                                light={true}
+                                                dark={false}
+                                                onChange={e => this.handleSelectapplicationStep(e.target.value)}
+                                                style={{ color: "#000", width: "100%", minHeight: "28px"}}>
+                                                <option value={-1}></option>
+                                                {Object.keys(applicationStep).map(key => (
+                                                    <option key={"applicationStep" + key} value={key} selected={applicationStep[key]?.checked}>
+                                                        {applicationStep[key]?.applicationStepName}
+                                                    </option>
+                                                ))}
+                                            </Select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className={CustomStyle.applicant_status_box_div}></div>
                         </div>
                         <div style={{marginBottom: "5px"}}>
                             <div><Text>■申請者情報</Text></div>
@@ -884,7 +1533,38 @@ class ApplicationInformationSearch extends React.Component {
                                     ))}
                                 </Select>
                             </div>
+                            {itemAnswerStatusDisplay && (
+                                <div>
+                                    <div><Text>■条文ステータス</Text></div>
+                                    {Object.keys(itemAnswerStatus).map(index => (
+                                        <>
+                                        <input type="checkbox" className={CustomStyle.custom_checkbox}
+                                            onChange={ evt => { this.changeItemAnswerStatus(index)} }
+                                            checked={itemAnswerStatus[index].checked}
+                                        />
+                                        {itemAnswerStatus[index].text}
+                                        </>
+                                    ))}
+                                </div>
+                            )}
                         </div>
+                        <div className={CustomStyle.clear_left}></div>
+                        <div className={CustomStyle.applicant_status_box} style={{marginBottom: "5px"}}>
+                            <div className={CustomStyle.applicant_status_box_div}>
+                                <div><Text>■申請ID</Text></div>
+                                <Input
+                                    light={true}
+                                    dark={false}
+                                    type="text"
+                                    value={applicationId}
+                                    placeholder=""
+                                    id={applicationId}
+                                    style={{ height: "28px", width: "100%" }}
+                                    onChange={e => this.inputChangeApplicationId(e.target.value, applicationId)}
+                                    />
+                            </div>
+                        </div>
+
                         <div className={CustomStyle.clear_left}></div>
                         <div><Text>■申請区分</Text></div>
                         {Object.keys(selectedScreen).map(index => (
@@ -927,10 +1607,130 @@ class ApplicationInformationSearch extends React.Component {
                                 </div>
                             </div>
                         ))}
+                        { applicationAddInfoDisplay && (
+                            <>
+                                <div><Text>■申請追加情報</Text></div>
+                                {Object.keys(applicationAddInfo).map(index => (
+                                    <div className={CustomStyle.applicant_division_box}>
+                                        <div>
+                                            <Text>条件 {Number(index) + 1}</Text>
+                                        </div>
+                                        <div style={{ display: "flex", justifyContent: "flex-start"}}>
+                                            <div style={{ width: "55%", marginRight: "10px"}}>
+                                                <Select
+                                                    key={index}
+                                                    id={"add-cond-" + index}
+                                                    light={true}
+                                                    dark={false}
+                                                    onChange={e => this.handleSelectApplicationAddInfo(index, e.target.value)}
+                                                    style={{ color: "#000", width: "100%", minHeight: "28px", marginBottom:"5px", }}>
+                                                    <option value={-1}></option>
+                                                    {Object.keys(applicationAddInfo[index]).map(key => (
+                                                        <option key={index + applicationAddInfo[index][key]?.id} value={key} selected={applicationAddInfo[index][key]?.checked}>
+                                                            {applicationAddInfo[index][key]?.name}
+                                                        </option>
+                                                    ))}
+                                                </Select>
+                                            </div>
+                                            <div style={{ width: "40%", marginRight: "10px"}}>
+                                                { Object.keys(applicationAddInfo[index]).map(key => (
+                                                    <>
+                                                        {applicationAddInfo[index][key].checked && applicationAddInfo[index][key].itemType == "0" && (
+                                                            <Input
+                                                                light={true}
+                                                                dark={false}
+                                                                type="text"
+                                                                value={applicationAddInfo[index][key]?.value}
+                                                                placeholder={applicationAddInfo[index][key]?.name+ "を入力してください"}
+                                                                id={index + `-` + applicationAddInfo[index][key]?.id}
+                                                                style={{ height: "28px", width: "100%" }}
+                                                                onChange={e => this.inputChangeApplicationAddInfoItem(index, key, e.target.value)}
+                                                            />
+                                                        )}
+
+                                                        {applicationAddInfo[index][key].checked && applicationAddInfo[index][key].itemType == "1" && (
+                                                            <textarea 
+                                                                className={CustomStyle.input_text_area} 
+                                                                type="text" 
+                                                                value={applicationAddInfo[index][key]?.value}
+                                                                placeholder={applicationAddInfo[index][key]?.name+ "を入力してください"}
+                                                                id={index + `-` + applicationAddInfo[index][key]?.id}
+                                                                style={{ height: "56px", width: "100%" }}
+                                                                onChange={e => this.inputChangeApplicationAddInfoItem(index, key, e.target.value)}
+                                                            />
+                                                        )}
+
+                                                        {applicationAddInfo[index][key].checked && applicationAddInfo[index][key].itemType == "2" && (
+                                                            <Input
+                                                                light={true}
+                                                                dark={false}
+                                                                type="date"
+                                                                value={applicationAddInfo[index][key]?.value}
+                                                                placeholder="年/月/日"
+                                                                id={index + `-` + applicationAddInfo[index][key]?.id}
+                                                                style={{ height: "28px", width: "100%" }}
+                                                                onChange={e => this.changeApplicationAddInfoItemDate(index, key, e.target.value)}
+                                                                max={"9999-12-31"} min={"2000-01-01"}
+                                                            />
+                                                        )}
+
+                                                        {applicationAddInfo[index][key].checked && applicationAddInfo[index][key].itemType == "3" && (
+                                                            <Input
+                                                                light={true}
+                                                                dark={false}
+                                                                type="number"
+                                                                value={applicationAddInfo[index][key]?.value}
+                                                                placeholder={applicationAddInfo[index][key]?.name+ "を入力してください"}
+                                                                id={index + `-` + applicationAddInfo[index][key]?.id}
+                                                                style={{ height: "28px", width: "100%" }}
+                                                                onChange={e => this.inputChangeApplicationAddInfoItem(index, key, e.target.value)}
+                                                            />
+                                                        )}
+
+                                                        {applicationAddInfo[index][key].checked && applicationAddInfo[index][key].itemType == "4" && (
+                                                           
+                                                           <Select
+                                                                light={true}
+                                                                dark={false}
+                                                                onChange={e => this.handleSelectApplicationAddInfoItem(index, key, e.target.value)}
+                                                                style={{ color: "#000", width: "100%", minHeight: "28px", marginBottom:"5px"  }}>
+                                                                <option value={-1}></option>
+                                                                {
+                                                                Object.keys(applicationAddInfo[index][key].itemOptions).map(itemKey => (
+                                                                <option key={index + key + applicationAddInfo[index][key].itemOptions[itemKey]?.id} value={itemKey} selected={applicationAddInfo[index][key].itemOptions[itemKey]?.checked}>
+                                                                    {applicationAddInfo[index][key].itemOptions[itemKey]?.content}
+                                                                </option>))
+                                                                }
+                                                            </Select>
+                                                        )}
+                                                        {/* 複数選択 */}
+                                                        {applicationAddInfo[index][key].checked && applicationAddInfo[index][key].itemType == "5" && (
+
+                                                            <MultiSelect
+                                                                className={CustomStyle.container}
+                                                                classNamePrefix ="multi_select"
+                                                                onChange={(value) => this.handleMultiSelectApplicationAddInfoItem(index, key, value)}
+                                                                isClearable={false}
+                                                                isSearchable={false}
+                                                                isMulti={true}
+                                                                components={{IndicatorSeparator: () => null , DropdownIndicator: DropdownIndicator}}
+                                                                defaultValue={this.getMultiSelectDefaultValue(applicationAddInfo[index][key].itemOptions)}
+                                                                options={this.getMultiSelectOptions(applicationAddInfo[index][key].itemOptions)}
+                                                                placeholder = ""
+                                                                menuPlacement={"auto"}                                                            >
+                                                            </MultiSelect>
+                                                        )}
+                                                    </>
+                                                ))} 
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </>
+                        )}
                         <div className={CustomStyle.clear_left}></div>
                         <Spacing bottom={2} />
                         <div className={CustomStyle.search_button_box}>
-                            {/* <div style={{ fontSize: ".7em", paddingTop: "1.8em" }}>検索結果件数：{Number(Object.keys(searchValue).length).toLocaleString()} 件</div> */}
                             <button
                                 className={CustomStyle.clear_button}
                                 onClick={e => {
@@ -955,13 +1755,11 @@ class ApplicationInformationSearch extends React.Component {
                         <Spacing bottom={2} />
                         { this.state.searchConditionShow && this.state.searcResultShow && (
                             <div style={{textAlign: "center"}}>
-                                {/* <button style={{ width:"75%", height:"36px", backgroundColor: "#ff9900", color:"#fff", margin:"0 auto", padding:"10px 20px", border: "none", borderRadius:"10px", fontWeight:"600"}} onClick={(e)=>this.hideSearchCondition()}>検索条件を隠す</button> */}
                                 <button className={CustomStyle.show_search_condition} onClick={(e)=>this.hideSearchCondition()}>検索条件を隠す</button>
                             </div>
                         )}
                         { !this.state.searchConditionShow && (
                             <div style={{textAlign: "center"}}>
-                                {/* <button style={{ width:"75%", height:"36px", backgroundColor: "#ff9900", color:"#fff", margin:"0 auto", padding:"10px 20px", border: "none", borderRadius:"10px", fontWeight:"600"}} onClick={(e)=>this.showSearchCondition()}>検索条件を表示する</button> */}
                                 <button  className={CustomStyle.show_search_condition} onClick={(e)=>this.showSearchCondition()}>検索条件を表示する</button>
                             </div>
                         )}
@@ -972,13 +1770,54 @@ class ApplicationInformationSearch extends React.Component {
                             {searchResultCategory === "0" && (
                                 <div>
                                     <div style={{ padding: "5px"}}>
-                                        <div style={{ fontSize: ".7em", paddingTop: "1.8em" }}>{`検索結果件数：${searchValue.length}件`}</div>
-                                        <table className={CustomStyle.selection_table}>
+                                    <div className={CustomStyle.list_header_div}>
+                                            <div style={{ fontSize: ".7em", paddingTop: "1.8em" }}>{`検索結果件数：${searchValue.length}件`}</div>
+                                            <div>
+                                                <button
+                                                    className={CustomStyle.csv_button}
+                                                    onClick={e => {
+                                                        this.outPutCSVFile(searchValue);
+                                                    }}
+                                                >
+                                                    <span>CSV出力</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <table className={CustomStyle.selection_table+" no-sort"}>
                                             <thead>
                                                 <tr className={CustomStyle.table_header}>
                                                     {Object.keys(table).map(key => (
                                                         <th style={{ width: table[key].tableWidth + "%" }}>
-                                                            {table[key]?.displayColumnName}
+                                                            <div style={{display:"flex",justifyContent: "space-between"}}>
+                                                                <span>{table[key]?.displayColumnName}</span>
+                                                                <div className={CustomStyle.sort_icon_position}>
+                                                                    <button id={`sort_asc_${key}`} className={CustomStyle.sort_button}
+                                                                        style={{display:"block"}}
+                                                                        onClick={e => {this.sortApplicationList( key, "asc")}}
+                                                                    >
+                                                                        <StyledIcon 
+                                                                            glyph={Icon.GLYPHS.opened}
+                                                                            styledWidth={"12px"}
+                                                                            styledHeight={"12px"}
+                                                                            light
+                                                                            rotation={180}
+                                                                            className={`${this.isSorted(key,"asc" )? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}`}
+                                                                        />
+                                                                    </button>
+                                                                    <button id={`sort_desc_${key}`} className={CustomStyle.sort_button}
+                                                                        style={{display:"block"}}
+                                                                        onClick={e => {this.sortApplicationList( key, "desc")}}
+                                                                    >
+                                                                        <StyledIcon 
+                                                                            glyph={Icon.GLYPHS.opened}
+                                                                            styledWidth={"12px"}
+                                                                            styledHeight={"12px"}
+                                                                            light
+                                                                            className={this.isSorted(key,"desc")? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}
+                                                                        />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </th>
                                                     ))}
                                                     <th style={{ width: "50px" }}></th>
@@ -987,7 +1826,7 @@ class ApplicationInformationSearch extends React.Component {
                                             <tbody>
                                                 {Object.keys(searchValue).map(searchKey => (
                                                     <tr className={CustomStyle.tr_button} key={searchKey} onClick={() => {
-                                                        this.showLayers(searchValue[searchKey]?.lotNumbers);
+                                                        this.showLayers(searchValue[searchKey]);
                                                     }}>
                                                         {Object.keys(table).map(tableKey => (
                                                             <td style={{ width: table[tableKey].tableWidth + "%" }}>
@@ -1016,28 +1855,303 @@ class ApplicationInformationSearch extends React.Component {
 
                             {searchResultCategory === "1"  && (
                                 <div style={{ border: "none", margin: "0 5px"}}>
-                                    <div style={{ fontSize: ".7em", paddingTop: "1.8em" }}>{`検索結果件数：${searchValue.length}件`}</div>
-                                    {/* <div style={{ padding: "5px"}} className={CustomStyle.table_scroll}> */}
+                                    <div className={CustomStyle.list_header_div}>
+                                        <div style={{ fontSize: ".7em", paddingTop: "1.8em" }}>{`検索結果件数：${searchValue.length}件`}</div>
+                                        <div>
+                                            <button className={CustomStyle.csv_button}
+                                                onClick={e => {
+                                                    this.outPutCSVFile(searchValue);
+                                                }}
+                                            >
+                                                <span>CSV出力</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
                                     <div className={CustomStyle.table_scroll}>
-                                        <table className={CustomStyle.selection_table}>
+                                        <table className={CustomStyle.selection_table + " no-sort"}>
                                             <thead>
                                                 <tr className={CustomStyle.table_header}>
                                                     <th style={{ width: "60px" }} className={CustomStyle.fixedCol}></th>
-                                                    <th style={{ width: "80px" }}>ステータス</th>
-                                                    <th style={{ width: "60px" }}>申請ID</th>
-                                                    <th style={{ width: "200px" }}>対象</th>
-                                                    <th style={{ width: "120px" }}>回答担当課</th>
-                                                    <th style={{ width: "120px" }}>初回投稿日時	</th>
-                                                    <th style={{ width: "120px" }}>最新投稿日時</th>
-                                                    <th style={{ width: "120px" }}>最新回答者</th>
-                                                    <th style={{ width: "120px" }}>最新回答日時</th>
+                                                    <th style={{ width: "105px" }}>
+                                                        <div style={{display:"flex", justifyContent:"space-between"}}>
+                                                            <div className={CustomStyle.table_header_label}>
+                                                                <span>ステータス</span>
+                                                            </div>
+                                                            <div className={CustomStyle.sort_icon_position}>
+                                                                <button id="sort_asc_status" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "status", "asc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        rotation={180}
+                                                                        className={`${this.isSorted("status","asc" )? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}`}
+                                                                    />
+                                                                </button>
+                                                                <button id="sort_desc_status" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "status", "desc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        className={this.isSorted("status","desc")? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}
+                                                                    />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "85px" }}>
+                                                        <div style={{display:"flex", justifyContent:"space-between"}}>
+                                                            <div className={CustomStyle.table_header_label}>
+                                                                <span>申請ID</span>
+                                                            </div>
+                                                            <div className={CustomStyle.sort_icon_position}>
+                                                                <button id="sort_asc_applicationId" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "applicationId", "asc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        rotation={180}
+                                                                        className={`${this.isSorted("applicationId","asc" )? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}`}
+                                                                    />
+                                                                </button>
+                                                                <button id="sort_desc_applicationId" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "applicationId", "desc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        className={this.isSorted("applicationId","desc")? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}
+                                                                    />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "200px" }}>
+                                                        <div style={{display:"flex", justifyContent:"space-between"}}>
+                                                            <div className={CustomStyle.table_header_label}>
+                                                                <span>対象</span>
+                                                            </div>
+                                                            <div className={CustomStyle.sort_icon_position}>
+                                                                <button id="sort_asc_categoryJudgementTitle" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "categoryJudgementTitle", "asc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        rotation={180}
+                                                                        className={`${this.isSorted("categoryJudgementTitle","asc" )? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}`}
+                                                                    />
+                                                                </button>
+                                                                <button id="sort_desc_categoryJudgementTitle" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "categoryJudgementTitle", "desc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        className={this.isSorted("categoryJudgementTitle","desc")? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}
+                                                                    />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "120px" }}>
+                                                        <div style={{display:"flex", justifyContent:"space-between"}}>
+                                                            <div className={CustomStyle.table_header_label}>
+                                                                <span>回答担当課</span>
+                                                            </div>
+                                                            <div className={CustomStyle.sort_icon_position}>
+                                                                <button id="sort_asc_departmentName" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "departmentName", "asc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        rotation={180}
+                                                                        className={`${this.isSorted("departmentName","asc" )? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}`}
+                                                                    />
+                                                                </button>
+                                                                <button id="sort_desc_departmentName" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "departmentName", "desc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        className={this.isSorted("departmentName","desc")? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}
+                                                                    />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "120px" }}>
+                                                        <div style={{display:"flex", justifyContent:"space-between"}}>
+                                                            <div className={CustomStyle.table_header_label}>
+                                                                <span>初回投稿日時</span>
+                                                            </div>
+                                                            <div className={CustomStyle.sort_icon_position}>
+                                                                <button id="sort_asc_establishmentFirstPostDatetime" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "establishmentFirstPostDatetime", "asc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        rotation={180}
+                                                                        className={`${this.isSorted("establishmentFirstPostDatetime","asc" )? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}`}
+                                                                    />
+                                                                </button>
+                                                                <button id="sort_desc_establishmentFirstPostDatetime" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "establishmentFirstPostDatetime", "desc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        className={this.isSorted("establishmentFirstPostDatetime","desc")? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}
+                                                                    />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "120px" }}>
+                                                        <div style={{display:"flex", justifyContent:"space-between"}}>
+                                                            <div className={CustomStyle.table_header_label}>
+                                                                <span>最新投稿日時</span>
+                                                            </div>
+                                                            <div className={CustomStyle.sort_icon_position}>
+                                                                <button id="sort_asc_sendDatetime" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "sendDatetime", "asc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        rotation={180}
+                                                                        className={`${this.isSorted("sendDatetime","asc" )? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}`}
+                                                                    />
+                                                                </button>
+                                                                <button id="sort_desc_sendDatetime" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "sendDatetime", "desc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        className={this.isSorted("sendDatetime","desc")? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}
+                                                                    />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "120px" }}>
+                                                        <div style={{display:"flex", justifyContent:"space-between"}}>
+                                                            <div className={CustomStyle.table_header_label}>
+                                                                <span>最新回答者</span>
+                                                            </div>
+                                                            <div className={CustomStyle.sort_icon_position}>
+                                                                <button id="sort_asc_answerUserName" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "answerUserName", "asc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        rotation={180}
+                                                                        className={`${this.isSorted("answerUserName","asc" )? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}`}
+                                                                    />
+                                                                </button>
+                                                                <button id="sort_desc_answerUserName" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "answerUserName", "desc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        className={this.isSorted("answerUserName","desc")? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}
+                                                                    />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                    <th style={{ width: "120px" }}>
+                                                        <div style={{display:"flex", justifyContent:"space-between"}}>
+                                                            <div className={CustomStyle.table_header_label}>
+                                                                <span>最新回答日時</span>
+                                                            </div> 
+                                                            <div className={CustomStyle.sort_icon_position}>
+                                                                <button id="sort_asc_answerDatetime" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "answerDatetime", "asc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        rotation={180}
+                                                                        className={`${this.isSorted("answerDatetime","asc" )? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}`}
+                                                                    />
+                                                                </button>
+                                                                <button id="sort_desc_answerDatetime" className={CustomStyle.sort_button}
+                                                                    style={{display:"block"}}
+                                                                    onClick={e => {this.sortChatMessageList( "answerDatetime", "desc")}}
+                                                                >
+                                                                    <StyledIcon 
+                                                                        glyph={Icon.GLYPHS.opened}
+                                                                        styledWidth={"12px"}
+                                                                        styledHeight={"12px"}
+                                                                        light
+                                                                        className={this.isSorted("answerDatetime","desc")? CustomStyle.sort_icon_checked :CustomStyle.sort_icon}
+                                                                    />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </th>
                                                     
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {searchValue && Object.keys(searchValue).map(searchKey => (
                                                     <tr className={CustomStyle.tr_button} key={searchKey} onClick={() => {
-                                                        this.showLayers(searchValue[searchKey]?.lotNumbers);
+                                                        this.showLayers(searchValue[searchKey]);
                                                     }}>
                                                         <td className={CustomStyle.fixedCol}>
                                                             <button className={CustomStyle.detail_button} 
