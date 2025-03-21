@@ -46,4 +46,12 @@ public class ApplicationCategory implements Serializable {
 	@Column(name = "category_id")
 	private String categoryId;
 
+	/** 申請段階ID */
+	@Id
+	@Column(name = "application_step_id")
+	private Integer applicationStepId;
+
+	/** 版情報 */
+	@Column(name = "version_information")
+	private Integer versionInformation;
 }

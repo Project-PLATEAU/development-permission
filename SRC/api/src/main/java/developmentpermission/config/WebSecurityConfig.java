@@ -47,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 		// 「*」 が設定されている場合は「*」のまま返す
 		if (allowedOrigins.length == 1 && allowedOrigins[0].equals("*")) {
-			return List.of("*");
+			return Arrays.asList("*");
 		}
 		// ホスト名にスキームをつける
 		return Arrays.stream(allowedOrigins).collect(Collectors.toList());

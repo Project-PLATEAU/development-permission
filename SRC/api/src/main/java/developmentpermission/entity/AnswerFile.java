@@ -37,6 +37,18 @@ public class AnswerFile implements Serializable {
 	@Column(name = "answer_id")
 	private Integer answerId;
 
+	/** 申請ID */
+	@Column(name = "application_id")
+	private Integer applicationId;
+
+	/** 申請段階ID */
+	@Column(name = "application_step_id")
+	private Integer applicationStepId;
+
+	/** 部署ID */
+	@Column(name = "department_id")
+	private String departmentId;
+
 	/** 回答ファイル名 */
 	@Column(name = "answer_file_name")
 	private String answerFileName;
@@ -52,10 +64,5 @@ public class AnswerFile implements Serializable {
 	/** 削除未通知フラグ */
 	@Column(name = "delete_unnotified_flag", columnDefinition = "char(1)")
 	private Boolean deleteUnnotifiedFlag;
-	
-	/** 削除フラグ */
-	// TODO Dao実装
-	//@Column(name = "delete_flag", columnDefinition = "char(1)")
-	//private Boolean deleteFlag;
 
 }

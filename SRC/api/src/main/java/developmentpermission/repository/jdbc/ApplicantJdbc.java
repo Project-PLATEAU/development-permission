@@ -27,9 +27,10 @@ public class ApplicantJdbc extends AbstractJdbc {
 	 * 申請者情報登録(照合IDとパスワードはnull固定)
 	 * 
 	 * @param applicantInformation 申請者情報
+	 * @param contactAddressFlag 申請者の場合:0,連絡先の場合:1
 	 * @return 申請者ID
 	 */
-	public Integer insert(ApplicantInformation applicantInformation) {
+	public Integer insert(ApplicantInformation applicantInformation,String contactAddressFlag) {
 		LOGGER.debug("申請者情報登録 開始");
 		try {
 			String sql = "" + //
@@ -46,9 +47,10 @@ public class ApplicantJdbc extends AbstractJdbc {
 					"  item_8, " + //
 					"  item_9, " + //
 					"  item_10, " + //
-					"  mail_address " + //
+					"  mail_address, " + //
+					"  contact_address_flag " + //
 					") " + //
-					"VALUES (nextval('seq_applicant'), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					"VALUES (nextval('seq_applicant'), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			jdbcTemplate.update(sql, //
 					applicantInformation.getApplicationId(), //
 					applicantInformation.getItem1(), //
@@ -61,7 +63,8 @@ public class ApplicantJdbc extends AbstractJdbc {
 					applicantInformation.getItem8(), //
 					applicantInformation.getItem9(), //
 					applicantInformation.getItem10(), //
-					applicantInformation.getMailAddress());
+					applicantInformation.getMailAddress(), //
+					contactAddressFlag);
 			return jdbcTemplate.queryForObject("SELECT lastval()", Integer.class);
 		} finally {
 			LOGGER.debug("申請者情報登録 終了");
@@ -90,6 +93,25 @@ public class ApplicantJdbc extends AbstractJdbc {
 					applicantId);
 		} finally {
 			LOGGER.debug("申請者情報更新 終了");
+		}
+	}
+
+	/**
+	 * 申請者情報削除
+	 * 
+	 * @param applicantId 申請者情報ID
+	 * @return
+	 */
+	public int delete(Integer applicantId) {
+		LOGGER.debug("申請者情報削除 開始");
+		try {
+			String sql = "" + //
+					"DELETE FROM " + //
+					"  o_applicant_information " + //
+					"WHERE applicant_id=?";
+			return jdbcTemplate.update(sql, applicantId);
+		} finally {
+			LOGGER.debug("申請者情報削除 終了");
 		}
 	}
 }

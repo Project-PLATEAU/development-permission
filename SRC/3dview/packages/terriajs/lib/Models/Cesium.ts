@@ -344,8 +344,8 @@ export default class Cesium extends GlobeOrMap {
           const pickPosition = this.scene.globe.pick(pickRay, this.scene);
           const pickPositionCartographic = pickPosition && Ellipsoid.WGS84.cartesianToCartographic(pickPosition);
           if (pickPositionCartographic && this.terria.clickMode === "1") {
-            let div = document.getElementById("tooltips");
-            if(div) div.style.display = "none";
+            //let div = document.getElementById("tooltips");
+            //if(div) div.style.display = "none";
             //API問い合わせ用の為取得
             const latitude = CesiumMath.toDegrees(pickPositionCartographic.latitude);
             const longitude = CesiumMath.toDegrees(pickPositionCartographic.longitude);
@@ -423,8 +423,8 @@ export default class Cesium extends GlobeOrMap {
         const pickPosition = this.scene.globe.pick(pickRay, this.scene);
         const pickPositionCartographic = pickPosition && Ellipsoid.WGS84.cartesianToCartographic(pickPosition);
         if (pickPositionCartographic && this.terria.clickMode === "1") {
-          let div = document.getElementById("tooltips");
-          if(div) div.style.display = "none";
+          //let div = document.getElementById("tooltips");
+          //if(div) div.style.display = "none";
           const latitude = CesiumMath.toDegrees(pickPositionCartographic.latitude);
           const longitude = CesiumMath.toDegrees(pickPositionCartographic.longitude);
           this.terria.setActiveShapeLonLat([longitude,latitude]);

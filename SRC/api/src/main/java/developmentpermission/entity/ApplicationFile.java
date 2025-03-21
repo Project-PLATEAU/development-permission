@@ -37,6 +37,10 @@ public class ApplicationFile implements Serializable {
 	@Column(name = "application_id")
 	private Integer applicationId;
 
+	/** 申請段階ID */
+	@Column(name = "application_step_id")
+	private Integer applicationStepId;
+
 	/** 申請ファイルID */
 	@Column(name = "application_file_id")
 	private String applicationFileId;
@@ -48,17 +52,25 @@ public class ApplicationFile implements Serializable {
 	/** ファイルパス */
 	@Column(name = "file_path")
 	private String filePath;
-	
+
 	/** 版情報 */
 	@Column(name = "version_information")
 	private Integer versionInformation;
-	
+
 	/** 拡張子 */
 	@Column(name = "extension")
 	private String extension;
-	
+
 	/** アップロード日時 */
 	@Column(name = "upload_datetime")
 	private LocalDateTime uploadDatetime;
 	
+	/** 指示元部署 */
+	@Column(name = "direction_department")
+	private String directionDepartment;
+	
+	/** 修正内容 */
+	@Column(name = "revise_content")
+	private String reviseContent;
+
 }

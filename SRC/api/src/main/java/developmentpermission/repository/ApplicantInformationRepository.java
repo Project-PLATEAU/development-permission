@@ -24,7 +24,7 @@ public interface ApplicantInformationRepository extends JpaRepository<ApplicantI
 	 * @param password    パスワード
 	 * @return 申請者情報
 	 */
-	@Query(value = "SELECT application_id, applicant_id, item_1, item_2, item_3, item_4, item_5, item_6, item_7, item_8, item_9, item_10, mail_address, collation_id, password FROM o_applicant_information WHERE collation_id = :collationId AND password = :password ORDER BY application_id ASC", nativeQuery = true)
+	@Query(value = "SELECT application_id, applicant_id, item_1, item_2, item_3, item_4, item_5, item_6, item_7, item_8, item_9, item_10, mail_address, collation_id, password, contact_address_flag FROM o_applicant_information WHERE collation_id = :collationId AND password = :password ORDER BY applicant_id ASC", nativeQuery = true)
 	List<ApplicantInformation> getApplicantList(@Param("collationId") String collationId,
 			@Param("password") String password);
 
@@ -34,6 +34,15 @@ public interface ApplicantInformationRepository extends JpaRepository<ApplicantI
 	 * @param applicationId 申請ID
 	 * @return 申請者情報
 	 */
-	@Query(value = "SELECT application_id, applicant_id, item_1, item_2, item_3, item_4, item_5, item_6, item_7, item_8, item_9, item_10, mail_address, collation_id, password FROM o_applicant_information WHERE application_id = :applicationId ORDER BY application_id ASC", nativeQuery = true)
-	List<ApplicantInformation> getApplicantList(@Param("applicationId") Integer applicationId);
+	@Query(value = "SELECT application_id, applicant_id, item_1, item_2, item_3, item_4, item_5, item_6, item_7, item_8, item_9, item_10, mail_address, collation_id, password, contact_address_flag FROM o_applicant_information WHERE application_id = :applicationId AND contact_address_flag = :contactAddressFlag ORDER BY applicant_id ASC", nativeQuery = true)
+	List<ApplicantInformation> getApplicantList(@Param("applicationId") Integer applicationId,@Param("contactAddressFlag") String contactAddressFlag);
+	
+	/**
+	 * 申請者情報取得
+	 * 
+	 * @param applicationId 申請ID
+	 * @return 申請者情報
+	 */
+	@Query(value = "SELECT application_id, applicant_id, item_1, item_2, item_3, item_4, item_5, item_6, item_7, item_8, item_9, item_10, mail_address, collation_id, password, contact_address_flag FROM o_applicant_information WHERE application_id = :applicationId ORDER BY applicant_id ASC", nativeQuery = true)
+	List<ApplicantInformation> getApplicantListByApplicationId(@Param("applicationId") Integer applicationId);
 }

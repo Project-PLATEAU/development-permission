@@ -8,6 +8,7 @@ import Styles from "./scss/inquiry-file-upload-modal.scss"
 import { RawButton } from "../../../../Styled/Button";
 import Icon, { StyledIcon } from "../../../../Styled/Icon";
 import Spacing from "../../../../Styled/Spacing";
+import Config from "../../../../../customconfig.json";
 
 /**
  * 問合せコンポーネント：ファイルアップロードモーダル
@@ -70,6 +71,26 @@ class InquiryFileUploadModal extends React.Component {
             return false;
         }
 
+        // 拡張子チェック
+        let extension = file.name.split('.').pop();
+        if(Config.extension.inquiryFile){
+            let allowExts = Config.extension.inquiryFile.split(',')
+            if(allowExts.indexOf(extension) === -1){
+                alert(Config.extension.inquiryFile + " のいずれかのファイル形式のファイルをアップロードしてください。");
+                return false;
+            }
+        }
+
+        // ファイル名チェック
+        const fileNameWithoutExtension = file.name.split(".").slice(0, -1).join(".");
+        const regex = /[\"\'<>\&]/;
+        const reg = new RegExp(regex);
+        const result = reg.exec(fileNameWithoutExtension);
+        if (result != null) {
+            alert("ファイル名に禁止文字("+'"'+",',<,>,&"+")のいずれか含めていますので、ファイル名を修正してアップロードしてください。");
+            return false;
+        }
+        
         let isRepeat = false;
         Object.keys(inquiryFiles).map(index => {
             if(inquiryFiles[index]["fileName"] == file.name){

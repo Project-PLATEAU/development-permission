@@ -49,6 +49,96 @@ public class ChatJdbc extends AbstractJdbc {
 	}
 
 	/**
+	 * チャット登録
+	 * 
+	 * @param answerId 回答ID
+	 * @param applicationId 申請ID
+	 * @param applicationStepId 申請段階ID
+	 * @return
+	 */
+	public Integer insertStep1(int answerId,int applicationId,int applicationStepId) {
+		LOGGER.debug("チャット登録 開始");
+		try {
+			String sql = "" + //
+					"INSERT INTO o_chat ( " + //
+					"  chat_id, " + //
+					"  answer_id, " + //
+					"  application_id, " + //
+					"  application_step_id " + //
+					") " + //
+					"VALUES ( " + //
+					"  nextval('seq_chat'), " + //
+					"  ?, " + // answer_id
+					"  ?, " + // application_id
+					"  ? " + // application_step_id
+					")";
+			jdbcTemplate.update(sql, answerId,applicationId,applicationStepId);
+			return jdbcTemplate.queryForObject("SELECT lastval()", Integer.class);
+		} finally {
+			LOGGER.debug("チャット登録 終了");
+		}
+	}
+	
+	/**
+	 * チャット登録
+	 * 
+	 * @param applicationId 申請ID
+	 * @param applicationStepId 申請段階ID
+	 * @param departmentAnswerId 部署回答ID
+	 * @return
+	 */
+	public Integer insertStep2(int applicationId,int applicationStepId,int departmentAnswerId) {
+		LOGGER.debug("チャット登録 開始");
+		try {
+			String sql = "" + //
+					"INSERT INTO o_chat ( " + //
+					"  chat_id, " + //
+					"  application_id, " + //
+					"  application_step_id, " + //
+					"  department_answer_id " + //
+					") " + //
+					"VALUES ( " + //
+					"  nextval('seq_chat'), " + //
+					"  ?, " + // application_id
+					"  ?, " + // application_step_id
+					"  ? " + // department_answer_id
+					")";
+			jdbcTemplate.update(sql,applicationId,applicationStepId,departmentAnswerId);
+			return jdbcTemplate.queryForObject("SELECT lastval()", Integer.class);
+		} finally {
+			LOGGER.debug("チャット登録 終了");
+		}
+	}
+	
+	/**
+	 * チャット登録
+	 * 
+	 * @param applicationId 申請ID
+	 * @param applicationStepId 申請段階ID
+	 * @return
+	 */
+	public Integer insertStep3(int applicationId,int applicationStepId) {
+		LOGGER.debug("チャット登録 開始");
+		try {
+			String sql = "" + //
+					"INSERT INTO o_chat ( " + //
+					"  chat_id, " + //
+					"  application_id, " + //
+					"  application_step_id " + //
+					") " + //
+					"VALUES ( " + //
+					"  nextval('seq_chat'), " + //
+					"  ?, " + // application_id
+					"  ? " + // application_step_id
+					")";
+			jdbcTemplate.update(sql,applicationId,applicationStepId);
+			return jdbcTemplate.queryForObject("SELECT lastval()", Integer.class);
+		} finally {
+			LOGGER.debug("チャット登録 終了");
+		}
+	}
+	
+	/**
 	 * チャット更新
 	 * 
 	 * @param chatId チャットID

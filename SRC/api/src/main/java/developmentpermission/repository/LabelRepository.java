@@ -25,7 +25,17 @@ public interface LabelRepository extends JpaRepository<Label, LabelKey> {
 	 * @param labelType 種別
 	 * @return ラベル一覧
 	 */
-	@Query(value = "SELECT view_code, label_id, label_key, label_type, label_text FROM m_label WHERE view_code = :viewCode AND label_type in ('0', :labelType) ORDER BY label_id ASC", nativeQuery = true)
+	@Query(value = "SELECT view_code, label_id, label_key, label_type, label_text, application_step FROM m_label WHERE view_code = :viewCode AND label_type in ('0', :labelType) ORDER BY label_id ASC", nativeQuery = true)
 	List<Label> findByViewCode(@Param("viewCode") String viewCode, @Param("labelType") String labelType);
 
+	/**
+	 * ラベル一覧取得
+	 * 
+	 * @param viewCode          画面コード
+	 * @param applicationStepId 申請段階ID
+	 * @param labelType         種別
+	 * @return ラベル一覧
+	 */
+	@Query(value = "SELECT view_code, label_id, label_key, label_type, label_text, application_step FROM m_label WHERE view_code = :viewCode AND label_type in ('0', :labelType) AND ( application_step LIKE CONCAT('%', :applicationStepId , '%') OR application_step = 'all' ) ORDER BY label_id ASC", nativeQuery = true)
+	List<Label> getLabelForApplicationStepId(@Param("viewCode") String viewCode, @Param("applicationStepId") String applicationStepId, @Param("labelType") String labelType);
 }

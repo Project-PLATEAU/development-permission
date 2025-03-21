@@ -47,4 +47,12 @@ public class MessagePostRequestForm implements Serializable{
 	/** 画面に表示されるの最大メッセージID */
 	@ApiModelProperty(value = "メッセージID", example = "1")
 	private Integer displayedMaxMessageId;
+	
+	/** 申請段階ID */
+	@ApiModelProperty(value = "申請段階ID")
+	private Integer applicationStepId;
+	
+	/** 部署回答ID */
+	@ApiModelProperty(value = "部署回答ID")
+	private Integer departmentAnswerId;
 }

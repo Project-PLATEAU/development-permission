@@ -180,14 +180,14 @@ class LayerTab extends React.Component {
         if(Object.keys(legends).length > 0){
             Object.keys(legends).map(key => {
                 let str = legends[key].url
-                if(str?.match(IMAGE_URL_REGEX) && type != "wms" ){
+                if(str?.match(IMAGE_URL_REGEX)){
                     urls.push(str);
                 }else{
                     urls.push(this.editUrl(catalogItem));
                 }
             });
         }else{
-            if(url?.match(IMAGE_URL_REGEX) && type != "wms" ){
+            if(url?.match(IMAGE_URL_REGEX)){
                 urls.push(url);
             }else{
                 urls.push(this.editUrl(catalogItem));
@@ -330,11 +330,28 @@ class LayerTab extends React.Component {
             if (Object.keys(hiddenItemsOfGroup).length>0){
                 childlist = hiddenItemsOfGroup;
             }
+
+            // 折り畳んでいるグループのID
+            let isClosedGroupId = [];
+
             Object.keys(childlist).map(i => {
-                list.splice(Number(index)+1+Number(i),0,childlist[i]);
-                let addItemIndex = hiddenItems.findIndex((item) => item.id == childlist[i].id);
-                if(addItemIndex > -1){
-                    hiddenItems.splice(addItemIndex,1);
+
+                // 子要素がグループの場合、表示状態が折畳の場合、該当子要素の子要素が存在しても、表示リストに追加しないため、折り畳んでいるグループのIDを表示リストに追加
+                if(GroupMixin.isMixedInto(childlist[i].data) && childlist[i].data.isOpen == false){
+                    isClosedGroupId.push(childlist[i].id);
+                }
+
+                // 子要素が折り畳んでいるグループに所属するであれば、表示リストに追加しない
+                if(isClosedGroupId.includes(childlist[i].pid)){
+                    // 表示リストに追加しない
+                }else{
+
+                    // 表示リストに追加して、非表示リストから、削除
+                    list.splice(Number(index)+1+Number(i),0,childlist[i]);
+                    let addItemIndex = hiddenItems.findIndex((item) => item.id == childlist[i].id);
+                    if(addItemIndex > -1){
+                        hiddenItems.splice(addItemIndex,1);
+                    }
                 }
             });
             this.props.viewState.setHiddenItems(hiddenItems);

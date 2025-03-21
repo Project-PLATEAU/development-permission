@@ -38,37 +38,40 @@ class InputApplyConditionView extends React.Component {
      * 初期処理
      */
     componentDidMount() {
+        // 再申請か否か
+        let isReApply = this.props.viewState.isReApply;
+        if (!isReApply) {
+            // 前画面で選択された申請地を地図上に表示する
+            let applicationPlace = Object.values(this.props.viewState.applicationPlace);
+            applicationPlace = applicationPlace.filter(Boolean);
+            this.props.viewState.setLotNumbers(applicationPlace);
+            try{
+                const item = new webMapServiceCatalogItem(Config.layer.lotnumberSearchLayerNameForApplicationTarget, this.state.terria);
+                const wmsUrl = Config.config.geoserverUrl;
+                const items = this.state.terria.workbench.items;
 
-        // 前画面で選択された申請地を地図上に表示する
-        let applicationPlace = Object.values(this.props.viewState.applicationPlace);
-        applicationPlace = applicationPlace.filter(Boolean);
-        this.props.viewState.setLotNumbers(applicationPlace);
-        try{
-            const item = new webMapServiceCatalogItem(Config.layer.lotnumberSearchLayerNameForApplicationTarget, this.state.terria);
-            const wmsUrl = Config.config.geoserverUrl;
-            const items = this.state.terria.workbench.items;
-
-            for (const aItem of items) {
-                if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationTarget || aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForBusiness) {
-                    this.state.terria.workbench.remove(aItem);
-                    aItem.loadMapItems();
+                for (const aItem of items) {
+                    if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationTarget || aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForBusiness) {
+                        this.state.terria.workbench.remove(aItem);
+                        aItem.loadMapItems();
+                    }
                 }
+                item.setTrait(CommonStrata.definition, "url", wmsUrl);
+                item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForApplicationTarget);
+                item.setTrait(
+                    CommonStrata.user,
+                    "layers",
+                    Config.layer.lotnumberSearchLayerNameForApplicationTarget);
+                item.setTrait(CommonStrata.user,
+                    "parameters",
+                    {
+                        "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationTarget + Object.keys(this.props.viewState.applicationPlace)?.map(key => { return this.props.viewState.applicationPlace[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_"),
+                    });
+                item.loadMapItems();
+                this.state.terria.workbench.add(item);
+            }catch(error){
+                console.error('処理に失敗しました', error);
             }
-            item.setTrait(CommonStrata.definition, "url", wmsUrl);
-            item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForApplicationTarget);
-            item.setTrait(
-                CommonStrata.user,
-                "layers",
-                Config.layer.lotnumberSearchLayerNameForApplicationTarget);
-            item.setTrait(CommonStrata.user,
-                "parameters",
-                {
-                    "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationTarget + Object.keys(this.props.viewState.applicationPlace)?.map(key => { return this.props.viewState.applicationPlace[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_"),
-                });
-            item.loadMapItems();
-            this.state.terria.workbench.add(item);
-        }catch(error){
-            console.error('処理に失敗しました', error);
         }
     }
 

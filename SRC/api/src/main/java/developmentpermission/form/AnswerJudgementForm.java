@@ -1,6 +1,7 @@
 package developmentpermission.form;
 
 import java.io.Serializable;
+import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -32,5 +33,5 @@ public class AnswerJudgementForm implements Serializable {
 
 	/** 部署 */
 	@ApiModelProperty(value = "部署")
-	private DepartmentForm department;
+	private List<DepartmentForm> departments;
 }

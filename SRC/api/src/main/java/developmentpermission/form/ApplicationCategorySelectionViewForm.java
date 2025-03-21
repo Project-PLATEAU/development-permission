@@ -47,8 +47,8 @@ public class ApplicationCategorySelectionViewForm implements Serializable {
 	@ApiModelProperty(value = "画面説明", example = "下記より開発予定行為の選択をお願いします（複数可）。")
 	private String explanation;
 
-	/** 概況診断タイプ(1=開発許可関連, 0=土地相談) */
-	@ApiModelProperty(value = "概況診断タイプ", example = "1")
+	/** 申請種類(1=開発許可, 0=建築確認) */
+	@ApiModelProperty(value = "申請種類", example = "1,0")
 	private String judgementType;
 	
 	/** 申請区分選択肢一覧 */

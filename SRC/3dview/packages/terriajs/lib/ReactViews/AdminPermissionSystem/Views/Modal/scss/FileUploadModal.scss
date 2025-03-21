@@ -17,8 +17,7 @@
 }
 
 .modal {
-    width: 700px;
-    min-height: 600px;
+    width: 60vw;
     max-height: 750px;
     position: absolute;
     padding: 0;
@@ -49,6 +48,9 @@
 }
 
 .container {
+    max-height: 480px;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 1em;
 
     > div {

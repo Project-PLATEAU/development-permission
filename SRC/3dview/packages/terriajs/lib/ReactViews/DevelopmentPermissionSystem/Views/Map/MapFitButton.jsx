@@ -36,56 +36,11 @@ class MapFitButton extends React.Component {
         let lotNumbers = this.props.viewState.lotNumbers;
         console.log(lotNumbers);
         if(lotNumbers.length > 0){
-            // this.showLayers(this.props.viewState.lotNumbers);
             this.focusMapPlaceDriver(lotNumbers);
         }else{
             alert("地番情報の取得に失敗しました。");
         }
     }
-
-    /**
-     * 申請地レイヤーの表示（不要）
-     * @param {object} 申請地情報
-     */
-    // showLayers(lotNumbers) {
-    //     try{
-    //         const wmsUrl = Config.config.geoserverUrl;
-    //         const items = this.state.terria.workbench.items;
-    //         let layerFlg = false;
-    //         for (const aItem of items) {
-    //             if (aItem.uniqueId === Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget) {
-    //                 aItem.setTrait(CommonStrata.user,
-    //                     "parameters",
-    //                     {
-    //                         "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + Object.keys(lotNumbers)?.map(key => { return lotNumbers[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_"),
-    //                     });
-    //                 aItem.loadMapItems();
-    //                 layerFlg = true;
-    //             }
-    //         }
-
-    //         this.focusMapPlaceDriver(lotNumbers);
-
-    //         if(!layerFlg){
-    //             const item = new webMapServiceCatalogItem(Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget, this.state.terria);
-    //             item.setTrait(CommonStrata.definition, "url", wmsUrl);
-    //             item.setTrait(CommonStrata.user, "name", Config.layer.lotnumberSearchLayerDisplayNameForApplicationSearchTarget);
-    //             item.setTrait(
-    //                 CommonStrata.user,
-    //                 "layers",
-    //                 Config.layer.lotnumberSearchLayerNameForApplicationSearchTarget);
-    //             item.setTrait(CommonStrata.user,
-    //                 "parameters",
-    //                 {
-    //                     "viewparams": Config.layer.lotnumberSearchViewParamNameForApplicationSearchTarget + Object.keys(lotNumbers)?.map(key => { return lotNumbers[key].chibanId }).filter(chibanId => { return chibanId !== null }).join("_"),
-    //                 });
-    //             item.loadMapItems();
-    //             this.state.terria.workbench.add(item);
-    //         }
-    //     } catch (error) {
-    //         console.error('処理に失敗しました', error);
-    //     }
-    // }
 
     /**
      * フォーカス処理ドライバー
@@ -137,34 +92,7 @@ class MapFitButton extends React.Component {
      * @param {number} lat 緯度
      */
     outputFocusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat) {
-        // 3dmodeにセット
-        this.props.viewState.set3dMode();
-        //現在のカメラ位置等を取得
-        const currentSettings = getShareData(this.state.terria, this.props.viewState);
-        const currentCamera = currentSettings.initSources[0].initialCamera;
-        let newCamera = Object.assign(currentCamera);
-        //新規の表示範囲を設定
-        let currentLonDiff = Math.abs(maxLon - minLon);
-        let currentLatDiff = Math.abs(maxLat - minLat);
-        newCamera.north = maxLon + currentLatDiff / 2;
-        newCamera.south = minLon - currentLatDiff / 2;
-        newCamera.east = maxLat + currentLonDiff / 2;
-        newCamera.west = minLat - currentLonDiff / 2;
-        //camera.positionを緯度経度に合わせて設定
-        const scene = this.props.terria.cesium.scene;
-        const terrainProvider = scene.terrainProvider;
-        const positions = [Cartographic.fromDegrees(lon, minLat)];
-        let height = 0;
-        sampleTerrainMostDetailed(terrainProvider, positions).then((updatedPositions) => {
-            height = updatedPositions[0].height
-            let coord_wgs84 = Cartographic.fromDegrees(lon, minLat, parseFloat(height) + parseInt((400000 * currentLatDiff )) + 200 );
-            let coord_xyz = Ellipsoid.WGS84.cartographicToCartesian(coord_wgs84);
-            newCamera.position = { x: coord_xyz.x, y: coord_xyz.y, z: coord_xyz.z - parseInt((300000 * currentLatDiff )) - 170 };
-            //カメラの向きは統一にさせる
-            newCamera.direction = { x: this.props.terria.focusCameraDirectionX, y: this.props.terria.focusCameraDirectionY, z: this.props.terria.focusCameraDirectionZ };
-            newCamera.up = { x: this.props.terria.focusCameraUpX, y: this.props.terria.focusCameraUpY, z:this.props.terria.focusCameraUpZ };
-            this.state.terria.currentViewer.zoomTo(newCamera, 5);
-        })
+        this.props.terria.focusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat, this.props.viewState);
     }
 
 
@@ -176,11 +104,15 @@ class MapFitButton extends React.Component {
                     title="対象の申請地番に移動"
                     >
                     <StyledIcon 
-                        styledWidth={"28px"}
+                        styledWidth={"23px"}
                         fillColor={"#FFF"}
                         glyph={Icon.GLYPHS.location2}
                         css={`
                             cursor: pointer;
+                            position:absolute;
+                            top: 62%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
                         `}
                     />
                 </RawButton>

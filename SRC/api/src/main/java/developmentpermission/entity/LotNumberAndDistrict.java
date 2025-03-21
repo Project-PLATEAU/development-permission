@@ -122,4 +122,7 @@ public class LotNumberAndDistrict implements Serializable {
 	@Column(name = "ooaza_result_column5")
 	private String ooazaResultColumn5;
 
+	/** 全筆フラグ */
+	@Column(name = "full_flag")
+	private String fullFlag;
 }

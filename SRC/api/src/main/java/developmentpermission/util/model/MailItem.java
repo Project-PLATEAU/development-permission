@@ -21,6 +21,14 @@ public class MailItem {
 	private String name;
 	/** 申請者メールアドレス */
 	private String mailAddress;
+	/** 申請ID */
+	private String applicationId;
+	/** 申請種類名 */
+	private String applicationTypeName;
+	/** 申請段階名 */
+	private String applicationStepName;
+	/** 版番号（書式：”n版”） */
+	private String versionInformation;
 	/** 申請地番 */
 	private String lotNumber;
 	/** 申請登録日時 */
@@ -41,6 +49,16 @@ public class MailItem {
 	private String departmentName;
 	/** 回答内容 */
 	private String answerContent;
+	/** コメント１ */
+	private String comment1;
+	/** 帳票名 */
+	private String ledgerName;
+	/** 統括部署管理者の受付確認コメント(メール本文) */
+	private String acceptContent;
+	/** 申請ファイル変更案内 */
+	private String applicationFileChangedContent;
+	/** 統括部署管理者の受付確認コメント */
+	private String comment;
 
 	/**
 	 * コンストラクタ
@@ -50,6 +68,10 @@ public class MailItem {
 		password = "";
 		name = "";
 		mailAddress = "";
+		applicationId = "";
+		applicationTypeName = "";
+		applicationStepName = "";
+		versionInformation = "";
 		lotNumber = "";
 		timestamp = "";
 		resultList = new ArrayList<MailResultItem>();
@@ -60,6 +82,11 @@ public class MailItem {
 		inquiryContent = "";
 		departmentName = "";
 		answerContent = "";
+		comment1 = "";
+		ledgerName = "";
+		acceptContent = "";
+		applicationFileChangedContent = "";
+		comment = "";
 	}
 
 	/**
@@ -71,6 +98,10 @@ public class MailItem {
 		tmpItem.password = password;
 		tmpItem.name = name;
 		tmpItem.mailAddress = mailAddress;
+		tmpItem.applicationId = applicationId;
+		tmpItem.applicationTypeName = applicationTypeName;
+		tmpItem.applicationStepName = applicationStepName;
+		tmpItem.versionInformation = versionInformation;
 		tmpItem.lotNumber = lotNumber;
 		tmpItem.timestamp = timestamp;
 		tmpItem.resultList = new ArrayList<MailResultItem>();
@@ -79,6 +110,9 @@ public class MailItem {
 				MailResultItem resultItem = new MailResultItem();
 				resultItem.setTarget(item.getTarget());
 				resultItem.setResult(item.getResult());
+				resultItem.setApplicationFileMasterName(item.getApplicationFileMasterName());
+				resultItem.setDirectionDepartmentNames(item.getDirectionDepartmentNames());
+				resultItem.setReviseContent(item.getReviseContent());
 				tmpItem.resultList.add(resultItem);
 			}
 		}
@@ -89,6 +123,11 @@ public class MailItem {
 		tmpItem.inquiryContent = inquiryContent;
 		tmpItem.departmentName = departmentName;
 		tmpItem.answerContent = answerContent;
+		tmpItem.comment1 = comment1;
+		tmpItem.ledgerName = ledgerName;
+		tmpItem.acceptContent = acceptContent;
+		tmpItem.applicationFileChangedContent = applicationFileChangedContent;
+		tmpItem.comment = comment;
 		return tmpItem;
 	}
 }

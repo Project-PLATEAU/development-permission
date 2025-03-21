@@ -170,7 +170,7 @@ public class AuthenticationApiController extends AbstractApiController {
 	 * @param AnswerConfirmLoginForm ログインID,パスワード
 	 * @return ApplyAnswerForm 申請情報詳細
 	 */
-	@RequestMapping(value = "/goverment/login", method = RequestMethod.POST)
+	@RequestMapping(value = "/government/login", method = RequestMethod.POST)
 	@ApiOperation(value = "行政ログイン", notes = "行政向け画面にログインする.")
 	@ResponseBody
 	@ApiResponses(value = { @ApiResponse(code = 201, message = "認証OK", response = ResponseEntityForm.class),

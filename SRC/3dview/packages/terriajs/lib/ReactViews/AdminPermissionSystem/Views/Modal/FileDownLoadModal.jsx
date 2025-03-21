@@ -18,8 +18,7 @@ class FileDownLoadModal extends React.Component {
     static displayName = "FileDownLoadModal"
     static propsType = {
         terria: PropTypes.object.isRequired,
-        viewState: PropTypes.object.isRequired,
-        t: PropTypes.func.isRequired
+        viewState: PropTypes.object.isRequired
     }
 
     constructor(props) {

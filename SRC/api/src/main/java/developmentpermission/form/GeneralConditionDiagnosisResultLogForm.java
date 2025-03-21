@@ -34,6 +34,14 @@ public class GeneralConditionDiagnosisResultLogForm implements Serializable {
 	@ApiModelProperty(value = "アクセス日時", example = "2022-08-30T12:56:00.000")
 	private String アクセス日時;
 
+	/** 申請種類 */
+	@ApiModelProperty(value = "申請種類", example = "開発許可")
+	private String 申請種類;
+	
+	/** 申請段階 */
+	@ApiModelProperty(value = "申請段階", example = "事前相談")
+	private String 申請段階;
+	
 	/** 概況診断結果ID */
 	@ApiModelProperty(value = "概況診断結果ID", example = "1")
 	private Integer 概況診断結果ID;

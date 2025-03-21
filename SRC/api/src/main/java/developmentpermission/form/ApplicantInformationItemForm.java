@@ -1,6 +1,7 @@
 package developmentpermission.form;
 
 import java.io.Serializable;
+import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -53,8 +54,36 @@ public class ApplicantInformationItemForm implements Serializable {
 	/** メールアドレスか否か */
 	@ApiModelProperty(value = "メールアドレスか否か", example = "true")
 	private Boolean mailAddress;
+	
+	/** 項目型 */
+	@ApiModelProperty(value = "項目型", example = "1")
+	private String itemType;
 
 	/** 登録情報 */
 	@ApiModelProperty(value = "登録情報", example = "dev@apply.com")
 	private String value;
+	
+	/** 追加情報フラグ */
+	@ApiModelProperty(value = "追加情報フラグ", example = "true")
+	private Boolean addInformationItemFlag;
+
+	/** 申請段階 */
+	@ApiModelProperty(value = "追加情報フラグ")
+	private List<ApplicationStepForm> applicationSteps;
+	
+	/** 連絡先登録情報 */
+	@ApiModelProperty(value = "連絡先登録情報", example = "dev@apply.com")
+	private String contactValue;
+	
+	/** 連絡先フラグ */
+	@ApiModelProperty(value = "連絡先フラグ", example = "true")
+	private Boolean contactAddressFlag;
+	
+	/** 申請者同一フラグ */
+	@ApiModelProperty(value = "申請者同一フラグ", example = "true")
+	private Boolean applicantSameFlag;
+
+	/** 申請情報項目選択肢一覧 */
+	@ApiModelProperty(value = "申請情報項目選択肢一覧")
+    private List<ApplicantInformationItemOptionForm> itemOptions;
 }

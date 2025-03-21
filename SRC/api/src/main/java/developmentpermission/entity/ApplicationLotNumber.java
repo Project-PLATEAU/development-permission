@@ -42,4 +42,7 @@ public class ApplicationLotNumber implements Serializable{
 	
 	@Column(name="status")
 	private String status;
+
+	@Column(name="full_flag")
+	private String fullFlag;
 }

@@ -19,6 +19,10 @@ interface CssExports {
   'caption': string;
   'chatButton': string;
   'chat_button': string;
+  'checkedButton': string;
+  'checkedFileButton': string;
+  'checked_button': string;
+  'checked_file_button': string;
   'circleButton': string;
   'circle_button': string;
   'closeButton': string;
@@ -26,9 +30,13 @@ interface CssExports {
   'customContent': string;
   'customFrame': string;
   'customNuv': string;
+  'customSelection': string;
   'custom_content': string;
   'custom_frame': string;
   'custom_nuv': string;
+  'custom_selection': string;
+  'disabledButton': string;
+  'disabled_button': string;
   'divArea': string;
   'div_area': string;
   'downloadButton': string;
@@ -43,7 +51,7 @@ interface CssExports {
   'nextButton': string;
   'next_button': string;
   'scrollContainer': string;
-  'scrollContainer1': string;
+  'scroll_container': string;
   'selectBox': string;
   'select_box': string;
   'selectionTable': string;

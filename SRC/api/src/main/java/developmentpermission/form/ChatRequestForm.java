@@ -27,10 +27,28 @@ public class ChatRequestForm implements Serializable {
 	/** 回答 */
 	@ApiModelProperty(value = "回答")
 	private AnswerForm answer;
+	/** 回答ID */
+	@ApiModelProperty(value = "回答ID")
+	private Integer answerId;
+	/** チャットID */
+	@ApiModelProperty(value = "チャットID")
+	private Integer chatId;
 	/** ログインID */
 	@ApiModelProperty(value = "ログインID", example = "00111223344")
 	private String loginId;
 	/** パスワード */
 	@ApiModelProperty(value = "パスワード", example = "password")
 	private String password;
+	/** 申請段階ID */
+	@ApiModelProperty(value = "申請段階ID")
+	private Integer applicationStepId;
+	/** 申請ID */
+	@ApiModelProperty(value = "申請ID")
+	private Integer applicationId;
+	/** 部署回答ID */
+	@ApiModelProperty(value = "部署回答ID")
+	private Integer departmentAnswerId;
+	/** 未読済みフラグ */
+	@ApiModelProperty(value = "未読済みフラグ")
+	private Boolean unreadFlag;
 }

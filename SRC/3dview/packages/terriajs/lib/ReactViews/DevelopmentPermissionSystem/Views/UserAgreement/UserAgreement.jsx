@@ -51,7 +51,7 @@ class UserAgreement extends React.Component {
                 return null;
             }
             if (Object.keys(res).length > 0) {
-                userAgreement = { title:  res[0]?.labels?.title, content:  res[0]?.labels?.content, consentButtonText:  res[0]?.labels?.contentButtonText, systemName:  res[0]?.labels?.systemName,purposeContent:  res[0]?.labels?.purposeContent, questionaryContent:  res[0]?.labels?.questionaryContent };
+                userAgreement = { title:  res[0]?.labels?.title, content:  res[0]?.labels?.content, consentButtonText:  res[0]?.labels?.contentButtonText, systemName:  res[0]?.labels?.systemName,purposeContent:  res[0]?.labels?.purposeContent, questionaryContent:  res[0]?.labels?.questionaryContent, topButtonText:  res[0]?.labels?.topButtonText };
                 this.setState({ userAgreement: userAgreement });
                 // 利用目的リスト取得
                 this.getQuestionaryPurposes();
@@ -128,7 +128,6 @@ class UserAgreement extends React.Component {
      * アンケートをクリックする
      */
     doQuestion(){
-        // window.open();
         let purposeList = this.state.questionaryPurposes;
         let purpose = purposeList.filter((value) => value["checked"]);
 
@@ -178,6 +177,7 @@ class UserAgreement extends React.Component {
         const systemName = this.state.userAgreement.systemName;
         const purposeContent = this.state.userAgreement.purposeContent;
         const questionaryContent = this.state.userAgreement.questionaryContent;
+        const topButtonText = this.state.userAgreement.topButtonText;
         let textContent = purposeContent;
         if(Config.QuestionaryActived.UserAgreementView == "true"){
             textContent = textContent + '<BR>' + questionaryContent;
@@ -209,18 +209,13 @@ class UserAgreement extends React.Component {
                             <button
                                 className={CustomStyle.back_button}
                                 onClick={e => {
-                                    if( window.history.length >= 2 ) {
-                                        this.closeBackgroundDiv();
-                                        window.history.back();
-                                        return false;
-                                    }
-                                    else {
-                                        this.closeBackgroundDiv();
-                                        window.close();
-                                    }
+                                    // トップボタンのURL
+                                    let url = Config.config.topButtonUrl;
+                                    // 遷移先画面を開く
+                                    window.open(url, "_self");
                                 }}
                             >
-                                <span>トップに戻る</span>
+                                <span dangerouslySetInnerHTML={{ __html: topButtonText }}></span>
                             </button>
                         </div>
                     </div>
@@ -231,7 +226,6 @@ class UserAgreement extends React.Component {
                             paddedHorizontally={6}
                             displayInlineBlock
                         >
-                            {/* <p className={CustomStyle.fontSize08} dangerouslySetInnerHTML={{ __html: textContent }}></p> */}
                             <p dangerouslySetInnerHTML={{ __html: textContent }}></p>
                         </Box>
                         <div className={CustomStyle.div_area}>
@@ -253,16 +247,7 @@ class UserAgreement extends React.Component {
                                 ))}
                             </div>
                         </div>
-                        {/* <div className={CustomStyle.button_position}>
-                            <button
-                                className={CustomStyle.next_button}
-                                onClick={e => { this.doQuestion() }}
-                            >
-                                <span>アンケート</span>
-                            </button>
-                        </div> */}
                         <Spacing bottom={2} />
-                        {/* <div style={{display: displayFlag ? "block":"none"}}> */}
                         <div className={CustomStyle.custom_sub_title}>
                             <p className={CustomStyle.title_text} dangerouslySetInnerHTML={{ __html: title }}></p>
                         </div>
@@ -295,7 +280,6 @@ class UserAgreement extends React.Component {
                         <Box fullWidth centered paddedHorizontally={6} displayInlineBlock >
                             <AnswerLogin  terria={this.props.terria} viewState={this.props.viewState} t={this.props.t} disabledFlag={!displayFlag} questionaryPurposes={questionaryPurposeList}/>
                         </Box>
-                        {/* </div> */}
                     </div>
                 </Box >
             </>

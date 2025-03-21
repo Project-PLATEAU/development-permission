@@ -28,46 +28,38 @@ public class ApplyAnswerForm implements Serializable {
 	private Integer applicationId;
 
 	/** ステータス */
-	@ApiModelProperty(value = "ステータス(0:申請中 1:回答中（未回答課あり）2:回答完了 3:通知済み 4:通知済み（要再申請)", example = "第1版申請中")
+	@ApiModelProperty(value = "版情報付けるステータス", example = "第1版事前相談：未回答")
 	private String status;
 	
 	/** ステータスコード */
-	@ApiModelProperty(value = "ステータス(0:申請中 1:回答中（未回答課あり）2:回答完了 3:通知済み 4:通知済み（要再申請）)", example = "1")
+	@ApiModelProperty(value = "ステータスコード", example = "101")
 	private String statusCode;
 
-	/** 申請区分 */
-	@ApiModelProperty(value = "申請区分選択一覧")
-	private List<ApplicationCategorySelectionViewForm> applicationCategories;
+	/** 申請種類 */
+	@ApiModelProperty(value = "申請種類")
+	private ApplicationTypeForm applicationType;
+	
+	/** 申請地番一覧 */
+	@ApiModelProperty(value = "申請地番一覧")
+	private List<ApplyLotNumberForm> lotNumbers;
 
 	/** 申請者情報一覧 */
 	@ApiModelProperty(value = "申請者情報一覧")
 	private List<ApplicantInformationItemForm> applicantInformations;
 
-	/** 回答一覧（申請情報詳細取得時のみ） */
-	@ApiModelProperty(value = "回答一覧")
-	private List<AnswerForm> answers;
-
-	/** 申請地番一覧 */
-	@ApiModelProperty(value = "申請地番一覧")
-	private List<LotNumberForm> lotNumbers;
-
-	/** 申請ファイル一覧 */
-	@ApiModelProperty(value = "申請ファイル一覧")
-	private List<ApplicationFileForm> applicationFiles;
-
-	/** 申請ファイル版情報一覧 */
-	@ApiModelProperty(value = "申請ファイル版情報一覧")
-	private List<ApplicationFileVersionForm> applicationFileVersions;
+	/** 申請情報詳細一覧 */
+	@ApiModelProperty(value = "申請情報詳細一覧")
+	private List<ApplyAnswerDetailForm> applyAnswerDetails;
 	
 	/** 回答権限 */
 	@ApiModelProperty(value = "回答通知権限", example = "true")
 	private Boolean notificable;
 	
-	/** 回答履歴 */
-	@ApiModelProperty(value = "回答履歴一覧")
-	private List<AnswerHistoryForm> answerHistory;
+	/** 統括部署の管理者かどうか */
+	@ApiModelProperty(value = "統括部署の管理者かどうか", example = "true")
+	private Boolean controlDepartmentAdmin;
 	
-	/** 回答ファイル更新履歴 */
-	@ApiModelProperty(value = "回答ファイル更新履歴一覧")
-	private List<AnswerFileHistoryForm> answerFileHistory;
+	/** 申請情報が初回受付確認中かどうか（事前協議のみ） */
+	@ApiModelProperty(value = "申請情報が初回受付確認中かどうか（事前協議のみ）", example = "true")
+	private Boolean firstAccepting;
 }

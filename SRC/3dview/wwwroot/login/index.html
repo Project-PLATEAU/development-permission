@@ -109,7 +109,10 @@
                 ログイン</button>
         </form>
         <div class="mt-5 link">
-        	<a href="../">事業者の方はこちらから</a>
+        	<a href="../"><i class="fas fa-user"></i> 事業者の方はこちらから</a>
+        </div>
+        <div class="mt-3 link">
+        	<a id="questionnaireURL" target="_blank" rel="noopener noreferrer" href=""></a>
         </div>
         <p style="font-size:.8em;margin-top:2em;color:red;">※同一ブラウザから行政と事業者の同時操作は行えないためご注意ください</p>
     </div>
@@ -136,6 +139,10 @@
         .then(res => {
             if (Object.keys(res).length > 0 && res[0]?.labels) {
                 document.getElementById("title").innerText = res[0]?.labels?.title;
+                var questionnaire = res[0]?.labels?.questionnaire || "アンケートはこちらから";
+                var questionnaireUrl = res[0]?.labels?.questionnaireUrl;
+                document.getElementById("questionnaireURL").innerHTML = '<i class="fas fa-file-alt"></i> ' + questionnaire;
+                document.getElementById("questionnaireURL").href = questionnaireUrl;
             }
         }).catch(error => {
             console.error('通信処理に失敗しました', error);
@@ -160,7 +167,7 @@
         		document.getElementById("error").innerText = "ユーザーIDとパスワードは必須です";
         		return false;
         	}
-	        fetch(apiUrl + "/auth/goverment/login", {
+	        fetch(apiUrl + "/auth/government/login", {
 	            method: 'POST',
 	            body: JSON.stringify({
 	                loginId: userId,
@@ -169,21 +176,14 @@
 	            headers: new Headers({ 'Content-type': 'application/json' }),
 	        })
 	        .then(res => {
-	            console.log(res);
 	            if(res.status === 201){
-                    // 行政アンケート画面を開く
-                    let url = "https://path.to.questinnaire/for/government";
-                    let target = "admin_quessionaire";
-                    window.open(url, target);
-
                     window.location.href = "../";
-                if(res.status === 401){
+                }else if(res.status === 401){
                     // 401認証エラーの場合の処理を追加
                     alert('認証情報が無効です。ページの再読み込みを行います。');
                     window.location.href = "./login/";
                     return null;
-                }
-	            }else{
+                }else{
 	            	document.getElementById("error").innerText = "ログインに失敗しました";
 	            }
 	        }).catch(error => {

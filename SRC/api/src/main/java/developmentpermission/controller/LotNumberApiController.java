@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import developmentpermission.form.ApplyLotNumberForm;
 import developmentpermission.form.DistrictNameForm;
 import developmentpermission.form.GetLotNuberByFigureForm;
 import developmentpermission.form.GetLotNumberForm;
@@ -196,14 +197,13 @@ public class LotNumberApiController extends AbstractApiController {
 	@ApiResponses(value = { 
 			@ApiResponse(code = 400, message = "パラメータ不正", response = ResponseEntityForm.class),
 			@ApiResponse(code = 401, message = "認証エラー", response = ResponseEntityForm.class) })
-	public List<LotNumberForm> getApplyingLotNumberFromLonlat(@ApiParam(required = true, value = "地番取得フォーム")@RequestBody GetLotNumberForm getLotNumberForm) {
+	public List<ApplyLotNumberForm> getApplyingLotNumberFromLonlat(@ApiParam(required = true, value = "地番取得フォーム")@RequestBody GetLotNumberForm getLotNumberForm) {
 		LOGGER.info("座標地番検索（行政） 開始");
 		try {
 			String longitude = getLotNumberForm.getLongitude();
 			String latitude = getLotNumberForm.getLatiude();
 			if (longitude != null && latitude != null) {
-				List<LotNumberForm> lotNumberSearchFormList = lotNumberService
-						.searchApplyingLotNumberFromLonlat(longitude, latitude);
+				List<ApplyLotNumberForm> lotNumberSearchFormList = lotNumberService.searchApplyingLotNumberFromLonlat(longitude, latitude);
 				return lotNumberSearchFormList;
 			} else {
 				LOGGER.error("パラメータ不正");

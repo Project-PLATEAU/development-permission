@@ -50,43 +50,61 @@ class InputChatMessage extends React.Component {
             width:700,
             // 回答内容を表示するエリアの高さ
             heightForAnswerContent:500,
-            //問合せの相関情報DTO
+            // 問合せの相関情報DTO
             ChatRelatedInfoForm: {},
-            //回答DTO
+            // 回答DTO
             answer: {},
             // 回答対象
             categoryJudgementTitle:"",
             // 回答登録内容表示フラグ
             answerContentDisplay:false,
-            //回答履歴
+            // 回答履歴
             answerHistory: [],
-            //回答ファイル
+            // 回答ファイル
             answerFile: [],
-            //申請ファイル
+            // 申請ファイル
             applicationFile: [],
             // 表示している一覧
             activeListId:0,
-            //ログインユーザーID
+            // ログインユーザーID
             loginUserId:"",
-            //ログインユーザー部署ID
+            // ログインユーザー部署ID
             loginUserDepartmentId:""
         };
         this.setAddressText = this.setAddressText.bind(this);
         this.openFile = this.openFile.bind(this);
+        this.resizeEvent = () => {
+            this.getWindowSize();
+            this.changeTextAreaHight(false,true);
+        };
+    }
+
+    /**
+     * クリーンアップ処理
+     */
+    componentWillUnmount(){
+        window.removeEventListener('resize', this.resizeEvent);
+        let map = document.getElementById("terriaViewer");
+        map.style.maxHeight = "100%";
+        this.props.viewState.triggerResizeEvent();
     }
 
     /**
      * 初期処理
      */
     componentDidMount() {
-       // ログインユーザー情報取得
-       this.setLoginUserInfo();
-       // 問合せ内容取得
+        //リサイズイベント
+        window.removeEventListener('resize', this.resizeEvent);
+        window.addEventListener('resize', this.resizeEvent);
+        // ログインユーザー情報取得
+        this.setLoginUserInfo();
+        // 問合せ内容取得
         this.getMessageList(false);
         //  問合せの相関情報取得
         this.getChatRelatedInfo();
         // 画面リサイズ
         this.getWindowSize(); 
+        this.props.viewState.triggerResizeEvent();
         // 宛先を初期化する
         this.props.viewState.removeAllInputChatAddress();
         // チャットボックスのリサイズ用
@@ -111,6 +129,9 @@ class InputChatMessage extends React.Component {
         }, 30000);
 
         this.setState({intervalID:intervalID});
+        setTimeout(()=>{
+            this.props.viewState.mapFitButtonFunction();
+        },2000)
     }
 
     /**
@@ -213,48 +234,53 @@ class InputChatMessage extends React.Component {
      * @param {*} isRefresh 定期リフレッシュイベントであるフラグ
      */
     changeTextAreaHight(isSendEvent,isRefresh){
-        //メッセージ入力欄の要素取得
-        let textarea = document.getElementById('messageText');
-        //textareaのデフォルトの要素の高さを取得
-        let ch = textarea.clientHeight;
-        //textareaの高さを再設定（デフォルトの高さから計算するため）
-        textarea.style.height = ch + 'px';
-        //textareaの入力内容の高さを取得
-        let sh = textarea.scrollHeight;
-        textarea.style.overflowY = "hidden";
-        if(sh>100){
-            textarea.style.overflowY = "scroll";
-            sh = 100;
-        }else if(sh<40){
-            sh = 40;
-        }
-        // 送信ボタンを押下する場合、初期の高さをリセット
-        if(isSendEvent){
-            sh = 40;
+        try{
+            //メッセージ入力欄の要素取得
+            let textarea = document.getElementById('messageText');
+            
+            //textareaのデフォルトの要素の高さを取得
+            let ch = textarea.clientHeight;
+            //textareaの高さを再設定（デフォルトの高さから計算するため）
+            textarea.style.height = ch + 'px';
+            //textareaの入力内容の高さを取得
+            let sh = textarea.scrollHeight;
             textarea.style.overflowY = "hidden";
-        }
+            if(sh>100){
+                textarea.style.overflowY = "scroll";
+                sh = 100;
+            }else if(sh<40){
+                sh = 40;
+            }
+            // 送信ボタンを押下する場合、初期の高さをリセット
+            if(isSendEvent){
+                sh = 40;
+                textarea.style.overflowY = "hidden";
+            }
 
-        //メッセージ入力欄の高さに入力内容の高さを設定
-        textarea.style.height = sh + 'px';
+            //メッセージ入力欄の高さに入力内容の高さを設定
+            textarea.style.height = sh + 'px';
 
-        //メッセージ入力欄のボックス
-        let inputMessageBox = document.getElementById('inputMessageBox');
-        let addressTextHeight = document.getElementById('addressText').clientHeight;
-        if(addressTextHeight < 40){
-            addressTextHeight = 40;
-        }
+            //メッセージ入力欄のボックス
+            let inputMessageBox = document.getElementById('inputMessageBox');
+            let addressTextHeight = document.getElementById('addressText').clientHeight;
+            if(addressTextHeight < 40){
+                addressTextHeight = 40;
+            }
 
-        let borderWidth = 2*4+2;
-        inputMessageBox.style.height = addressTextHeight + sh + borderWidth + 'px';
-        
-        //メッセージ表示のボックス
-        let chatBox = document.getElementById('ChatBox');
-        chatBox.style.height = (this.state.height - (addressTextHeight + sh + borderWidth)) + 'px';
+            let borderWidth = 2*4+2;
+            inputMessageBox.style.height = addressTextHeight + sh + borderWidth + 'px';
+            
+            //メッセージ表示のボックス
+            let chatBox = document.getElementById('ChatBox');
+            chatBox.style.height = (this.state.height - (addressTextHeight + sh + borderWidth)) + 'px';
 
-        // 定期リフレッシュの場合、スクロールを移動しない
-        if(!isRefresh){
-            // スクロールは最後にする
-            setTimeout(function(){chatBox.scrollTo(0,chatBox.scrollHeight)}, 300);
+            // 定期リフレッシュの場合、スクロールを移動しない
+            if(!isRefresh){
+                // スクロールは最後にする
+                setTimeout(function(){chatBox.scrollTo(0,chatBox.scrollHeight)}, 300);
+            }
+        }catch(e){
+            console.log(e.message)
         }
     }
     
@@ -262,27 +288,22 @@ class InputChatMessage extends React.Component {
      * 高さ再計算
      */
     getWindowSize() {
-        let win = window;
-        let e = window.document.documentElement;
-        let g = window.document.documentElement.getElementsByTagName('body')[0];
-        let h = win.innerHeight|| e.clientHeight|| g.clientHeight;
-        let w = win.innerWidth|| e.clientWidth|| g.clientWidth;
-        const getRect = document.getElementById("ChatBox");
-        let height = h - getRect.getBoundingClientRect().top - 20;
-        const sidePanel = document.getElementById("SidePanel");
-        let width = w - sidePanel.clientWidth;
-        let map = window.document.documentElement.getElementsByTagName('canvas')[0];
-        this.setState({height: height, width: width, positionLeft: sidePanel.clientWidth, heightForAnswerContent: map.clientHeight/2});
-    }
-
-    /**
-     * リサイズ
-     */
-    componentWillMount () {
-        window.addEventListener('resize', () => {
-            this.getWindowSize();
-            this.changeTextAreaHight(false,true);
-        })
+        try{
+            let win = window;
+            let e = window.document.documentElement;
+            let g = window.document.documentElement.getElementsByTagName('body')[0];
+            let h = win.innerHeight|| e.clientHeight|| g.clientHeight;
+            let w = win.innerWidth|| e.clientWidth|| g.clientWidth;
+            const getRect = document.getElementById("ChatBox");
+            let height = h - getRect.getBoundingClientRect().top - 20;
+            const sidePanel = document.getElementById("SidePanel");
+            let width = w - sidePanel.clientWidth;
+            let map = document.getElementById("terriaViewer");
+            map.style.maxHeight = "50%";
+            this.setState({height: height, width: width, positionLeft: sidePanel.clientWidth, heightForAnswerContent: map.clientHeight});
+        }catch(e){
+            console.log(e.message);
+        }
     }
 
     /**
@@ -368,6 +389,10 @@ class InputChatMessage extends React.Component {
         let backToPage = this.state.viewState.backToPage;
         this.state.viewState.changeAdminTabActive(backToPage.tab);
         this.state.viewState.changeApplyPageActive(backToPage.page? backToPage.page:"applyList");
+        window.removeEventListener('resize', this.resizeEvent);
+        let map = document.getElementById("terriaViewer");
+        map.style.maxHeight = "100%";
+        this.props.viewState.triggerResizeEvent();
     }
 
     /**
@@ -381,6 +406,10 @@ class InputChatMessage extends React.Component {
         this.state.viewState.applicationInformationSearchForApplicationId = applicationId;
         this.state.viewState.changeApplyPageActive(active);
         this.state.viewState.setAdminBackPage("applySearch", "chat");
+        window.removeEventListener('resize', this.resizeEvent);
+        let map = document.getElementById("terriaViewer");
+        map.style.maxHeight = "100%";
+        this.props.viewState.triggerResizeEvent();
     }
 
     /**
@@ -756,23 +785,6 @@ class InputChatMessage extends React.Component {
                                             <td>
                                                 {/* 自分から送信場合 */}
                                                 {this.isSelf(chatMessages[index]) && (
-                                                    // レイアウト案①
-                                                    // <div className={Styles.self_mesage}>
-                                                    //     <p className={`${CustomStyle.message_tips}`}>
-                                                    //         {`FROM: ${this.getDisplayName(chatMessages[index])}`}
-                                                    //     </p>
-                                                    //     <p className={`${CustomStyle.message_tips}`}>
-                                                    //         {`TO: ${this.getDisplayNameTO(chatMessages[index])}`}
-                                                    //     </p>
-                                                    //     <Spacing bottom={2}/>
-                                                    //     <div className={Styles.self_mesage_content}>
-                                                    //         <p className={CustomStyle.preLine}>{chatMessages[index].messageText}</p>
-                                                    //     </div>
-                                                    //     <p className={`${CustomStyle.message_tips} ${CustomStyle.text_right}`}>
-                                                    //         {chatMessages[index].sendDatetime}
-                                                    //     </p>
-                                                    // </div>
-                                                    // レイアウト案②
                                                     <div className={Styles.self_mesage}>
                                                         <div className={Styles.mesage_address}>
                                                             <p className={`${CustomStyle.message_tips}`}>
@@ -792,45 +804,6 @@ class InputChatMessage extends React.Component {
                                                 )}
                                                 {/* 他ユーザーから送信場合 */}
                                                 {!this.isSelf(chatMessages[index]) && (
-                                                    // レイアウト案①
-                                                    // <div className={Styles.other_mesage}>
-                                                    //     <p className={`${CustomStyle.message_tips}`}>
-                                                    //         {`FROM: ${this.getDisplayName(chatMessages[index])}`}
-                                                    //     </p>
-                                                    //     <p className={`${CustomStyle.message_tips}`}>
-                                                    //         {`TO: ${this.getDisplayNameTO(chatMessages[index])}`}
-                                                    //     </p>
-                                                    //     <Spacing bottom={2}/>
-                                                    //     <div className={Styles.other_mesage_content}>
-                                                    //         <p className={CustomStyle.preLine}>{chatMessages[index].messageText}</p>
-                                                    //         <div className={CustomStyle.download_file_area} >
-                                                    //             {Object.keys(chatMessages[index].inquiryFiles).length > 0 && (
-                                                    //                 <div className={CustomStyle.download_file_area}>
-                                                    //                     { Object.keys(chatMessages[index].inquiryFiles).map(key => (
-                                                    //                         <div style={{width:"180px",marginRight:"10px"}}>
-                                                    //                             <button className={CustomStyle.download_file_button}
-                                                    //                                 title={chatMessages[index].inquiryFiles[key].fileName}
-                                                    //                                 onClick={e => this.outputFile("/chat/file/download", chatMessages[index].inquiryFiles[key],"fileName")}
-                                                    //                             >
-                                                    //                                 <label className={CustomStyle.download_file_label}>{chatMessages[index].inquiryFiles[key].fileName}</label>
-                                                    //                                 <StyledIcon glyph={Icon.GLYPHS.downloadNew}
-                                                    //                                     styledWidth={"15px"}
-                                                    //                                     styledHeight={"15px"}
-                                                    //                                     light
-                                                    //                                     className={CustomStyle.download_file_icon}
-                                                    //                                 />
-                                                    //                             </button>
-                                                    //                         </div>
-                                                    //                     ))}
-                                                    //                 </div>
-                                                    //             )}
-                                                    //         </div>
-                                                    //     </div>
-                                                    //     <p className={`${CustomStyle.message_tips}`}>
-                                                    //         {chatMessages[index].sendDatetime}
-                                                    //     </p>
-                                                    // </div>
-                                                    // レイアウト案②
                                                     <div className={Styles.other_mesage}>
                                                         <div className={Styles.mesage_address}>
                                                             <p className={`${CustomStyle.message_tips}`}>
@@ -904,14 +877,12 @@ class InputChatMessage extends React.Component {
                                             </td>
                                             <td style={{width:"60px",textAlign:"center"}}>
                                                 <button id="sendMessage" className={CustomStyle.send_btn}
-                                                    // disabled={!this.state.messageText || Object.keys(addressList).length == 0}
                                                     disabled={!this.isInputed(this.state.messageText , addressList)}
                                                     title="送信" onClick={evt => { this.sendMessage(addressList) } }> 
                                                         <StyledIcon glyph={Icon.GLYPHS.send}
                                                             styledWidth={"15px"}
                                                             styledHeight={"15px"}
                                                             light
-                                                            // className={`${!this.state.messageText || Object.keys(addressList).length == 0 ? CustomStyle.send_btn_icon_disabled : CustomStyle.send_btn_icon}`}
                                                             className={`${!this.isInputed(this.state.messageText , addressList)? CustomStyle.send_btn_icon_disabled : CustomStyle.send_btn_icon}`}
                                                        />
                                                 </button>

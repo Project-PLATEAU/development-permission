@@ -11,9 +11,13 @@ import DataCatalog from "../../DataCatalog/DataCatalog";
 import AdminTab from "../Views/Tab/AdminTab";
 import ShowMessage from "../Views/Message/ShowMessage";
 import LotNumberSearch from "../../DevelopmentPermissionSystem/Views/LotNumberSearch/LotNumberSearch";
-import InquiryList from "../Views/Apply/InquiryList";
-import AnswerList from "../Views/Apply/AnswerList";
 import Config from "../../../../customconfig.json";
+import ViewerMode, {
+    MapViewers,
+    setViewerMode
+  } from "../../../Models/ViewerMode";
+
+import NotificationList from "../Views/Apply/NotificationList";
 
 /**
  * 行政用画面：地図検索
@@ -33,12 +37,7 @@ class AdminInitAndLotNumberSearchView extends React.Component {
         super(props);
         this.state = {
             viewState: props.viewState,
-            terria: props.terria,
-            // 自分担当課に対する問い合わせ一覧
-            inquiries: [],
-            // 自分担当課に対する回答（申請）一覧 
-            answers: [],
-            intervalID: null
+            terria: props.terria
         }
     }
 
@@ -243,7 +242,7 @@ class AdminInitAndLotNumberSearchView extends React.Component {
             catalogItem.loadMapItems();
             this.state.terria.workbench.add(catalogItem);
 
-            //3D建物モデルを非表示
+            //建物モデルを非表示
             const cesium3DTiles = this.state.terria.getModelById(BaseModel, Config.buildingModel.id);
             cesium3DTiles.traits.style.show = false;
             cesium3DTiles.setTrait(
@@ -251,6 +250,12 @@ class AdminInitAndLotNumberSearchView extends React.Component {
                 "style",
                 {"show": false});
             cesium3DTiles.loadMapItems();
+            const leaflet2DModel = this.state.terria.getModelById(BaseModel, Config.buildingModelFor2d.id);
+            leaflet2DModel.setTrait(
+                CommonStrata.user,
+                "show",
+                false);
+            leaflet2DModel.loadMapItems();
         } catch (error) {
             console.error('処理に失敗しました', error);
         }
@@ -265,67 +270,26 @@ class AdminInitAndLotNumberSearchView extends React.Component {
         this.props.viewState.setshowLotLayerSelected(false);
 
         try{
-            //3D建物モデルを表示
+            //建物モデルを表示
             const cesium3DTiles = this.state.terria.getModelById(BaseModel, Config.buildingModel.id);
-            cesium3DTiles.traits.style.show = false;
+            cesium3DTiles.traits.style.show = true;
             cesium3DTiles.setTrait(
                 CommonStrata.user,
                 "style",
                 {"show": true});
             cesium3DTiles.loadMapItems();
+            const leaflet2DModel = this.state.terria.getModelById(BaseModel, Config.buildingModelFor2d.id);
+            leaflet2DModel.setTrait(
+                CommonStrata.user,
+                "show",
+                true);
+            leaflet2DModel.loadMapItems();
         }catch(error){
             console.error('処理に失敗しました', error);
         }
 
         this.clearTooltips();
         
-    }
-
-    /**
-     * 初期表示
-     */
-    componentDidMount() {
-
-        // 担当課の問合せ・回答一覧取得
-        this.getResponsibleInquiries();  
-
-        // 30秒につき、問い合わせ内容をリフレッシュする
-        let intervalID = setInterval(() => {
-            if(this.props.viewState.adminTabActive === "mapSearch"){
-                
-                this.getResponsibleInquiries()
-            
-            }else{
-                return;
-            }
-            
-        }, 30000);        
-    }
-
-    /**
-     * 担当課の問合せ・回答一覧取得
-     */
-    getResponsibleInquiries(){
-        fetch(Config.config.apiUrl + "/chat/inquiries")
-        .then(res => {
-            // 401認証エラーの場合の処理を追加
-            if (res.status === 401) {
-                alert('認証情報が無効です。ページの再読み込みを行います。');
-                window.location.href = "./login/";
-                return null;
-            }
-            return res.json();
-        })
-        .then(res => {
-            if (Object.keys(res).length > 0) {
-             this.setState({inquiries: res.inquiries, answers:res.answers});
-            }else{
-                alert('担当課の問合せ・回答一覧取得に失敗しました');
-            }
-        }).catch(error => {
-            console.error('通信処理に失敗しました', error);
-            alert('通信処理に失敗しました');
-        });
     }
 
     //申請条件入力画面へ遷移
@@ -342,14 +306,20 @@ class AdminInitAndLotNumberSearchView extends React.Component {
             }
         }
         try{
-            //3D建物モデルを表示
+            //建物モデルを表示
             const cesium3DTiles = this.state.terria.getModelById(BaseModel, Config.buildingModel.id);
-            cesium3DTiles.traits.style.show = false;
+            cesium3DTiles.traits.style.show = true;
             cesium3DTiles.setTrait(
                 CommonStrata.user,
                 "style",
                 {"show": true});
             cesium3DTiles.loadMapItems();
+            const leaflet2DModel = this.state.terria.getModelById(BaseModel, Config.buildingModelFor2d.id);
+            leaflet2DModel.setTrait(
+                CommonStrata.user,
+                "show",
+                true);
+            leaflet2DModel.loadMapItems();
         }catch(error){
             console.error('処理に失敗しました', error);
         }
@@ -364,24 +334,9 @@ class AdminInitAndLotNumberSearchView extends React.Component {
         this.state.viewState.changeAdminTabActive(active);
     }
 
-    // 問合せタブをクリック
-    clickInquiryListModel(){
-        this.props.viewState.changeShowInquiryList(true);
-        this.props.viewState.changeShowAnswerList(false);
-        console.log("問合せ");
-    }
-
-    // 回答タブをクリック
-    clickAnswerListModel(){
-        this.props.viewState.changeShowInquiryList(false);
-        this.props.viewState.changeShowAnswerList(true);
-        console.log("回答");
-    }
 
     render(){
         const t = this.props.t;
-        let inquiries = this.state.inquiries;
-        let answers = this.state.answers;
         return(
             <>
             <div className={Styles.tooltips} id="tooltips">
@@ -411,42 +366,8 @@ class AdminInitAndLotNumberSearchView extends React.Component {
                         </div>
                     </div>
 
-                    <ShowMessage t={t} message={"adminInfoMessage.tipsForApplyList"} />
+                    <NotificationList terria={this.props.terria} viewState={this.props.viewState} t={t} referrer={"mapSearch"}/>
 
-                    <Box padded>
-                        <button className={`${Styles.btn_baise_style} ${CustomStyle.button} ${this.props.viewState.showInquiryList? "": Styles.btn_gry}`}
-                            onClick={evt => {
-                                evt.preventDefault();
-                                evt.stopPropagation();
-                                this.clickInquiryListModel();
-                            }} id="">
-                            <span>問合せ</span>
-                            <span className={CustomStyle.badge}>{Object.keys(inquiries).length}</span>
-                        </button>
-
-                        <button className={`${Styles.btn_baise_style} ${CustomStyle.button} ${this.props.viewState.showAnswerList? "": Styles.btn_gry}`}
-                            onClick={evt => {
-                                evt.preventDefault();
-                                evt.stopPropagation();
-                                this.clickAnswerListModel();
-                            }} id="">
-                            <span>回答</span>
-                            <span className={CustomStyle.badge}>{Object.keys(answers).length}</span>
-                        </button>
-                    </Box>
-
-                    <div>
-                        <If condition = {this.props.viewState.showInquiryList}>
-                            <div className={Styles.component_border} style={{height: "30vh", overflowY: "auto", marginBottom:"0"}}>
-                                <InquiryList terria={this.props.terria} viewState={this.props.viewState} referrer={"mapSearch"} inquiries={inquiries}/> 
-                            </div>
-                        </If>
-                        <If condition = {this.props.viewState.showAnswerList}>
-                            <div className={Styles.component_border}  style={{height: "30vh", overflowY: "auto", marginBottom:"0"}}>
-                                <AnswerList terria={this.props.terria} viewState={this.props.viewState} referrer={"mapSearch"} answers={answers}/> 
-                            </div>
-                        </If>
-                    </div>
                 </div>
 
             </Box>

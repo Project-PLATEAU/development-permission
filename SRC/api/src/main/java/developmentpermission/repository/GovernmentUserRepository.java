@@ -24,7 +24,7 @@ public interface GovernmentUserRepository extends JpaRepository<GovernmentUser, 
 	 * @param password パスワード
 	 * @return ユーザ情報
 	 */
-	@Query(value = "SELECT user_id, login_id, password, role_code, department_id, user_name FROM m_government_user WHERE login_id = :loginId AND password = :password ORDER BY user_id ASC", nativeQuery = true)
+	@Query(value = "SELECT user_id, login_id, password, role_code, department_id, user_name, admin_flag FROM m_government_user WHERE login_id = :loginId AND password = :password ORDER BY user_id ASC", nativeQuery = true)
 	List<GovernmentUser> login(@Param("loginId") String id, @Param("password") String password);
 	
 	/**
@@ -34,7 +34,7 @@ public interface GovernmentUserRepository extends JpaRepository<GovernmentUser, 
 	 * @param password パスワード
 	 * @return ユーザ情報
 	 */
-	@Query(value = "SELECT user_id, login_id, password, role_code, department_id, user_name FROM m_government_user WHERE user_id = :userId ORDER BY user_id ASC", nativeQuery = true)
+	@Query(value = "SELECT user_id, login_id, password, role_code, department_id, user_name, admin_flag FROM m_government_user WHERE user_id = :userId ORDER BY user_id ASC", nativeQuery = true)
 	List<GovernmentUser> findByUserId(@Param("userId") String userId);
 	
 }

@@ -3,15 +3,18 @@ package developmentpermission.service;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.PathResource;
@@ -29,35 +32,56 @@ import developmentpermission.dao.ChatDao;
 import developmentpermission.entity.Answer;
 import developmentpermission.entity.ApplicantInformation;
 import developmentpermission.entity.Application;
+import developmentpermission.entity.ApplicationAnswerSearchResult;
+import developmentpermission.entity.ApplicationStep;
+import developmentpermission.entity.ApplicationType;
+import developmentpermission.entity.ApplicationVersionInformation;
+import developmentpermission.entity.ApplyLotNumber;
+import developmentpermission.entity.Authority;
 import developmentpermission.entity.CategoryJudgement;
+import developmentpermission.entity.CategoryJudgementAuthority;
+import developmentpermission.entity.CategoryJudgementResult;
 import developmentpermission.entity.Chat;
 import developmentpermission.entity.Department;
+import developmentpermission.entity.DepartmentAnswer;
 import developmentpermission.entity.GovernmentUser;
-import developmentpermission.entity.InquiryFile;
 import developmentpermission.entity.InquiryAddress;
+import developmentpermission.entity.InquiryFile;
 import developmentpermission.entity.LotNumberAndDistrict;
 import developmentpermission.entity.LotNumberSearchResultDefinition;
 import developmentpermission.entity.Message;
 import developmentpermission.form.ApplicationSearchConditionForm;
-import developmentpermission.form.ApplyAnswerForm;
+import developmentpermission.form.ApplicationStepForm;
+import developmentpermission.form.ApplyAnswerSearchResultForm;
+import developmentpermission.form.ApplyLotNumberForm;
 import developmentpermission.form.ChatForm;
+import developmentpermission.form.ChatRequestForm;
 import developmentpermission.form.ChatSearchResultForm;
+import developmentpermission.form.DepartmentForm;
+import developmentpermission.form.GovernmentUserForm;
+import developmentpermission.form.InquiryAddressForm;
+import developmentpermission.form.InquiryFileForm;
+import developmentpermission.form.LotNumberForm;
 import developmentpermission.form.MessageForm;
 import developmentpermission.form.MessagePostRequestForm;
 import developmentpermission.form.ResponsibleInquiryFrom;
-import developmentpermission.form.GovernmentUserForm;
-import developmentpermission.form.InquiryFileForm;
-import developmentpermission.form.InquiryAddressForm;
-import developmentpermission.form.LotNumberForm;
-import developmentpermission.form.DepartmentForm;
+import developmentpermission.repository.AnswerDepartmentRepository;
 import developmentpermission.repository.AnswerRepository;
 import developmentpermission.repository.ApplicantInformationRepository;
+import developmentpermission.repository.ApplicationRepository;
+import developmentpermission.repository.ApplicationStepRepository;
+import developmentpermission.repository.ApplicationTypeRepository;
+import developmentpermission.repository.ApplicationVersionInformationRepository;
+import developmentpermission.repository.AuthorityRepository;
 import developmentpermission.repository.CategoryJudgementRepository;
 import developmentpermission.repository.ChatRepository;
+import developmentpermission.repository.DepartmentAnswerRepository;
 import developmentpermission.repository.DepartmentRepository;
 import developmentpermission.repository.GovernmentUserRepository;
 import developmentpermission.repository.InquiryAddressRepository;
 import developmentpermission.repository.InquiryFileRepository;
+import developmentpermission.repository.JudgementAuthorityRepository;
+import developmentpermission.repository.JudgementResultRepository;
 import developmentpermission.repository.LotNumberSearchResultDefinitionRepository;
 import developmentpermission.repository.MssageRepository;
 import developmentpermission.repository.jdbc.ChatJdbc;
@@ -66,6 +90,7 @@ import developmentpermission.repository.jdbc.InquiryFileJdbc;
 import developmentpermission.repository.jdbc.MessageJdbc;
 import developmentpermission.util.AuthUtil;
 import developmentpermission.util.ExportJudgeForm;
+import developmentpermission.util.LogUtil;
 import developmentpermission.util.MailMessageUtil;
 import developmentpermission.util.model.MailItem;
 
@@ -110,6 +135,14 @@ public class ChatService extends AbstractJudgementService {
 	/** M_部署Repositoryインタフェース */
 	@Autowired
 	private DepartmentRepository departmentRepository;
+	
+	/** O_部署回答Repositoryインタフェース */
+	@Autowired
+	private DepartmentAnswerRepository departmentAnswerRepository;
+
+	/** M_申請段階Repositoryインタフェース */
+	@Autowired
+	private ApplicationStepRepository applicationStepRepository;
 
 	/** O_回答Repositoryインタフェース */
 	@Autowired
@@ -119,10 +152,6 @@ public class ChatService extends AbstractJudgementService {
 	@Autowired
 	private CategoryJudgementRepository categoryJudgementRepository;
 
-	/** O_申請者情報Repositoryインタフェース */
-	@Autowired
-	private ApplicantInformationRepository applicantInformationRepository;
-
 	/** M_地番検索結果定義Repositoryインタフェース */
 	@Autowired
 	private LotNumberSearchResultDefinitionRepository lotNumberSearchResultDefinitionRepository;
@@ -131,17 +160,65 @@ public class ChatService extends AbstractJudgementService {
 	@Autowired
 	private InquiryFileRepository inquiryFileRepository;
 
+	/** O_申請Repositoryインスタンス */
+	@Autowired
+	private ApplicationRepository applicationRepository;
+	
+	/** O_申請者情報Repositoryインタフェース */
+	@Autowired
+	private ApplicantInformationRepository applicantInformationRepository;
+
 	/** O_問合せ宛先Repositoryインタフェース */
 	@Autowired
 	private InquiryAddressRepository inquiryAddressRepository;
 
+	/** O_部署回答Repositoryインタフェース */
+	@Autowired
+	private AnswerDepartmentRepository answerDepartmentRepository;
+
+	/** M_申請区分Repositoryインタフェース */
+	@Autowired
+	private JudgementAuthorityRepository judgementAuthorityRepository;
+
+	/** M_判定結果Repositoryインタフェース */
+	@Autowired
+	private JudgementResultRepository judgementResultRepository;
+
 	/** 申請版情報表示用文字列 */
 	@Value("${app.application.versioninformation.text}")
 	protected String versionInformationText;
+
 	/** 申請版情報置換文字列 */
 	@Value("${app.application.versioninformation.replacetext}")
 	protected String versionInformationReplaceText;
 
+	/** 回答.期日X日前 */
+	@Value("${app.answer.deadlineXDaysAgo}")
+	private int deadlineXDaysAgo;
+
+	/** 問合せ検索 対象列出力内容（事前協議） */
+	@Value("${app.chat.search.title.step2}")
+	private String step2Title;
+
+	/** 問合せ検索 対象列出力内容（許可判定） */
+	@Value("${app.chat.search.title.step3}")
+	private String step3Title;
+	/** 問合せ検索 対象列出力内容（事前協議）置換文字列 */
+	@Value("${app.chat.search.title.step2.replaceText}")
+	private String step2TitleReplaceText;
+
+	/** M_権限Repositoryインタフェース */
+	@Autowired
+	private AuthorityRepository authorityRepository;
+	
+	/** M_申請種類Repositoryインスタンス */
+	@Autowired
+	private ApplicationTypeRepository applicationTypeRepository;
+
+	/** O_申請版情報Repositoryインスタンス */
+	@Autowired
+	private ApplicationVersionInformationRepository applicationVersionInformationRepository;
+	
 	/**
 	 * チャット登録
 	 * 
@@ -173,25 +250,24 @@ public class ChatService extends AbstractJudgementService {
 		Integer answerId = form.getAnswerId();
 		String messageText = form.getMessage().getMessageText();
 		try {
-			String toDepartmentId = "";
-			LOGGER.trace("回答IDに紐づく判定項目ID取得 開始");
-			LOGGER.trace("回答ID：" + answerId);
-			List<Answer> anwserList = answerRepository.findByAnswerId(answerId);
-			LOGGER.trace("回答IDに紐づく判定項目ID取得 終了");
-
-			if (anwserList.size() > 0) {
-				// 判定項目ID
-				String judgementId = anwserList.get(0).getJudgementId();
-				LOGGER.trace("判定項目IDに紐づく担当部署ID取得 開始");
-				LOGGER.trace("判定項目ID：" + judgementId);
-				List<CategoryJudgement> categoryJudgementList = categoryJudgementRepository
-						.getCategoryJudgementListById(judgementId);
-				// 担当部署ID
-				if (categoryJudgementList.size() > 0) {
-					toDepartmentId = categoryJudgementList.get(0).getDepartmentId();
-				}
-				LOGGER.trace("判定項目IDに紐づく担当部署ID取得 終了");
+			
+			Integer applicationStepId = form.getApplicationStepId();
+			DepartmentAnswer departmentId = new DepartmentAnswer();
+			List<CategoryJudgementAuthority> departmentIdList = new ArrayList<CategoryJudgementAuthority>();
+			List<Authority> authorityList = new ArrayList<Authority>();
+			
+			LOGGER.trace("部署ID取得 開始");
+			LOGGER.trace("申請段階ID：" + applicationStepId);
+			LOGGER.trace("チャットID：" + chatId);
+			AnswerDao answerDao = new AnswerDao(emf);
+			if (APPLICATION_STEP_ID_1.equals(applicationStepId)) {
+				departmentIdList = answerDao.getJudgementAuthorityList(chatId);
+			} else if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+				departmentId = answerDepartmentRepository.findByDepartmentId(chatId);
+			} else if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+				authorityList = authorityRepository.findStep3AnswerDepartment();
 			}
+			LOGGER.trace("部署ID取得 終了");
 
 			Message message = new Message();
 			message.setChatId(chatId);
@@ -208,11 +284,26 @@ public class ChatService extends AbstractJudgementService {
 
 			InquiryAddress inquiryAddress = new InquiryAddress();
 			inquiryAddress.setMessageId(messageId);
-			inquiryAddress.setDepartmentId(toDepartmentId);
-
 			LOGGER.trace("O_問合せ宛先 開始");
-			int inquiryAddressId = inquiryAddressJdbc.insert(inquiryAddress);
-			LOGGER.trace("O_問合せ宛先 終了  問合せ宛先ID：" + inquiryAddressId);
+			if (APPLICATION_STEP_ID_1.equals(applicationStepId)) {
+				for (CategoryJudgementAuthority department : departmentIdList) {
+					inquiryAddress.setDepartmentId(department.getDepartmentId());
+					int inquiryAddressId = inquiryAddressJdbc.insert(inquiryAddress);
+					LOGGER.trace("問合せ宛先ID：" + inquiryAddressId);
+				}
+				LOGGER.trace("O_問合せ宛先 終了");
+			} else if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+				inquiryAddress.setDepartmentId(departmentId.getDepartmentId());
+				int inquiryAddressId = inquiryAddressJdbc.insert(inquiryAddress);
+				LOGGER.trace("O_問合せ宛先 終了  問合せ宛先ID：" + inquiryAddressId);
+			} else if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+				for (Authority authority : authorityList) {
+					inquiryAddress.setDepartmentId(authority.getDepartmentId());
+					int inquiryAddressId = inquiryAddressJdbc.insert(inquiryAddress);
+					LOGGER.trace("問合せ宛先ID：" + inquiryAddressId);
+				}
+				LOGGER.trace("O_問合せ宛先 終了");
+			}
 
 			// 初回投稿であるか判断
 			List<Message> messageList = mssageRepository.findByChatIdForBusiness(chatId);
@@ -233,10 +324,20 @@ public class ChatService extends AbstractJudgementService {
 			LOGGER.trace("O_チャット更新 終了");
 
 			// 最新なメッセージ一覧を取得する
-			ChatForm chatForm = searchChatMessage(answerId);
+			ChatForm chatForm = searchChatMessage(answerId,chatId);
 
 			// 行政に事業者からの問合せ通知を送付する
-			sendInquiryMailFromBusinessUser(form, toDepartmentId, messageId);
+			if (APPLICATION_STEP_ID_1.equals(applicationStepId)) {
+				for (CategoryJudgementAuthority department : departmentIdList) {
+					sendInquiryMailFromBusinessUser(form, department.getDepartmentId(), messageId);
+				}
+			} else if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+				sendInquiryMailFromBusinessUser(form, departmentId.getDepartmentId(), messageId);
+			} else if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+				for (Authority authority : authorityList) {
+					sendInquiryMailFromBusinessUser(form, authority.getDepartmentId(), messageId);
+				}
+			}
 
 			return chatForm;
 		} finally {
@@ -248,9 +349,10 @@ public class ChatService extends AbstractJudgementService {
 	 * 事業者向けチャットメッセージ一覧取得
 	 * 
 	 * @param answerId 回答ID
+	 * @param chatId チャットID
 	 * @return 事業者向けチャットメッセージ一覧
 	 */
-	public ChatForm searchChatMessage(int answerId) {
+	public ChatForm searchChatMessage(Integer answerId,Integer chatId) {
 
 		LOGGER.debug("事業者向けチャットメッセージ一覧取得 開始");
 		LOGGER.trace("回答ID: " + answerId);
@@ -258,8 +360,10 @@ public class ChatService extends AbstractJudgementService {
 		try {
 			// 回答ID紐づくチャットを取得する
 			List<Chat> chatList = chatRepository.findByAnswerId(answerId);
-
-			int chatId = 0;
+			// チャットが既に存在する場合
+			if(chatId != null && chatId.intValue() != 0) {
+				chatList = chatRepository.findByChatId(chatId);
+			}
 			if (chatList.size() == 0) {
 				// 回答IDに紐づくO_チャットのレコードがない場合新規作成する
 				chatId = chattionJdbc.insert(answerId);
@@ -304,73 +408,472 @@ public class ChatService extends AbstractJudgementService {
 	}
 
 	/**
+	 * 事業者向けチャットメッセージ存在確認
+	 * 
+	 * @param chatId チャットID
+	 */
+	public void searchChatMessageExist(int chatId) {
+
+		LOGGER.debug("事業者向けチャットメッセージ件数チェック 開始");
+		LOGGER.trace("チャットID： " + chatId);
+		try {
+			// O_チャットを取得する
+			List<Chat> chatList = chatRepository.findByChatId(chatId);
+
+			if (chatList.size() < 1) {
+				LOGGER.warn("O_チャットの値が取得できない。");
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			}
+		} finally {
+			LOGGER.debug("事業者向けチャットメッセージ件数チェック 終了");
+		}
+	}
+
+	/**
+	 * 事業者向けチャットメッセージ存在確認(チャットID無し、申請段階が事前相談の場合)
+	 * 
+	 * @param applicationId     申請ID
+	 * @param answerId          回答ID
+	 * @param applicationStepId 申請段階ID
+	 * @return chatId チャットID
+	 */
+	public int searchChatMessageExistStep1(int applicationId, int answerId, int applicationStepId) {
+
+		LOGGER.debug("事業者向けチャットメッセージ件数チェック 開始");
+		LOGGER.trace("申請ID： " + applicationId);
+		LOGGER.trace("回答ID： " + answerId);
+		LOGGER.trace("申請段階ID： " + applicationStepId);
+		try {
+			// O_チャットを取得する
+			List<Chat> chatList = chatRepository.findByApplicationStepId1(applicationId, answerId, applicationStepId);
+			int chatId = 0;
+			if (chatList.size() < 1) {
+				LOGGER.warn("O_チャットの値が取得できない。追加を行う。");
+				if(applicationId < 1 || applicationStepId < 1 || answerId < 1) {
+					LOGGER.warn("登録値が不正");
+					throw new RuntimeException("チャットの作成に失敗");
+				}
+				chatId = chattionJdbc.insertStep1(answerId, applicationId, applicationStepId);
+			} else {
+				chatId = chatList.get(0).getChatId();
+			}
+			return chatId;
+		} finally {
+			LOGGER.debug("事業者向けチャットメッセージ件数チェック 終了");
+		}
+	}
+
+	/**
+	 * 事業者向けチャットメッセージ存在確認(チャットID無し、申請段階が事前協議の場合)
+	 * 
+	 * @param applicationId      申請ID
+	 * @param applicationStepId  申請段階ID
+	 * @param departmentAnswerId 部署回答ID
+	 * @return chatId チャットID
+	 */
+	public int searchChatMessageExistStep2(int applicationId, int applicationStepId, int departmentAnswerId) {
+
+		LOGGER.debug("事業者向けチャットメッセージ件数チェック 開始");
+		LOGGER.trace("申請ID： " + applicationId);
+		LOGGER.trace("申請段階ID： " + applicationStepId);
+		LOGGER.trace("部署回答ID： " + departmentAnswerId);
+		try {
+			// O_チャットを取得する
+			List<Chat> chatList = chatRepository.findByApplicationStepId2(applicationId, applicationStepId,
+					departmentAnswerId);
+			int chatId = 0;
+			if (chatList.size() < 1) {
+				LOGGER.warn("O_チャットの値が取得できない。追加を行う。");
+				if(applicationId < 1 || applicationStepId < 1 || departmentAnswerId < 1) {
+					LOGGER.warn("登録値が不正");
+					throw new RuntimeException("チャットの作成に失敗");
+				}
+				chatId = chattionJdbc.insertStep2(applicationId, applicationStepId, departmentAnswerId);
+			} else {
+				chatId = chatList.get(0).getChatId();
+			}
+			return chatId;
+		} finally {
+			LOGGER.debug("事業者向けチャットメッセージ件数チェック 終了");
+		}
+	}
+
+	/**
+	 * 事業者向けチャットメッセージ存在確認(チャットID無し、申請段階が許可判定の場合)
+	 * 
+	 * @param applicationId     申請ID
+	 * @param applicationStepId 申請段階ID
+	 * @return chatId チャットID
+	 */
+	public int searchChatMessageExistStep3(int applicationId, int applicationStepId) {
+
+		LOGGER.debug("事業者向けチャットメッセージ件数チェック 開始");
+		LOGGER.trace("申請ID： " + applicationId);
+		LOGGER.trace("申請段階ID： " + applicationStepId);
+		try {
+			// O_チャットを取得する
+			List<Chat> chatList = chatRepository.findByApplicationStepId3(applicationId, applicationStepId);
+			int chatId = 0;
+			if (chatList.size() < 1) {
+				LOGGER.warn("O_チャットの値が取得できない。追加を行う。");
+				if(applicationId < 1 || applicationStepId < 1) {
+					LOGGER.warn("登録値が不正");
+					throw new RuntimeException("チャットの作成に失敗");
+				}
+				chatId = chattionJdbc.insertStep3(applicationId, applicationStepId);
+			} else {
+				chatId = chatList.get(0).getChatId();
+			}
+			return chatId;
+		} finally {
+			LOGGER.debug("事業者向けチャットメッセージ件数チェック 終了");
+		}
+	}
+
+	/**
+	 * 事業者向けチャットメッセージ取得(チャットID無し,検索時)
+	 * 
+	 * @param applicationId      申請ID
+	 * @param applicationStepId  申請段階ID
+	 * @param answerId           回答ID
+	 * @param departmentAnswerId 部署回答ID
+	 * @return chatId チャットID
+	 */
+	public List<Chat> getChatMessage(Integer applicationId, Integer applicationStepId, Integer answerId, Integer departmentAnswerId) {
+
+		LOGGER.debug("事業者向けチャットメッセージ取得 開始");
+		LOGGER.trace("申請ID： " + applicationId);
+		LOGGER.trace("申請段階ID： " + applicationStepId);
+		LOGGER.trace("回答ID： " + answerId);
+		LOGGER.trace("部署回答ID： " + departmentAnswerId);
+		try {
+			List<Chat> chatList = new ArrayList<Chat>();
+			if (APPLICATION_STEP_ID_1.equals(applicationStepId)) {
+				chatList = chatRepository.findByApplicationStepId1(applicationId, answerId, applicationStepId);
+			} else if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+				chatList = chatRepository.findByApplicationStepId2(applicationId, applicationStepId,
+						departmentAnswerId);
+			} else if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+				chatList = chatRepository.findByApplicationStepId3(applicationId, applicationStepId);
+			}
+
+			if (chatList.size() < 1) {
+				LOGGER.warn("O_チャットの値が取得できない。");
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			}
+			return chatList;
+		} finally {
+			LOGGER.debug("事業者向けチャットメッセージ取得 終了");
+		}
+	}
+
+	/**
+	 * 事業者向けチャットメッセージ取得(chatIdで)
+	 * 
+	 * @param chatId チャットID
+	 */
+	public List<Chat> getChatMessage(int chatId) {
+
+		LOGGER.debug("事業者向けチャットメッセージ取得(chatId) 開始");
+		LOGGER.trace("チャットID： " + chatId);
+		try {
+			// O_チャットを取得する
+			List<Chat> chatList = chatRepository.findByChatId(chatId);
+
+			if (chatList.size() < 1) {
+				LOGGER.warn("O_チャットの値が取得できない。");
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			}
+			return chatList;
+		} finally {
+			LOGGER.debug("事業者向けチャットメッセージ件数チェック 終了");
+		}
+	}
+
+	/**
+	 * 事業者向けチャットメッセージ一覧取得(申請ID)
+	 * 
+	 * @param applicationId 申請ID
+	 * @return 事業者向けチャットメッセージ一覧
+	 */
+	public List<ChatForm> searchChatMessageListForApplicationId(int applicationId, int chatId, Boolean unreadFlag) {
+		
+		LOGGER.debug("事業者向けチャットメッセージ一覧取得 開始");
+		LOGGER.trace("申請ID: " + applicationId);
+		List<ChatForm> form = new ArrayList<ChatForm>();
+		try {
+			// 申請ID紐づくチャットを取得する
+			List<Chat> chatList = chatRepository.findByApplicationId(applicationId);
+			ApplicationDao applicationDao = new ApplicationDao(emf);
+			for (Chat chat : chatList) {
+				ChatForm chatForm = new ChatForm();
+				// チャットID
+				chatForm.setChatId(chat.getChatId());
+				// 回答ID
+				chatForm.setAnswerId(chat.getAnswerId());
+				// 申請ID
+				chatForm.setApplicationId(chat.getApplicationId());
+				// 申請段階
+				ApplicationStepForm stepForm = new ApplicationStepForm();
+				// 申請段階ID
+				stepForm.setApplicationStepId(chat.getApplicationStepId());
+				// 申請IDを元にM_申請段階から申請段階名を取得
+				stepForm.setApplicationStepName(applicationStepRepository
+						.findByApplicationStep(chat.getApplicationStepId()).getApplicationStepName());
+				chatForm.setApplicationStep(stepForm);
+				// 担当部署・タイトル
+				DepartmentForm departmentForm = new DepartmentForm();
+				// チャットIDに紐づくメッセージを取得する
+				List<Message> messageList = mssageRepository.findByChatIdForBusiness(chat.getChatId());
+				// チャットに紐づく回答一覧を取得する
+				List<Answer> answers = applicationDao.getAllAnswerListForBusiness(chat.getApplicationId(),chat.getApplicationStepId(),chat.getDepartmentAnswerId());
+				if (APPLICATION_STEP_ID_1.equals(chat.getApplicationStepId())) {
+					// 事前相談
+					List<Answer> answer = answers.stream().filter(_answer -> _answer.getAnswerId() != null && _answer.getAnswerId().equals(chat.getAnswerId())).collect(Collectors.toList()); 
+					// 回答がない or メッセージがないかつ回答未通知の場合はスキップ
+					if(answer == null || answer.size() < 1 || ((messageList==null || messageList.size() < 1) && (answer.get(0).getNotifiedFlag() == null || !answer.get(0).getNotifiedFlag()))) {
+						continue;
+					}
+					// 担当部署
+					List<CategoryJudgementAuthority> judgementDepartment = judgementAuthorityRepository
+							.getJudgementAuthorityList(answer.get(0).getJudgementId());
+					List<Department> departmentList = departmentRepository
+							.getDepartmentListById(judgementDepartment.get(0).getDepartmentId());
+					// 部署UID
+					departmentForm.setDepartmentId(departmentList.get(0).getDepartmentId());
+					// 部署名
+					departmentForm.setDepartmentName(departmentList.get(0).getDepartmentName());
+					// 選択状態
+					departmentForm.setChecked(false);
+					// メールアドレス
+					departmentForm.setMailAddress(departmentList.get(0).getMailAddress());
+					// タイトル
+					List<CategoryJudgementResult> judgementTitle = judgementResultRepository
+							.getJudgementTitleByJudgementId(answer.get(0).getJudgementId().toString());
+					chatForm.setTitle(judgementTitle.get(0).getTitle());
+				} else if (APPLICATION_STEP_ID_2.equals(chat.getApplicationStepId())) {
+					// 事前協議
+					List<Answer> answer = answers.stream().filter(_answer -> _answer.getNotifiedFlag() != null && _answer.getNotifiedFlag()).collect(Collectors.toList()); 
+					// 通知済みの回答がないかつメッセージが無い場合はスキップ
+					if((answer == null || answer.size() < 1) && (messageList == null || messageList.size() < 1)) {
+						continue;
+					}
+					// 担当部署
+					List<Department> departmentList = departmentRepository.getDepartmentListById(
+							answerDepartmentRepository.findByAnswerId(chat.getDepartmentAnswerId()).getDepartmentId());
+					// 部署UID
+					departmentForm.setDepartmentId(departmentList.get(0).getDepartmentId());
+					// 部署名
+					departmentForm.setDepartmentName(departmentList.get(0).getDepartmentName());
+					// 選択状態
+					departmentForm.setChecked(false);
+					// メールアドレス
+					departmentForm.setMailAddress(departmentList.get(0).getMailAddress());
+					// タイトル
+					chatForm.setTitle(departmentList.get(0).getDepartmentName());
+					// 部署回答ID
+					chatForm.setDepartmentAnswerId(chat.getDepartmentAnswerId());
+				} else if (APPLICATION_STEP_ID_3.equals(chat.getApplicationStepId())) {
+					// 許可判定
+					List<Answer> answer = answers.stream().filter(_answer -> _answer.getNotifiedFlag() != null && _answer.getNotifiedFlag()).collect(Collectors.toList()); 
+					// 通知済みの回答がないかつメッセージが無い場合はスキップ
+					if((answer == null || answer.size() < 1) && (messageList == null || messageList.size() < 1)) {
+						continue;
+					}
+					// タイトル
+					chatForm.setTitle("許可判定");
+				}
+				chatForm.setDepartment(departmentForm);
+				// メッセージ一覧
+				List<MessageForm> messageFormList = new ArrayList<MessageForm>();
+				for (Message message : messageList) {
+					MessageForm messageForm = getMessageFormFromEntity(message);
+					messageFormList.add(messageForm);
+					// 行政から未読のメッセージを既読に更新する(cahtIdがパラメータであるもののみ)
+					if ((unreadFlag == null || unreadFlag == false) && chatId == chat.getChatId()) {
+						if (MESSAGE_TYPE_GOVERNMENT_TO_BUSINESS.equals(message.getMessageType()) && !message.getReadFlag()) {
+							if (messageJdbc.updateReadFlag(message.getMessageId()) != 1) {
+								LOGGER.warn("メッセージ情報の更新件数不正");
+								throw new RuntimeException("メッセージ情報の更新に失敗");
+							}
+
+							// 行政から事業者へ回答する時に、宛先は一つしか選択しないので、更新条件に部署IDを入れなくてもいい
+							for (InquiryAddressForm inquiryAddressForm : messageForm.getInquiryAddressForms()) {
+								if (inquiryAddressJdbc.updateReadFlag(inquiryAddressForm.getInquiryAddressId()) != 1) {
+									LOGGER.warn("問合せ宛先情報の更新件数不正");
+									throw new RuntimeException("問合せ宛先情報の更新に失敗");
+								}
+							}
+						}
+					}
+				}
+				// メッセージ一覧
+				chatForm.setMessages(messageFormList);
+				// 選択状態
+				if (chatId == chat.getChatId()) {
+					chatForm.setChecked(true);
+				} else {
+					chatForm.setChecked(false);
+				}
+				form.add(chatForm);
+			}
+			return form;
+		} finally {
+			LOGGER.debug("事業者向けチャットメッセージ一覧取得 終了");
+		}
+
+	}
+
+	/**
 	 * 行政向けチャットメッセージ一覧取得
 	 * 
 	 * @param chatId       チャットID
 	 * @param departmentId ログインしている行政ユーザーの部署ID
 	 * @return 行政向けチャットメッセージ一覧
 	 */
-	public ChatForm searchChatMessageForGovernment(int chatId, String departmentId) {
+	public List<ChatForm> searchChatMessageForGovernment(int chatId, String departmentId, Boolean unreadFlag) {
 
 		LOGGER.debug("行政向けチャットメッセージ一覧取得 開始");
 		LOGGER.trace("チャットID： " + chatId);
-		ChatForm form = new ChatForm();
+		List<ChatForm> form = new ArrayList<ChatForm>();
 		try {
 			// O_チャットを取得する
 			List<Chat> chatList = chatRepository.findByChatId(chatId);
 
 			if (chatList.size() > 0) {
 
-				// 回答ID
-				form.setAnswerId(chatList.get(0).getAnswerId());
-				// チャットID
-				form.setChatId(chatId);
+				Integer applicationId = chatList.get(0).getApplicationId();
+				// 申請ID紐づくチャットを取得する
+				List<Chat> chatLists = chatRepository.findByApplicationId(applicationId);
 
-				// チャットIDに紐づくメッセージを取得する
-				List<Message> messageList = mssageRepository.findByChatId(chatId);
-
-				List<MessageForm> messageFormList = new ArrayList<MessageForm>();
-				for (Message message : messageList) {
-					MessageForm messageForm = getMessageFormFromEntity(message);
-					messageFormList.add(messageForm);
-
-					// 自分部署担当しているの未読の問合せ宛先ID
-					Integer inquiryAddressId = null;
-					// 既読になる担当部署数
-					int alreadyReadCount = 0;
-					for (InquiryAddressForm inquiryAddressForm : messageForm.getInquiryAddressForms()) {
-						// 既読になる担当部署数カウント
-						if (inquiryAddressForm.getReadFlag()) {
-							alreadyReadCount++;
-						}
+				// 取得したチャットリストをループしてメッセージ詳細を取得する
+				for (Chat chat : chatLists) {
+					ChatForm chatForm = new ChatForm();
+					// チャットID
+					chatForm.setChatId(chat.getChatId());
+					// 回答ID
+					chatForm.setAnswerId(chat.getAnswerId());
+					// 申請ID
+					chatForm.setApplicationId(chat.getApplicationId());
+					// 申請段階
+					ApplicationStepForm stepForm = new ApplicationStepForm();
+					// 申請段階ID
+					stepForm.setApplicationStepId(chat.getApplicationStepId());
+					// 申請IDを元にM_申請段階から申請段階名を取得
+					stepForm.setApplicationStepName(applicationStepRepository
+							.findByApplicationStep(chat.getApplicationStepId()).getApplicationStepName());
+					chatForm.setApplicationStep(stepForm);
+					// 担当部署・タイトル
+					DepartmentForm departmentForm = new DepartmentForm();
+					if (APPLICATION_STEP_ID_1.equals(chat.getApplicationStepId())) {
+						// 事前相談
+						// 担当部署
+						List<Answer> answer = answerRepository.findByAnswerId(chat.getAnswerId());
+						List<CategoryJudgementAuthority> judgementDepartment = judgementAuthorityRepository
+								.getJudgementAuthorityList(answer.get(0).getJudgementId());
+						List<Department> departmentList = departmentRepository
+								.getDepartmentListById(judgementDepartment.get(0).getDepartmentId());
+						// 部署UID
+						departmentForm.setDepartmentId(departmentList.get(0).getDepartmentId());
+						// 部署名
+						departmentForm.setDepartmentName(departmentList.get(0).getDepartmentName());
+						// 選択状態
+						departmentForm.setChecked(false);
+						// メールアドレス
+						departmentForm.setMailAddress(departmentList.get(0).getMailAddress());
+						// タイトル
+						List<CategoryJudgementResult> judgementTitle = judgementResultRepository
+								.getJudgementTitleByJudgementId(answer.get(0).getJudgementId().toString());
+						chatForm.setTitle(judgementTitle.get(0).getTitle());
+					} else if (APPLICATION_STEP_ID_2.equals(chat.getApplicationStepId())) {
+						// 事前協議
+						// 担当部署
+						List<Department> departmentList = departmentRepository
+								.getDepartmentListById(answerDepartmentRepository
+										.findByAnswerId(chat.getDepartmentAnswerId()).getDepartmentId());
+						// 部署UID
+						departmentForm.setDepartmentId(departmentList.get(0).getDepartmentId());
+						// 部署名
+						departmentForm.setDepartmentName(departmentList.get(0).getDepartmentName());
+						// 選択状態
+						departmentForm.setChecked(false);
+						// メールアドレス
+						departmentForm.setMailAddress(departmentList.get(0).getMailAddress());
+						// タイトル
+						chatForm.setTitle(departmentList.get(0).getDepartmentName());
+						// 部署回答ID
+						chatForm.setDepartmentAnswerId(chat.getDepartmentAnswerId());
+					} else if (APPLICATION_STEP_ID_3.equals(chat.getApplicationStepId())) {
+						// 許可判定
+						// タイトル
+						chatForm.setTitle("許可判定");
+					}
+					chatForm.setDepartment(departmentForm);
+					// チャットIDに紐づくメッセージを取得する
+					List<Message> messageList = mssageRepository.findByChatId(chat.getChatId());
+					List<MessageForm> messageFormList = new ArrayList<MessageForm>();
+					for (Message message : messageList) {
+						MessageForm messageForm = getMessageFormFromEntity(message);
+						messageFormList.add(messageForm);
 
 						// 自分部署担当しているの未読の問合せ宛先ID
-						if (!inquiryAddressForm.getReadFlag()
-								&& departmentId.equals(inquiryAddressForm.getDepartment().getDepartmentId())) {
-							inquiryAddressId = inquiryAddressForm.getInquiryAddressId();
+						Integer inquiryAddressId = null;
+						// 既読になる担当部署数
+						int alreadyReadCount = 0;
+						for (InquiryAddressForm inquiryAddressForm : messageForm.getInquiryAddressForms()) {
+							// 既読になる担当部署数カウント
+							if (inquiryAddressForm.getReadFlag()) {
+								alreadyReadCount++;
+							}
+
+							// 自分部署担当しているの未読の問合せ宛先ID
+							if (!inquiryAddressForm.getReadFlag()
+									&& departmentId.equals(inquiryAddressForm.getDepartment().getDepartmentId())) {
+								inquiryAddressId = inquiryAddressForm.getInquiryAddressId();
+							}
+						}
+
+						if(unreadFlag == null || unreadFlag == false) {
+							// 「O_問合せ宛先」の既読フラグを既読済みに更新する
+							// 既読に更新する(cahtIdがパラメータであるもののみ)
+							if (chatId == chat.getChatId()) {
+								if (inquiryAddressId != null) {
+									if (inquiryAddressJdbc.updateReadFlag(inquiryAddressId) != 1) {
+										LOGGER.warn("問合せ宛先情報の更新件数不正");
+										throw new RuntimeException("問合せ宛先情報の更新に失敗");
+									}
+									alreadyReadCount++;
+								}
+							}
+							// 「O_メッセージ」の既読フラグを既読に更新する
+							if (!message.getReadFlag() && messageForm.getInquiryAddressForms().size() == alreadyReadCount) {
+								if (messageJdbc.updateReadFlag(message.getMessageId()) != 1) {
+									LOGGER.warn("メッセージ情報の更新件数不正");
+									throw new RuntimeException("メッセージ情報の更新に失敗");
+								}
+							}
+							// 許可判定の場合
+							if (APPLICATION_STEP_ID_3.equals(chat.getApplicationStepId())) {
+								// 許可判定
+								if (MESSAGE_TYPE_BUSINESS_TO_GOVERNMENT.equals(message.getMessageType())
+										&& !message.getReadFlag()) {
+									if (messageJdbc.updateReadFlag(message.getMessageId()) != 1) {
+										LOGGER.warn("メッセージ情報の更新件数不正");
+										throw new RuntimeException("メッセージ情報の更新に失敗");
+									}
+								}
+							}
 						}
 					}
-
-					// 「O_問合せ宛先」の既読フラグを既読済みに更新する
-					if (inquiryAddressId != null) {
-						if (inquiryAddressJdbc.updateReadFlag(inquiryAddressId) != 1) {
-							LOGGER.warn("問合せ宛先情報の更新件数不正");
-							throw new RuntimeException("問合せ宛先情報の更新に失敗");
-						}
-						alreadyReadCount++;
+					chatForm.setMessages(messageFormList);
+					// 選択状態
+					if (chatId == chat.getChatId()) {
+						chatForm.setChecked(true);
+					} else {
+						chatForm.setChecked(false);
 					}
-
-					// 「O_メッセージ」の既読フラグを既読に更新する
-					if (!message.getReadFlag() && messageForm.getInquiryAddressForms().size() == alreadyReadCount) {
-						if (messageJdbc.updateReadFlag(message.getMessageId()) != 1) {
-							LOGGER.warn("メッセージ情報の更新件数不正");
-							throw new RuntimeException("メッセージ情報の更新に失敗");
-						}
-					}
-
+					form.add(chatForm);
 				}
-				// メッセージ一覧
-				form.setMessages(messageFormList);
 			} else {
 				LOGGER.warn("O_チャットの値が取得できない。");
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -390,7 +893,7 @@ public class ChatService extends AbstractJudgementService {
 	 * @param departmentName ログインしている行政ユーザーの部署名
 	 * @return 最新なチャットメッセージ
 	 */
-	public ChatForm registerMessageForGovernment(MessagePostRequestForm form, String useId, String departmentId,
+	public List<ChatForm> registerMessageForGovernment(MessagePostRequestForm form, String useId, String departmentId,
 			String departmentName) {
 		LOGGER.debug("行政から メッセージ登録 開始");
 		try {
@@ -445,7 +948,7 @@ public class ChatService extends AbstractJudgementService {
 					MessageForm messageForm = getMessageFormFromEntity(messageObj);
 
 					// 事業者に回答する投稿メッセージの場合、送信者が事業者のメッセージを回答済みにする
-					if (MESSAGE_TYPE_GOVERNMENT_TO_BUSINESS == message.getMessageType()) {
+					if (MESSAGE_TYPE_GOVERNMENT_TO_BUSINESS.equals(message.getMessageType())) {
 
 						// 自分の部署担当かつ、送信者IDの部署IDが投稿メッセージの宛先部署IDの未回答メッセージを回答済みに更新する
 						if (!messageObj.getAnswerCompleteFlag() && "-1".equals(messageObj.getSenderId())) {
@@ -517,7 +1020,7 @@ public class ChatService extends AbstractJudgementService {
 			LOGGER.trace("O_メッセージ更新 終了");
 
 			// メッセージタイプが「2：行政→事業者」の場合、行政回答日時を更新する
-			if (message.getMessageType() == MESSAGE_TYPE_GOVERNMENT_TO_BUSINESS) {
+			if (MESSAGE_TYPE_GOVERNMENT_TO_BUSINESS.equals(message.getMessageType())) {
 				// O_チャット更新
 				LOGGER.trace("O_チャット更新 開始");
 				if (chattionJdbc.updateGovernmentAnswerDatetime(form.getChatId(), useId) != 1) {
@@ -528,7 +1031,7 @@ public class ChatService extends AbstractJudgementService {
 			}
 
 			// 行政向け 最新なメッセージ一覧を取得する
-			ChatForm chatForm = searchChatMessageForGovernment(form.getChatId(), departmentId);
+			List<ChatForm> chatForm = searchChatMessageForGovernment(form.getChatId(), departmentId, false);
 
 			// メール通信
 			sendInquiryMailFromGovernmentUser(form, departmentName, message.getMessageType(), messageId);
@@ -561,28 +1064,40 @@ public class ChatService extends AbstractJudgementService {
 
 			// O_申請検索
 			LOGGER.trace("O_申請検索 開始");
-			// ステータスと担当課は申請情報取得と異なるため、一旦除く
+			// ステータスと担当課、回答者、申請段階は申請情報取得と異なるため、一旦除く
 			ApplicationSearchConditionForm condition = new ApplicationSearchConditionForm();
+			// 申請者情報
 			condition.setApplicantInformationItemForm(applicationSearchConditionForm.getApplicantInformationItemForm());
+			// 申請区分
 			condition.setApplicationCategories(applicationSearchConditionForm.getApplicationCategories());
+			// 申請種類
+			condition.setApplicationTypes(applicationSearchConditionForm.getApplicationTypes());
+
+			// 申請追加情報
+			condition.setApplicantAddInformationItemForm(
+					applicationSearchConditionForm.getApplicantAddInformationItemForm());
+			// 条文ステータス
+			condition.setItemAnswerStatus(applicationSearchConditionForm.getItemAnswerStatus());
+			// 申請ID
+			condition.setApplicationId(applicationSearchConditionForm.getApplicationId());
+
 			List<Application> applicationList = applicationDao.searchApplication(condition);
 			LOGGER.trace("O_申請検索 終了");
 
 			// 申請IDのリストを作成する
-			List<Integer> applicantIdList = new ArrayList<Integer>();
+			List<Integer> applicationIdList = new ArrayList<Integer>();
 			for (Application application : applicationList) {
-				applicantIdList.add(application.getApplicantId());
+				applicationIdList.add(application.getApplicationId());
 			}
 			LOGGER.trace("O_チャット検索 開始");
-			List<Chat> chats = chatDao.searchChat(applicationSearchConditionForm, applicantIdList);
+			List<Chat> chats = chatDao.searchChat(applicationSearchConditionForm, applicationIdList);
 			LOGGER.trace("O_チャット検索 終了");
 
 			LOGGER.debug("検索結果編集 開始");
 			for (Chat chat : chats) {
 				ChatSearchResultForm form = new ChatSearchResultForm();
-				// 回答IDより、申請ID取得
-				List<Answer> answers = answerRepository.findByAnswerId(chat.getAnswerId());
-				form.setApplicationId(answers.get(0).getApplicationId());
+				// 申請ID取得
+				form.setApplicationId(chat.getApplicationId());
 				form.setChatId(chat.getChatId());
 
 				// ステータス
@@ -591,29 +1106,87 @@ public class ChatService extends AbstractJudgementService {
 				if (inquiryMessages.size() > 0) {
 					Message message = inquiryMessages.get(0);
 					form.setStatus(getStatus(message.getReadFlag(), message.getAnswerCompleteFlag()));
-				}
-
-				// 回答対象
-
-				List<CategoryJudgement> categoryJudgements = answerDao.getCategoryJudgementList(chat.getAnswerId());
-				if (categoryJudgements.size() == 0) {
-					LOGGER.warn("M_区分判定の値が取得できない 回答ID: " + chat.getAnswerId());
-					form.setCategoryJudgementTitle("");
 				} else {
-					// 回答担当課
-					form.setCategoryJudgementTitle(categoryJudgements.get(0).getTitle());
-					List<Department> toDepartmentList = departmentRepository
-							.getDepartmentListById(categoryJudgements.get(0).getDepartmentId());
-					if (toDepartmentList.size() > 0) {
-						form.setDepartmentName(toDepartmentList.get(0).getDepartmentName());
-					}
+					// 事業者→行政のメッセージが取得できない場合、行政から問い合わせを投げて事業者未回答の状態とみなす
+					form.setStatus(2);
 				}
 
+				// 回答対象、担当課: 申請段階により取得先を切替
+				final Integer applcationStepId = chat.getApplicationStepId();
+
+				String deparmentName = "";
+				String title = "";
+				if (applcationStepId.equals(APPLICATION_STEP_ID_1)) {
+					// 事前相談: 回答IDより回答対象、担当課を取得
+					List<CategoryJudgementResult> categoryJudgements = answerDao.getJudgementResultByAnswerId(chat.getAnswerId());
+
+					if (categoryJudgements.size() == 0) {
+						LOGGER.warn("M_区分判定の値が取得できない 回答ID: " + chat.getAnswerId());
+					} else {
+						title = categoryJudgements.get(0).getTitle();
+						List<CategoryJudgementAuthority> authorityList = judgementAuthorityRepository
+								.getJudgementAuthorityList(categoryJudgements.get(0).getJudgementItemId());
+						if (categoryJudgements.size() == 0) {
+							LOGGER.warn("M_権限の値が取得できない 回答ID: " + chat.getAnswerId());
+						} else {
+							final List<String> departmentIdList = new ArrayList<String>();
+							for (CategoryJudgementAuthority authority : authorityList) {
+								departmentIdList.add(authority.getDepartmentId());
+							}
+							List<Department> toDepartmentList = departmentRepository
+									.getDepartmentListByIdList(departmentIdList);
+							final List<String> departmentNameList = new ArrayList<String>();
+							for (Department aDepartment : toDepartmentList) {
+								departmentNameList.add(aDepartment.getDepartmentName());
+							}
+							deparmentName = String.join(",", departmentNameList);
+						}
+
+					}
+				} else if (applcationStepId.equals(APPLICATION_STEP_ID_2)) {
+					// 事前協議: 回答部署IDより担当課を取得、問合せ対象は一律で設定
+					final Integer departmentAnswerId = chat.getDepartmentAnswerId();
+					List<Department> toDepartmentList = chatDao
+							.getDepartmentListByDepartmentAnswerId(departmentAnswerId);
+					if (toDepartmentList.size() > 0) {
+						deparmentName = toDepartmentList.get(0).getDepartmentName();
+					}
+					title = step2Title.replace(step2TitleReplaceText, deparmentName);
+				} else if (applcationStepId.equals(APPLICATION_STEP_ID_3)) {
+					// 許可判定: 許可判定回答権限より担当課を取得、問合せ対象は一律で設定
+					final List<Authority> authorityList = authorityRepository.findStep3AnswerDepartment();
+					final List<String> departmentIdList = new ArrayList<String>();
+					for (Authority authority : authorityList) {
+						departmentIdList.add(authority.getDepartmentId());
+					}
+					List<Department> toDepartmentList = departmentRepository
+							.getDepartmentListByIdList(departmentIdList);
+					final List<String> departmentNameList = new ArrayList<String>();
+					for (Department aDepartment : toDepartmentList) {
+						departmentNameList.add(aDepartment.getDepartmentName());
+					}
+					deparmentName = String.join(",", departmentNameList);
+					title = step3Title;
+				}
+				// 担当課
+				form.setDepartmentName(deparmentName);
+				// 対象
+				form.setCategoryJudgementTitle(title);
+
+				List<Message> messages = mssageRepository.findByChatId(chat.getChatId());
 				// 最新投稿日時
-				form.setSendDatetime(datetimeformatter.format(chat.getEstablishmentPostDatetime()));
-				// 事業者初回投稿日時
-				form.setEstablishmentFirstPostDatetime(
-						datetimeformatter.format(chat.getEstablishmentFirstPostDatetime()));
+				if(messages != null && messages.size() > 0) {
+					form.setSendDatetime(datetimeformatter.format(messages.get(messages.size()-1).getSendDatetime()));
+				} else {
+					form.setSendDatetime("");
+				}
+				
+				// 初回投稿日時
+				if(messages != null && messages.size() > 0) {
+					form.setEstablishmentFirstPostDatetime(datetimeformatter.format(messages.get(0).getSendDatetime()));
+				} else {
+					form.setEstablishmentFirstPostDatetime("");
+				}
 
 				// 回答済みの場合、回答者と回答日時を設定する
 				if (chat.getLastAnswererId() != null && !"".equals(chat.getLastAnswererId())) {
@@ -623,6 +1196,8 @@ public class ChatService extends AbstractJudgementService {
 							.findByUserId(chat.getLastAnswererId());
 					if (governmentUserList.size() > 0) {
 						form.setAnswerUserName(governmentUserList.get(0).getUserName());
+					}else {
+						form.setAnswerUserName("");
 					}
 					// 最新回答日時
 					form.setAnswerDatetime(datetimeformatter.format(chat.getGovernmentAnswerDatetime()));
@@ -634,11 +1209,10 @@ public class ChatService extends AbstractJudgementService {
 				}
 
 				// 地番
-				List<LotNumberForm> lotNumberFormList = new ArrayList<LotNumberForm>();
-				List<LotNumberAndDistrict> lotNumberList = applicationDao
-						.getLotNumberList(answers.get(0).getApplicationId(), lonlatEpsg);
-				for (LotNumberAndDistrict lotNumber : lotNumberList) {
-					lotNumberFormList.add(getLotNumberFormFromEntity(lotNumber, null));
+				List<ApplyLotNumberForm> lotNumberFormList = new ArrayList<ApplyLotNumberForm>();
+				List<ApplyLotNumber> lotNumbersList = applicationDao.getApplyingLotNumberList(chat.getApplicationId(), lonlatEpsg);
+				for (ApplyLotNumber lotNumbers : lotNumbersList) {
+					lotNumberFormList.add(getApplyingLotNumberFormFromEntity(lotNumbers));
 				}
 				form.setLotNumbers(lotNumberFormList);
 
@@ -664,27 +1238,24 @@ public class ChatService extends AbstractJudgementService {
 
 			LOGGER.trace("担当課の回答一覧検索 開始");
 			ApplicationDao applicationDao = new ApplicationDao(emf);
-			List<Application> applicationList = applicationDao.getApplicatioList(departmentId);
-			List<ApplyAnswerForm> applyAnswerFormList = new ArrayList<ApplyAnswerForm>();
-			for (Application application : applicationList) {
-				ApplyAnswerForm applyAnswerForm = new ApplyAnswerForm();
-				// 申請ID
-				applyAnswerForm.setApplicationId(application.getApplicantId());
-				// ステータス
-				try {
-					final String statusText = (application.getVersionInformation() != null)
-							? versionInformationText.replace(versionInformationReplaceText,
-									application.getVersionInformation().toString())
-									+ getStatusMap().get(application.getStatus())
-							: getStatusMap().get(application.getStatus());
-					applyAnswerForm.setStatus(statusText);
-				} catch (Exception e) {
-					applyAnswerForm.setStatus("");
-				}
-				applyAnswerForm.setStatusCode(application.getStatus());
-				applyAnswerFormList.add(applyAnswerForm);
-			}
-			form.setAnswers(applyAnswerFormList);
+			// O_申請（事前相談）取得
+			List<ApplicationAnswerSearchResult> consultationApplicationList = applicationDao
+					.getConsultationApplicatioList(departmentId, deadlineXDaysAgo);
+			List<ApplyAnswerSearchResultForm> consultationApplyAnswerFormList = setApplyAnswerFormList(
+					consultationApplicationList);
+			form.setConsultationApplys(consultationApplyAnswerFormList);
+			// O_申請（事前協議）取得
+			List<ApplicationAnswerSearchResult> discussionApplicationList = applicationDao
+					.getDiscussionApplicatioList(departmentId, deadlineXDaysAgo);
+			List<ApplyAnswerSearchResultForm> discussionApplyAnswerFormList = setApplyAnswerFormList(
+					discussionApplicationList);
+			form.setDiscussionApplys(discussionApplyAnswerFormList);
+			// O_申請（許可判定）取得
+			List<ApplicationAnswerSearchResult> permissionApplicationList = applicationDao
+					.getPermissionApplicatioList(departmentId, deadlineXDaysAgo);
+			List<ApplyAnswerSearchResultForm> permissionApplyAnswerFormList = setApplyAnswerFormList(
+					permissionApplicationList);
+			form.setPermissionApplys(permissionApplyAnswerFormList);
 			LOGGER.trace("担当課の回答一覧検索 終了");
 
 			LOGGER.trace("担当課の問合せ一覧検索 開始");
@@ -695,11 +1266,11 @@ public class ChatService extends AbstractJudgementService {
 			for (Message message : messageList) {
 				ChatSearchResultForm chatSearchResultForm = new ChatSearchResultForm();
 				LOGGER.trace("申請情報検索 開始");
-				List<Application> applyList = chatDao.getApplicatioList(message.getChatId());
+				List<Chat> chatList = chatRepository.findByChatId(message.getChatId());
 
-				if (applyList.size() > 0) {
+				if (chatList.size() > 0) {
 					// 申請ID
-					chatSearchResultForm.setApplicationId(applyList.get(0).getApplicantId());
+					chatSearchResultForm.setApplicationId(chatList.get(0).getApplicationId());
 				} else {
 					LOGGER.warn("O_申請の値が取得できない チャットID: " + message.getChatId());
 					continue;
@@ -723,17 +1294,68 @@ public class ChatService extends AbstractJudgementService {
 					departments.add(getDepartmentFormFromEntity(department));
 				}
 				chatSearchResultForm.setDepartments(departments);
+				// 申請地番一覧
+				List<ApplyLotNumberForm> formList = new ArrayList<ApplyLotNumberForm>();
+				List<ApplyLotNumber> lotNumbersList = applicationDao.getApplyingLotNumberList(chatList.get(0).getApplicationId(), lonlatEpsg);
+				for (ApplyLotNumber lotNumbers : lotNumbersList) {
+					formList.add(getApplyingLotNumberFormFromEntity(lotNumbers));
+				}
+				chatSearchResultForm.setLotNumbers(formList);			
 				chatSearchResultFormList.add(chatSearchResultForm);
 				LOGGER.trace("部署情報検索 終了");
 			}
 
 			form.setInquiries(chatSearchResultFormList);
 			LOGGER.trace("担当課の問合せ一覧検索 終了");
-
 			return form;
 		} finally {
 			LOGGER.debug("担当課の問合せ・回答一覧検索 終了");
 		}
+	}
+
+	/**
+	 * 申請一覧フォーム設定（事前相談、事前協議、許可申請）
+	 * 
+	 * @param applicationList
+	 * @return 申請一覧フォームリスト
+	 */
+	List<ApplyAnswerSearchResultForm> setApplyAnswerFormList(List<ApplicationAnswerSearchResult> applicationList) {
+
+		List<ApplyAnswerSearchResultForm> applyAnswerFormList = new ArrayList<ApplyAnswerSearchResultForm>();
+		ApplicationDao dao = new ApplicationDao(emf);
+		for (ApplicationAnswerSearchResult application : applicationList) {
+			ApplyAnswerSearchResultForm applyAnswerForm = new ApplyAnswerSearchResultForm();
+			// 申請ID
+			applyAnswerForm.setApplicationId(application.getApplicationId());
+			// ステータス
+			try {
+				final String statusText = (application.getVersionInformation() != null)
+						? versionInformationText.replace(versionInformationReplaceText,
+								application.getVersionInformation().toString())
+								+ getStatusMap().get(application.getStatus())
+						: getStatusMap().get(application.getStatus());
+				applyAnswerForm.setStatus(statusText);
+			} catch (Exception e) {
+				applyAnswerForm.setStatus("");
+			}
+			// 期限
+			applyAnswerForm.setDeadlineDate(application.getDeadlineDate());
+
+			// 警告フラグ
+			applyAnswerForm.setWarning(application.getWarning());
+
+			// 申請地番一覧
+			List<ApplyLotNumberForm> formList = new ArrayList<ApplyLotNumberForm>();
+			List<ApplyLotNumber> lotNumbersList = dao.getApplyingLotNumberList(application.getApplicationId(), lonlatEpsg);
+			for (ApplyLotNumber lotNumbers : lotNumbersList) {
+				formList.add(getApplyingLotNumberFormFromEntity(lotNumbers));
+			}
+			applyAnswerForm.setLotNumbers(formList);
+			
+			applyAnswerFormList.add(applyAnswerForm);
+		}
+
+		return applyAnswerFormList;
 	}
 
 	/**
@@ -1100,7 +1722,6 @@ public class ChatService extends AbstractJudgementService {
 		// 送信間隔の間に、同じ宛先部署への問合せがない場合、メール通知を行う。
 		if (messageList.size() == 0) {
 			MailItem baseItem = new MailItem();
-
 			LOGGER.debug(" O_申請者情報検索 開始");
 			String id = form.getLoginId();
 			String password = form.getPassword();
@@ -1113,7 +1734,13 @@ public class ChatService extends AbstractJudgementService {
 			}
 			ApplicantInformation applicantInformation = applicantInformationList.get(0);
 			LOGGER.debug(" O_申請者情報検索 終了");
-
+			
+			// O_申請情報検索
+			Application application = getApplication(applicantInformation.getApplicationId());
+			baseItem.setApplicationId(application.getApplicationId().toString()); // 申請ID
+			baseItem.setApplicationTypeName(getApplicationTypeName(application.getApplicationTypeId())); // 申請種類名
+			baseItem.setApplicationStepName(getApplicationStepName(form.getApplicationStepId())); // 申請段階名
+			
 			LOGGER.debug("事業者から問合せ通知（行政向け）用内容編集 開始");
 			// 申請者氏名
 			LOGGER.debug("申請者氏名設定 開始");
@@ -1127,13 +1754,30 @@ public class ChatService extends AbstractJudgementService {
 
 			// 申請地番
 			LOGGER.debug("申請地番設定 開始");
-			baseItem.setLotNumber(getLotNumbers(applicantInformation.getApplicantId()));
+			baseItem.setLotNumber(getLotNumbers(applicantInformation.getApplicationId()));
 			LOGGER.debug("申請地番設定 終了");
 
 			// 回答対象
-			LOGGER.debug("回答対象設定 開始");
-			baseItem.setAnswerTarget(getAnswerTarget(answerId));
-			LOGGER.debug("回答対象設定 終了");
+			List<Chat> chatList = chatRepository.findByChatId(chatId);
+			if(chatList.get(0).getApplicationStepId().intValue() == 1) {
+				LOGGER.debug("回答対象設定 開始");
+				baseItem.setAnswerTarget(getAnswerTarget(answerId));
+				LOGGER.debug("回答対象設定 終了");
+			}else if(chatList.get(0).getApplicationStepId().intValue() == 2 && chatList.get(0).getDepartmentAnswerId() != null) {
+				LOGGER.debug("回答対象設定 開始");
+				List<DepartmentAnswer> departmentAnswerList = departmentAnswerRepository.findByDepartmentAnswerId(chatList.get(0).getDepartmentAnswerId());
+				if(departmentAnswerList != null && departmentAnswerList.get(0) != null && departmentAnswerList.get(0).getDepartmentId() != null) {
+					List<Department> departmentList = departmentRepository.getDepartmentListById(departmentAnswerList.get(0).getDepartmentId());
+					if(departmentList != null && departmentList.get(0) != null && departmentList.get(0).getDepartmentName() != null) {
+						baseItem.setAnswerTarget(departmentList.get(0).getDepartmentName());
+					}
+				}
+				LOGGER.debug("回答対象設定 終了");
+			}else if(chatList.get(0).getApplicationStepId().intValue() == 3){
+				LOGGER.debug("回答対象設定 開始");
+				baseItem.setAnswerTarget(step3Title);
+				LOGGER.debug("回答対象設定 終了");
+			}
 
 			// 問合せ内容
 			LOGGER.debug("問合せ内容設定 開始");
@@ -1198,26 +1842,31 @@ public class ChatService extends AbstractJudgementService {
 				MailItem baseItem = new MailItem();
 
 				// 回答がない場合、チャットIDで、回答IDを取得する
+				List<Chat> chatList = chatRepository.findByChatId(chatId);
 				if (answerId == null) {
-					List<Chat> chatList = chatRepository.findByChatId(chatId);
 					if (chatList.size() != 1) {
 						LOGGER.error("チャットデータの件数が不正");
 						throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 					}
 					answerId = chatList.get(0).getAnswerId();
 				}
-
-				List<Answer> anwserList = answerRepository.findByAnswerId(answerId);
-				if (anwserList.size() != 1) {
-					LOGGER.error("回答データの件数が不正");
+				
+				if (chatList.size() != 1) {
+					LOGGER.error("チャットデータの件数が不正");
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 				}
-				Integer applicationId = anwserList.get(0).getApplicationId();
+				Integer applicationId = chatList.get(0).getApplicationId();
 
+				// O_申請情報検索
+				Application application = getApplication(applicationId);
+				baseItem.setApplicationId(application.getApplicationId().toString()); // 申請ID
+				baseItem.setApplicationTypeName(getApplicationTypeName(application.getApplicationTypeId())); // 申請種類名
+				baseItem.setApplicationStepName(getApplicationStepName(form.getApplicationStepId())); // 申請段階名
+				
 				LOGGER.debug(" O_申請者情報検索 開始");
 				List<ApplicantInformation> applicantInformationList = applicantInformationRepository
-						.getApplicantList(applicationId);
-				if (applicantInformationList.size() != 1) {
+						.getApplicantList(applicationId,CONTACT_ADDRESS_INVALID);
+				if (applicantInformationList.size() < 1) {
 					LOGGER.error("申請者データの件数が不正");
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 				}
@@ -1227,7 +1876,7 @@ public class ChatService extends AbstractJudgementService {
 				LOGGER.debug("行政から問合せ通知用内容編集 開始");
 
 				// 行政向け問合せ通知情報編集
-				if (messageType == MESSAGE_TYPE_GOVERNMENT_TO_GOVERNMENT) {
+				if (MESSAGE_TYPE_GOVERNMENT_TO_GOVERNMENT.equals(messageType)) {
 
 					// 部署名
 					LOGGER.debug("部署名設定 開始");
@@ -1250,9 +1899,25 @@ public class ChatService extends AbstractJudgementService {
 				LOGGER.debug("申請地番設定 終了");
 
 				// 回答対象
-				LOGGER.debug("回答対象設定 開始");
-				baseItem.setAnswerTarget(getAnswerTarget(answerId));
-				LOGGER.debug("回答対象設定 終了");
+				if(chatList.get(0).getApplicationStepId() == 1) {
+					LOGGER.debug("回答対象設定 開始");
+					baseItem.setAnswerTarget(getAnswerTarget(answerId));
+					LOGGER.debug("回答対象設定 終了");
+				}else if(chatList.get(0).getApplicationStepId().intValue() == 2 && chatList.get(0).getDepartmentAnswerId() != null) {
+					LOGGER.debug("回答対象設定 開始");
+					List<DepartmentAnswer> departmentAnswerList = departmentAnswerRepository.findByDepartmentAnswerId(chatList.get(0).getDepartmentAnswerId());
+					if(departmentAnswerList != null && departmentAnswerList.get(0) != null && departmentAnswerList.get(0).getDepartmentId() != null) {
+						List<Department> departmentList = departmentRepository.getDepartmentListById(departmentAnswerList.get(0).getDepartmentId());
+						if(departmentList != null && departmentList.get(0) != null && departmentList.get(0).getDepartmentName() != null) {
+							baseItem.setAnswerTarget(departmentList.get(0).getDepartmentName());
+						}
+					}
+					LOGGER.debug("回答対象設定 終了");
+				}else if(chatList.get(0).getApplicationStepId().intValue() == 3){
+					LOGGER.debug("回答対象設定 開始");
+					baseItem.setAnswerTarget(step3Title);
+					LOGGER.debug("回答対象設定 終了");
+				}
 
 				// 問合せ内容
 				LOGGER.debug("問合せ内容設定 開始");
@@ -1267,7 +1932,7 @@ public class ChatService extends AbstractJudgementService {
 				LOGGER.debug("行政から問合せ通知用内容編集 終了");
 
 				// 行政に行政からの問合せ通知を送付する
-				if (messageType == MESSAGE_TYPE_GOVERNMENT_TO_GOVERNMENT) {
+				if (MESSAGE_TYPE_GOVERNMENT_TO_GOVERNMENT.equals(messageType)) {
 					// 宛先部署びメールアドレス
 					List<Department> toDepartmentList = departmentRepository.getDepartmentListById(toDepartmentId);
 					if (toDepartmentList.size() != 1) {
@@ -1295,8 +1960,15 @@ public class ChatService extends AbstractJudgementService {
 				}
 
 				// 事業者に問合せ回答通知を送付する
-				if (messageType == MESSAGE_TYPE_GOVERNMENT_TO_BUSINESS) {
+				if (MESSAGE_TYPE_GOVERNMENT_TO_BUSINESS.equals(messageType)) {
 					String mailAddress = applicantInformation.getMailAddress();
+					
+					List<ApplicantInformation> contactApplicantList = applicantInformationRepository
+							.getApplicantList(applicationId,CONTACT_ADDRESS_VALID);
+					if (contactApplicantList.size() > 0) {
+						ApplicantInformation contactApplicant = contactApplicantList.get(0);
+						mailAddress = contactApplicant.getMailAddress();
+					}
 
 					String subject = getMailPropValue(MailMessageUtil.KEY_BUSSINESS_INQUIRY_SUBJECT, baseItem);
 					String body = getMailPropValue(MailMessageUtil.KEY_BUSSINESS_INQUIRY_BODY, baseItem);
@@ -1372,19 +2044,9 @@ public class ChatService extends AbstractJudgementService {
 	 */
 	private String getLotNumbers(int applicationId) {
 		LOGGER.debug("申請地番一覧取得 開始");
-
-		String addressText = "";
 		ApplicationDao applicationDao = new ApplicationDao(emf);
-		List<LotNumberForm> lotNumberFormList = new ArrayList<LotNumberForm>();
-		List<LotNumberSearchResultDefinition> lotNumberSearchResultDefinitionList = lotNumberSearchResultDefinitionRepository
-				.getLotNumberSearchResultDefinitionList();
-		List<LotNumberAndDistrict> lotNumberList = applicationDao.getLotNumberList(applicationId, lonlatEpsg);
-		for (LotNumberAndDistrict lotNumber : lotNumberList) {
-			lotNumberFormList.add(getLotNumberFormFromEntity(lotNumber, lotNumberSearchResultDefinitionList));
-		}
-		ExportJudgeForm exportForm = new ExportJudgeForm();
-		addressText = exportForm.getAddressText(lotNumberFormList, lotNumberSeparators, separator);
-
+		List<ApplyLotNumber> lotNumbersList = applicationDao.getApplyingLotNumberList(applicationId, lonlatEpsg);
+		String addressText = (lotNumbersList != null && lotNumbersList.size() > 0) ? lotNumbersList.get(0).getLotNumbers(): "";
 		LOGGER.debug("申請地番一覧取得 終了");
 		return addressText;
 	}
@@ -1400,7 +2062,7 @@ public class ChatService extends AbstractJudgementService {
 
 		String answerTarget = "";
 		AnswerDao answerDao = new AnswerDao(emf);
-		List<CategoryJudgement> categoryJudgements = answerDao.getCategoryJudgementList(answerId);
+		List<CategoryJudgementResult> categoryJudgements = answerDao.getJudgementResultByAnswerId(answerId);
 		if (categoryJudgements.size() != 1) {
 			LOGGER.error("区分判定データの件数が不正");
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -1431,5 +2093,257 @@ public class ChatService extends AbstractJudgementService {
 		form.setRegisterDatetime(datetimeformated);
 
 		return form;
+	}
+	
+	/**
+	 * 申請IDからO_申請を取得する
+	 * 
+	 * @param applicationId 申請ID
+	 * @return O_申請
+	 */
+	private Application getApplication(Integer applicationId) {
+	
+		Application application;
+		
+		LOGGER.trace("O_申請検索 開始");
+		List<Application> applicationList = applicationRepository
+				.getApplicationList(applicationId);
+		if (applicationList.size() == 0) {
+			LOGGER.warn("O_申請情報が存在しません。");
+			throw new RuntimeException();
+		}
+		application = applicationList.get(0);
+		LOGGER.trace("O_申請検索 終了");
+		
+		return application;
+	}
+	/**
+	 * 申請種類IDから申請種類名を取得する
+	 * 
+	 * @param applicationTypeId 申請種別ID
+	 * @return 申請種別名
+	 */
+	private String getApplicationTypeName(Integer applicationTypeId) {
+	
+		ApplicationType applicationType;
+		
+		LOGGER.trace("M_申請種類検索 開始");
+		List<ApplicationType> applicationTypeList = applicationTypeRepository
+				.findByApplicationTypeId(applicationTypeId);
+		if (applicationTypeList.size() == 0) {
+			LOGGER.warn("M_申請種類情報が存在しません。");
+			throw new RuntimeException();
+		}
+		applicationType = applicationTypeList.get(0);
+		LOGGER.trace("M_申請種類検索 終了");
+		
+		return applicationType.getApplicationTypeName();
+	}
+	/**
+	 * 申請段階IDから申請段階名を取得する
+	 * 
+	 * @param applicationStepId 申請段階ID
+	 * @return 申請段階名
+	 */
+	private String getApplicationStepName(Integer applicationStepId) {
+	
+		ApplicationStep applicationStep;
+		
+		LOGGER.trace("M_申請段階検索 開始");
+		List<ApplicationStep> applicationStepList = applicationStepRepository
+				.findByApplicationStepId(applicationStepId);
+		if (applicationStepList.size() == 0) {
+			LOGGER.warn("M_申請段階情報が存在しません。");
+			throw new RuntimeException();
+		}
+		applicationStep = applicationStepList.get(0);
+		LOGGER.trace("M_申請段階検索 終了");
+		
+		return applicationStep.getApplicationStepName();
+	}
+	
+	/**
+	 * 
+	 * 問い合わせリマインドの検索を行う
+	 */
+	public Map<String, Map<Integer, List<Integer>>> getRemindMail() {
+		Map<String, Map<Integer, List<Integer>>> chatMap = new HashMap<>();
+		List<Chat> chats = chatRepository.findRemindChat();
+		for (Chat chat : chats) {
+			// 申請段階IDを取得
+			Integer stepId = chat.getApplicationStepId();
+			// 許可判定の場合
+			if (stepId.equals(APPLICATION_STEP_ID_3)) {
+				// 許可判定,M_権限より、部署ID
+				List<Authority> departmentIdList = authorityRepository.findStep3AnswerDepartment();
+				// 部署のリストを回す
+				for (Authority departmentIds : departmentIdList) {
+					// 部署ID
+					String departmentId = departmentIds.getDepartmentId();
+					// 返却するmapに部署IDが含まれていなければ追加する
+					if (!(chatMap.containsKey(departmentId))) {
+						List<Integer> applicationIdnew = new ArrayList<>();
+						applicationIdnew.add(chat.getApplicationId());
+						Map<Integer, List<Integer>> stepApplicationIdNew = new HashMap<>();
+						stepApplicationIdNew.put(APPLICATION_STEP_ID_3, applicationIdnew);
+						chatMap.put(departmentId, stepApplicationIdNew);
+					} else {
+						// 返却するmapに部署IDが含まれている場合は取り出す
+						Map<Integer, List<Integer>> stepApplicationId = chatMap.get(departmentId);
+						// 申請段階が3のものを取り出す
+						List<Integer> applicationId = stepApplicationId.get(APPLICATION_STEP_ID_3);
+						// 申請段階3のものが無ければ追加する
+						if (applicationId == null) {
+							List<Integer> applicationIdnew = new ArrayList<>();
+							applicationIdnew.add(chat.getApplicationId());
+							stepApplicationId.put(APPLICATION_STEP_ID_3, applicationIdnew);
+							chatMap.put(departmentId, stepApplicationId);
+						} else {
+							// 申請段階3のものがあった場合は取り出したものにaddしてputし直す
+							if (!applicationId.contains(chat.getApplicationId())) {
+								applicationId.add(chat.getApplicationId());
+								stepApplicationId.put(APPLICATION_STEP_ID_3, applicationId);
+								chatMap.put(departmentId, stepApplicationId);
+							}
+						}
+					}
+				}
+			} else {
+				// 許可判定以外の場合
+				// o_メッセージからメッセージを取得する
+				List<Message> messages = mssageRepository.findRemindMessageByChatId(chat.getChatId());
+				// メッセージのリストを回して該当する部署を取得する
+				for (Message message : messages) {
+					// 部署リストを取得
+					List<InquiryAddress> address = inquiryAddressRepository
+							.findByMessageIdAndFlag0(message.getMessageId());
+					// 部署リストを回してmapに追加していく
+					for (InquiryAddress addres : address) {
+						// 部署ID
+						String departmentId = addres.getDepartmentId();
+						// 返却するmapに部署IDが含まれていなければ追加する
+						if (!(chatMap.containsKey(departmentId))) {
+							List<Integer> applicationIdnew = new ArrayList<>();
+							applicationIdnew.add(chat.getApplicationId());
+							Map<Integer, List<Integer>> stepApplicationIdNew = new HashMap<>();
+							stepApplicationIdNew.put(stepId, applicationIdnew);
+							chatMap.put(departmentId, stepApplicationIdNew);
+						} else {
+							// 返却するmapに部署IDが含まれている場合は取り出す
+							Map<Integer, List<Integer>> stepApplicationId = chatMap.get(departmentId);
+							// 申請段階で取り出す
+							List<Integer> applicationId = stepApplicationId.get(stepId);
+							// その申請段階のものが無ければ追加する
+							if (applicationId == null) {
+								List<Integer> applicationIdnew = new ArrayList<>();
+								applicationIdnew.add(chat.getApplicationId());
+								stepApplicationId.put(stepId, applicationIdnew);
+								chatMap.put(departmentId, stepApplicationId);
+							} else {
+								// 申請段階のものがあった場合は取り出したものにaddしてputし直す
+								if (!applicationId.contains(chat.getApplicationId())) {
+									applicationId.add(chat.getApplicationId());
+									stepApplicationId.put(stepId, applicationId);
+									chatMap.put(departmentId, stepApplicationId);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return chatMap;
+	}
+	
+	/**
+	 * チャット投稿のログデータ編集
+	 * 
+	 * @param isGoverment    行政かどうか
+	 * @param accessId       アクセスID
+	 * @param loginId        ログインID
+	 * @param departmentName 部署名
+	 * @param chatId         チャットID
+	 * 
+	 * @return チャット投稿のログデータ
+	 */
+	public Object[] editLogContentList(boolean isGoverment, String accessId, String loginId, String departmentName,
+			Integer chatId) {
+
+		// チャット情報取得
+		List<Chat> chatList = chatRepository.findByChatId(chatId);
+		if (chatList.size() == 0) {
+			LOGGER.warn("O_チャットのデータが存在しません。　チャットID：" + chatId);
+			throw new RuntimeException();
+		}
+		Chat chatEntity = chatList.get(0);
+
+		// 申請ID
+		Integer applicationId = chatEntity.getApplicationId();
+		// O_申請を取得
+		Application application = getApplication(applicationId);
+
+		// 申請種類
+		String applicationTypeName = getApplicationTypeName(application.getApplicationTypeId());
+		// 申請段階
+		Integer applicationStepId = chatEntity.getApplicationStepId();
+		String applicationStepName = getApplicationStepName(applicationStepId);
+
+		// 回答ID
+		String answerIdStr = EMPTY;
+		// 問合せ部署
+		String inquiryDepartmentName = EMPTY;
+
+		// 事前相談：回答ID＝O_回答ID、問合せ部署＝空
+
+		if (APPLICATION_STEP_ID_1.equals(applicationStepId)) {
+			// 回答ID
+			answerIdStr = chatEntity.getAnswerId().toString();
+			// 問合せ部署
+			inquiryDepartmentName = EMPTY;
+		}
+
+		// 事前協議：回答ID＝空、問合せ部署＝O_部署回答に対する部署名
+
+		if (APPLICATION_STEP_ID_2.equals(applicationStepId)) {
+			// 回答ID
+			answerIdStr = EMPTY;
+
+			// 問合せ部署
+			Integer departmentAnswerId = chatEntity.getDepartmentAnswerId();
+			DepartmentAnswer departmentAnswer = answerDepartmentRepository.findByAnswerId(departmentAnswerId);
+
+			List<Department> departmentList = departmentRepository
+					.getDepartmentListById(departmentAnswer.getDepartmentId());
+
+			if (departmentList.size() == 0) {
+
+				inquiryDepartmentName = EMPTY;
+			} else {
+				inquiryDepartmentName = departmentList.get(0).getDepartmentName();
+			}
+
+		}
+		// 許可判定：回答ID＝空、問合せ部署＝空
+
+		if (APPLICATION_STEP_ID_3.equals(applicationStepId)) {
+			// 回答ID
+			answerIdStr = EMPTY;
+			// 問合せ部署
+			inquiryDepartmentName = EMPTY;
+		}
+
+		if (isGoverment) {
+			// チャット投稿（行政）
+			Object[] logData = { accessId, LogUtil.localDateTimeToString(LocalDateTime.now()), loginId, departmentName,
+					applicationId, applicationTypeName, applicationStepName, answerIdStr, inquiryDepartmentName };
+
+			return logData;
+		} else {
+			// チャット投稿（事業者）
+			Object[] logData = { accessId, LogUtil.localDateTimeToString(LocalDateTime.now()), applicationId,
+					applicationTypeName, applicationStepName, answerIdStr, inquiryDepartmentName };
+
+			return logData;
+		}
 	}
 }

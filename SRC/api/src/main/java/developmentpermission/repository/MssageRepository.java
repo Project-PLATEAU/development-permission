@@ -50,4 +50,12 @@ public interface MssageRepository extends JpaRepository<Message, Integer> {
 	 */
 	@Query(value = "SELECT message_id, chat_id, message_type, sender_id, to_department_id, message_text, send_datetime, read_flag, answer_complete_flag FROM o_message WHERE message_id = :messageId ", nativeQuery = true)
 	List<Message> findByMessageId(@Param("messageId") Integer messageId);
+	
+	/**
+	 * メッセージ一覧取得(未回答リマインドの取得)
+	 * 
+	 * @return メッセージ一覧(未回答リマインドの取得)
+	 */
+	@Query(value = "SELECT message_id, chat_id, message_type, sender_id, to_department_id, message_text, send_datetime, read_flag, answer_complete_flag FROM o_message WHERE chat_id = :chatId AND message_type = 1 AND answer_complete_flag = '0'", nativeQuery = true)
+	List<Message> findRemindMessageByChatId(@Param("chatId") Integer chatId);
 }

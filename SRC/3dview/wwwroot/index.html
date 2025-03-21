@@ -33,6 +33,52 @@
 
     <!-- Leaflet -->
     <script>L_PREFER_CANVAS = true;</script>
+    
+    <!-- Table Sort Library -->
+	<style>
+		th[role="columnheader"]{
+			user-select: none;
+			padding-left:15px;
+			padding-right:15px;
+			line-height: 2em;
+		}
+		
+		th[role="columnheader"]:not(.no-sort) {
+			cursor: pointer;
+		}
+		
+		th[role="columnheader"]:not(.no-sort):after {
+			content: "";
+			position: absolute;
+			right: 10px;
+			top: 50%;
+			transform: translateY(-50%);
+			border-width: 0 6px 6px;
+			border-style: solid;
+			border-color: #404040 transparent;
+			visibility: hidden;
+			opacity: 0;
+			-ms-user-select: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;
+		}
+
+		th[aria-sort="ascending"]:not(.no-sort):after {
+			border-bottom: none;
+			border-width: 6px 6px 0;
+		}
+
+		th[aria-sort]:not(.no-sort):after {
+			visibility: visible;
+			opacity: 0.4;
+		}
+
+		th[role="columnheader"]:not(.no-sort):hover:after {
+			visibility: visible;
+			opacity: 1;
+		}
+	</style>
 </head>
 
 <body>

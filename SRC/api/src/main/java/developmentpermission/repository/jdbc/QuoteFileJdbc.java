@@ -35,10 +35,13 @@ public class QuoteFileJdbc extends AbstractJdbc {
 		try {
 			String sql = "" + //
 					"INSERT INTO o_answer_file " + //
-					"(answer_file_id, answer_id, answer_file_name, delete_unnotified_flag, delete_flag) " + //
-					"VALUES (nextval('seq_answer_file'), ?, ?, '0', '0')";
+					"(answer_file_id, answer_id, application_id, application_step_id, department_id, answer_file_name, delete_unnotified_flag, delete_flag) " + //
+					"VALUES (nextval('seq_answer_file'), ?, ?, ?, ?, ?, '0', '0')";
 			jdbcTemplate.update(sql, //
 					form.getAnswerId(), //
+					form.getApplicationId(), //
+					form.getApplicationStepId(), //
+					form.getDepartmentId(), //
 					form.getAnswerFileName());
 			return jdbcTemplate.queryForObject("SELECT lastval()", Integer.class);
 		} finally {

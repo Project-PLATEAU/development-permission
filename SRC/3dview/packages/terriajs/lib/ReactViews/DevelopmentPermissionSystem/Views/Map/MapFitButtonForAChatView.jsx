@@ -30,6 +30,10 @@ class MapFitButtonForAChatView extends React.Component {
         }
     }
 
+    componentDidMount() {
+        this.props.viewState.setMapFitButtonFunction(()=>{this.fitMap();});
+    }
+
     fitMap(){
         let lotNumbers = this.props.viewState.lotNumbers;
         console.log(lotNumbers);
@@ -90,37 +94,7 @@ class MapFitButtonForAChatView extends React.Component {
      * @param {number} lat 緯度
      */
     outputFocusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat) {
-        // 3dmodeにセット
-        this.props.viewState.set3dMode();
-        //現在のカメラ位置等を取得
-        const currentSettings = getShareData(this.state.terria, this.props.viewState);
-        const currentCamera = currentSettings.initSources[0].initialCamera;
-        let newCamera = Object.assign(currentCamera);
-        //新規の表示範囲を設定
-        let currentLonDiff = Math.abs(maxLon - minLon);
-        let currentLatDiff = Math.abs(maxLat - minLat);
-        newCamera.north = maxLat + currentLatDiff;
-        newCamera.south = minLat - currentLatDiff;
-        newCamera.east = maxLon + currentLonDiff;
-        newCamera.west = minLon - currentLonDiff;
-        //camera.positionを緯度経度に合わせて設定
-        const scene = this.props.terria.cesium.scene;
-        const terrainProvider = scene.terrainProvider;
-        const positions = [Cartographic.fromDegrees(lon, minLat)];
-        let height = 0;
-        sampleTerrainMostDetailed(terrainProvider, positions).then((updatedPositions) => {
-            height = updatedPositions[0].height
-            let diff = currentLonDiff;
-            if(currentLonDiff < currentLatDiff ){
-                diff = currentLatDiff;
-            }
-            let coord_wgs84 = Cartographic.fromDegrees(lon, minLat, parseFloat(height+300) + parseInt((400000 * diff)));
-            let coord_xyz = Ellipsoid.WGS84.cartographicToCartesian(coord_wgs84);
-            newCamera.position = { x: (coord_xyz.x - 100), y: (coord_xyz.y + parseInt(100)), z: coord_xyz.z };
-            newCamera.direction = { x: this.props.terria.focusCameraDirectionX, y: this.props.terria.focusCameraDirectionY-1, z: this.props.terria.focusCameraDirectionZ };
-            newCamera.up = { x: this.props.terria.focusCameraUpX, y: this.props.terria.focusCameraUpY, z:this.props.terria.focusCameraUpZ };
-            this.state.terria.currentViewer.zoomTo(newCamera, 5);
-        })
+        this.props.terria.focusMapPlace(maxLon, maxLat, minLon, minLat, lon, lat, this.props.viewState);
     }
 
 
@@ -132,11 +106,15 @@ class MapFitButtonForAChatView extends React.Component {
                     title="対象の申請地番に移動"
                     >
                     <StyledIcon 
-                        styledWidth={"28px"}
+                        styledWidth={"23px"}
                         fillColor={"#FFF"}
                         glyph={Icon.GLYPHS.location2}
                         css={`
                             cursor: pointer;
+                            position:absolute;
+                            top: 62%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
                         `}
                     />
                 </RawButton>

@@ -29,4 +29,7 @@ public class ApplicationCategoryKey implements Serializable {
 	@Column(name = "category_id")
 	private String categoryId;
 
+	/** 申請段階ID */
+	@Column(name = "application_step_id")
+	private Integer applicationStepId;
 }

@@ -45,7 +45,7 @@ public class InquiryFile implements Serializable {
 	/** ファイルパス */
 	@Column(name = "file_path")
 	private String filePath;
-	
+
 	/** 登録日時 */
 	@Column(name = "register_datetime")
 	private LocalDateTime registerDatetime;

@@ -9,13 +9,13 @@ interface CssExports {
   'btn_baise_style': string;
   'btn_gry': string;
   'caption': string;
-  'checkbox': string;
   'circleButton': string;
   'circle_button': string;
-  'content': string;
+  'customCheckboxAuto': string;
   'customContent': string;
   'customFrame': string;
   'customNuv': string;
+  'custom_checkbox_auto': string;
   'custom_content': string;
   'custom_frame': string;
   'custom_nuv': string;
